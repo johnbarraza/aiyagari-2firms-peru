@@ -1,0 +1,8 @@
+Consumption distribution from HA model .mat
+C_eff=consumption aggregator entering utility
+expenditure=X=c_F+p_I*c_I, monetary spending on formal and informal goods
+variable mean sd
+C_eff 1.1037236022 0.2216892276
+expenditure 1.8343446136 0.3684386560
+c_F 1.6237909198 0.3261477368
+p_I_c_I 0.2105536938 0.0422909193

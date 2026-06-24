@@ -1,0 +1,8 @@
+Model gasto distribution by dominant formality
+source_mat=C:\Users\johnb\Documents\GitHub\HA-IE2025\Code\CONTINUOUS_TIME\Aiyagari_firmas\try_endog_labor_2_firms\replication_package\outputs\stationary\hong_nz14_DRSGobel\results_hong_nz14_DRSGobel.mat
+variable=expenditure=c_F+p_I*c_I reconstructed from C_eff using ces_split_from_Ceff_v10
+classification=Formal if ell_F>=ell_I; Informal if ell_I>ell_F
+group mass mean sd p10 p50 p90
+formal_dominant 0.2235083103 2.2854577667 0.4215159827 1.7925645109 2.2717765069 2.7399950511
+informal_dominant 0.7764916897 1.7044944943 0.2196360233 1.4171734987 1.7265411671 1.9636408663
+total 1.0000000000 1.8343446136 0.3684386560 1.4559265100 1.7841602813 2.2731222964

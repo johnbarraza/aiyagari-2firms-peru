@@ -1,210 +1,130 @@
 # CONTINUAR AQUÍ — HA-IE Replication Package
 
-> Para el compañero que retoma. Todo lo necesario está en esta carpeta.
+> Última actualización: 2026-06-25. Benchmark: `Rho06_fine` (ρ=0.06).
 
-## Contexto (30 segundos)
-
-Modelo Aiyagari HACT con 2 firmas (formal/informal), oferta laboral endógena, Perú.
-**Cambio clave 2026-06-21:** Reemplazamos proceso z propio (ENAHO GMM) por **Hong (2022)**.
-
-| Concepto                  | Valor                               | Fuente                               |
-| ------------------------- | ----------------------------------- | ------------------------------------ |
-| ρ_z (persistencia anual) | 0.8600132622                        | Hong (2022) JIE: 0.963⁴             |
-| σ_logz (sd estacionaria) | 0.5417411732                        | Hong (2022) JIE: 0.146/√(1-0.963²) |
-| Firma formal              | α=0.636 CRS                        | Céspedes et al. (2014)              |
-| Firma informal            | α_I=0.118, β_I=0.605 DRS          | Göbel et al. (2013)                 |
-| PDF paper                 | `docs/referencias/hong_emmpc.pdf` | Tabla 1, p.24                        |
-
-## Restricciones duras (NO VIOLAR)
-
-```
-p_I < 1       bien informal más barato que formal
-A_I ≤ 1       PTF informal ≤ PTF formal
-β_I = 0.605   NO TOCAR (Göbel et al. 2013)
-α_I = 0.118   NO TOCAR (Göbel et al. 2013)
-ρ_z = 0.860   NO TOCAR (Hong 2022)
-σ_logz = 0.542 NO TOCAR (Hong 2022)
-ν_I ∈ [0.4, 0.8]
-```
-
-## Targets
-
-| Target                      | Dato Perú | Fuente                     |
-| --------------------------- | ---------- | -------------------------- |
-| T4: L_I/(L_F+L_I)           | 0.557      | INEI Cuenta Satélite 2024 |
-| T5: p_I·Y_I/(Y_F+p_I·Y_I) | 0.190      | INEI Cuenta Satélite 2024 |
-| Tkz: gap formalidad z₂-z₁ | 0.386      | EPEN 2025                  |
-| Tgasto: gasto F-dom / I-dom | 1.913      | ENAHO 2015-2019            |
-
-## Mejor run hasta ahora
-
-`hong_nz14_DRS_om055` (p_I=1.14 — VIOLA RESTRICCIÓN pero targets más cercanos)
-
-| Target | Modelo   | Dato  | Brecha |
-| ------ | -------- | ----- | ------ |
-| p_I<1  | 1.14 ✗  | <1    | +0.14  |
-| T4     | 0.560 ✓ | 0.557 | +0.003 |
-| T5     | 0.157    | 0.190 | -0.033 |
-| Tkz    | 0.161    | 0.386 | -0.225 |
-| Tgasto | 1.60     | 1.913 | -0.31  |
-| T1 hh  | 2.58     | ~2.30 | +0.28  |
-
-Parámetros: Nz=14, A_I=0.99, psi_F=180, psi_I=50, ν_I=0.40, κ_z1=0.110, κ_shape=2.0, ω_C=0.55, amin=-1
-
-## Estrategia de calibración
-
-```
-Instrumento     →  Target     Dirección
-─────────────────────────────────────────
-ω_C (subir)     →  p_I < 1    ω_C↑ → p_I↓
-ω_C (bajar)     →  T5 ↑       ω_C↓ → demanda informal ↑ → p_I·Y_I ↑ → T5↑
-psi_F/psi_I     →  T4         ratio psi_F/psi_I ↑ → T4 ↑
-κ_z1 (subir)    →  Tkz ↑      más barrera a z bajo → gap sube
-ν_I (bajar)     →  Tkz ↑      z^ν más plano → informal para z alto
-```
-
-**Tensión central:** bajar ω_C sube T5 pero también sube p_I (riesgo >1).
-Hay que encontrar ω_C que maximice T5 con p_I<1. Ese ω_C está entre 0.55 y 0.65.
-Puede ajustar un poco sigma_C como robustez (σ_C=3 o σ_C=7) si p_I no responde a ω_C.
-
-## Nz vs velocidad vs precisión
-
-| Nz | Tiempo fast debug | Ventaja | Riesgo |
-|----|-------------------|---------|--------|
-| 7  | ~8 min | Rápido para explorar | Tkz subestimado, extremos truncados |
-| 14 | ~16 min | Balance velocidad/precisión | OK para calibrar |
-| 20 | ~25 min | Convergencia más fina | No necesario hasta ajuste final |
-| 40 | ~1h+ | Benchmark Moll-style | Solo para validación final |
-
-**Regla:** Calibrar en Nz=14 (o Nz=7 para exploración rápida). Solo correr Nz=20 o Nz=40 al final para validar que resultados no cambian.
-
-## Cómo se generan los gráficos
-
-Cada gráfico de la presentación → script que lo produce:
-
-| Slide | Gráfico | Script |
-|-------|---------|--------|
-| Uso del tiempo | `moll_time_use_by_z_excluding_leisure.png` | `ploteo/moll_mechanism.py` |
-| Ahorro y riqueza | `moll_savings_and_wealth_distribution.png` | `ploteo/moll_mechanism.py` |
-| Densidad por z | `moll_wealth_density_by_z_low_median_high.png` | `ploteo/moll_mechanism.py` |
-| Ingreso por quintil | `moll_income_decomposition_percent_by_wealth_quintile.png` | `ploteo/moll_mechanism.py` |
-| Gasto por formalidad | `moll_model_gasto_distribution_by_formality.png` | `ploteo/moll_gasto.py` |
-| Componentes consumo | `moll_consumption_components_distribution.png` | `ploteo/moll_mechanism.py` |
-
-Todos se generan con `python ploteo/<script>.py --mat-file <results.mat> --out-dir <dir>`.
-El .mat lo produce `model_main.m` al terminar.
-
-## PASO 1 — Correr ω_C=0.60 (el punto dulce)
+## Benchmark actual (Rho06_fine)
 
 ```matlab
-HA_IE_REPLICATION_LOADED = true;
+cd('C:\...\replication_package')
+
+setenv('HA_IE_RUN_TAG',   'Rho06_fine')
+setenv('HA_IE_FAST_DEBUG', '1')
+setenv('HA_IE_EQ_MODE',    '2')
+setenv('HA_IE_VERBOSE',    '0')
+setenv('HA_IE_R_HI',       '0.20')
+setenv('HA_IE_R_LO',       '-0.04')
+setenv('HA_IE_Z_N',        '7')
+setenv('HA_IE_Z_RHO',      '0.861')
+setenv('HA_IE_Z_SD',       '0.544')
+setenv('HA_IE_Z_WIDTH',    '2.5')
+setenv('HA_IE_RHO',        '0.06')        % Hong: β=0.948 → ρ≈0.053. Perú MPC alto → ρ=0.06
+setenv('HA_IE_A_I',        '1.0')
+setenv('HA_IE_ALPHA_I',    '0.118')       % Göbel et al. (2013)
+setenv('HA_IE_BETA_I',     '0.605')       % Göbel et al. (2013)
+setenv('HA_IE_THETA',      '1.0')
+setenv('HA_IE_NU_I',       '0.6')
+setenv('HA_IE_PSI_F',      '140')
+setenv('HA_IE_PSI_I',      '55')
+setenv('HA_IE_SIGMA_C',    '8')           % alta sustitución → p_I más bajo
+setenv('HA_IE_OMEGA_C',    '0.435')
+setenv('HA_IE_TAU_C',      '0')           % IGV off
+setenv('HA_IE_KAPPA_Z1',   '0.300')
+setenv('HA_IE_KAPPA_Z_SHAPE', '2.0')
+setenv('HA_IE_DEBT_PREM_CHI',    '0.02')
+setenv('HA_IE_DEBT_PREM_ETA',    '1.25')
+setenv('HA_IE_DEBT_PREM_REBATE', '0')
+setenv('HA_IE_AMIN',       '-0.002')
+setenv('HA_IE_INFORMAL_PROFIT_RULE', 'hours')
+
+model_main
+```
+
+## Resultados
+
+| Target | Modelo | Dato | Estado |
+|--------|--------|------|--------|
+| **T5** PBI informal nominal | **0.1905** | 0.190 | ✅ EXACTO |
+| **T4** horas informales | **0.556** | 0.557 | ✅ |
+| Tgasto (F-dom/I-dom) | 1.77 | 1.91 | ~ (-0.14) |
+| T1 w_F/(w_I_hh·θ) | 1.99 | 2.30 | ~ (-0.31) |
+| **Gini riqueza** | **0.336** | 0.4-0.5 | ⬆ mejorando |
+| Tkz gap formal z | ~0.14 | 0.386 | ❌ estructural |
+| **p_I** | **1.525** | <1 | ⬇ bajando pero >1 |
+| **K/Y** | **3.47** | 2.7 | ⬇ mejorando, aún alto |
+| r* | 0.055 | — | — |
+| K* | 10.55 | — | — |
+| K_I | 0.44 | — | — |
+
+## Parámetros clave y sus efectos
+
+| Parámetro | Valor | Efecto al subir | setenv |
+|-----------|-------|----------------|--------|
+| ρ (impaciencia) | 0.06 | ↓K, ↑r, ↓p_I, ↑Gini | `HA_IE_RHO` |
+| σ_C (sustitución F/I) | 8 | ↓p_I, ↓T5 | `HA_IE_SIGMA_C` |
+| ω_C (peso CES formal) | 0.435 | ↑ → ↓p_I ↓T5, ↓ → ↑T5 ↑p_I | `HA_IE_OMEGA_C` |
+| psi_F/psi_I | 140/55 | ↑ratio → ↑T4, puede romper Tgasto | `HA_IE_PSI_F`, `_I` |
+| A_I | 1.0 | ↑T5, ↑Y_I | `HA_IE_A_I` |
+| κ_z1 | 0.30 | ↑Tkz (poco) | `HA_IE_KAPPA_Z1` |
+| τ_c (IGV) | 0 | ↑ → ↑T5, ↓Gini (regresivo) | `HA_IE_TAU_C` |
+| amin | -0.002 | Más negativo: ↑Gini poco | `HA_IE_AMIN` |
+| γ (risk aversion) | 2 | 1 rompió (K subió) | `HA_IE_GA` |
+| Frisch | 0.38 | 0.28 empeoró | `HA_IE_FRISCH` |
+
+## Nuevos parámetros disponibles (agregados 2026-06-25)
+
+```
+HA_IE_RHO     — discount rate (default 0.05)
+HA_IE_GA      — risk aversion (default 2). ga=1 usa log utility
+HA_IE_FRISCH  — Frisch elasticity (default 0.38)
+HA_IE_TAU_C   — IGV on formal consumption (default 0.18, 0=off)
+```
+
+## Pendiente para mejorar
+
+### Prioridad 1: Bajar p_I hacia 1
+- **Problema:** p_I=1.52 porque Y_I es pequeño relativo a demanda de c_I
+- **Canales:** subir ρ más (0.065-0.07), ajustar psi para mantener Tgasto
+- **Riesgo:** Tgasto se vuelve NaN si todos son informal-dominantes
+- **Alternativa:** cambiar utilidad a Horvath (no-separable) para reducir auto-aseguro
+
+### Prioridad 2: Bajar K/Y hacia 2.7
+- **Problema:** K/Y=3.47, Perú debería ser más bajo (menos ahorro, más impacientes)
+- **Canal:** ρ↑ → K↓ → K/Y↓
+- **Trade-off:** con ρ>0.065, Tgasto muere. Toca ajustar psi_F/psi_I simultáneamente
+
+### Prioridad 3: Subir Gini a 0.4-0.5
+- **Problema:** auto-aseguro vía oferta laboral comprime riqueza
+- **Canales:** ρ↑ ayuda, amin más negativo ayuda poco
+- **Estructural:** modelo HA estándar sin entrepreneurs/herencias
+
+### Prioridad 4: Subir Tkz a 0.386
+- **Problema:** κ_z1 tiene efecto marginal decreciente (0.01→0.30 solo sube Tkz 0.10→0.14)
+- **Estructural:** con ρ_z=0.86 (Hong), el sorting por z es natural, κ_z añade poco
+
+## Archivos clave generados
+
+| Archivo | Contenido |
+|---------|-----------|
+| `AUDITORIA_NUMERICA.md` | Validación código vs Moll, Yanagimoto, Rafales, Galindo |
+| `SESION_CALIBRACION_2026-06-24.md` | Bitácora completa 30+ corridas |
+| `RESULTADOS_CORRIDAS_ABC.md` | Comparación primeras corridas |
+| `REVISION_ou_prima_calib_try3.md` | Revisión run del compañero |
+
+## Corridas en outputs/stationary/
+
+Las más relevantes:
+- `test_A_replica` — Réplica compañero (NO reproduce, código distinto)
+- `test_G_AI10_om046` — Primer T5=0.19 (σ=5, p_I=1.51)
+- `test_N3_kappa30` — T5=0.195, T4=0.556, Tgasto=1.82
+- `test_O2_sig8_om0425` — p_I=1.60 con σ=8
+- `test_T_Nz7_debt` — Nz=7 validación (mismos resultados, ~7 min)
+- `test_RHO06` — ρ=0.06: p_I=1.55, Gini=0.34, T5=0.195
+- **`test_RHO06_fine`** — 🏆 BENCHMARK: T5=0.1905, T4=0.556, p_I=1.525, K/Y=3.47
+
+## Cómo correr desde cero
+
+```matlab
 cd('C:\Users\johnb\Documents\GitHub\HA-IE2025\Code\CONTINUOUS_TIME\Aiyagari_firmas\try_endog_labor_2_firms\replication_package')
-
-setenv('HA_IE_RUN_TAG', 'hong_nz14_DRS_om060');
-setenv('HA_IE_Z_N', '14');
-setenv('HA_IE_Z_RHO', '0.8600132622');
-setenv('HA_IE_Z_SD', '0.5417411732');
-setenv('HA_IE_ALPHA_I', '0.118');
-setenv('HA_IE_BETA_I', '0.605');
-setenv('HA_IE_OMEGA_C', '0.60');
-setenv('HA_IE_NU_I', '0.40');
-setenv('HA_IE_PSI_F', '180');
-setenv('HA_IE_PSI_I', '50');
-setenv('HA_IE_A_I', '0.99');
-setenv('HA_IE_KAPPA_Z1', '0.110');
-setenv('HA_IE_KAPPA_Z_SHAPE', '2.0');
-setenv('HA_IE_FAST_DEBUG', '1');
-setenv('HA_IE_R_HI', '0.15');
-setenv('HA_IE_VERBOSE', '0');
-setenv('HA_IE_AMIN', '-1');
-setenv('HA_IE_INFORMAL_PROFIT_RULE', 'hours');
+% Copiar setenv del benchmark arriba
 model_main
 ```
-
-~16 min en fast debug. Si no converge, subir `HA_IE_R_HI` a 0.30.
-
-**Si p_I<1:** ¡Éxito! Ir a PASO 2.
-**Si p_I>1:** Subir ω_C a 0.62-0.63 y repetir.
-**Si p_I<0.80:** Bajar ω_C a 0.58 y repetir (hay margen para más T5).
-
-## PASO 2 — Graficar
-
-```matlab
-RESULTS = 'outputs/stationary/hong_nz14_DRS_om060/results_hong_nz14_DRS_om060.mat';
-PLOTS   = 'outputs/stationary/hong_nz14_DRS_om060/plots_moll';
-system(sprintf('python ploteo/moll_mechanism.py --mat-file "%s" --out-dir "%s"', RESULTS, PLOTS));
-system(sprintf('python ploteo/moll_gasto.py --mat-file "%s" --out-dir "%s"', RESULTS, PLOTS));
-```
-
-12 PNGs en `plots_moll/`.
-
-## PASO 3 — Actualizar presentación
-
-1. Editar `presentacion/presentation_replication.tex`:
-   - `\graphicspath{{../outputs/stationary/<NUEVO_DIR>/plots_moll/}}`
-   - Actualizar tabla de targets en slide "Calibración"
-2. Compilar: `cd presentacion && pdflatex presentation_replication.tex`
-
-## PASO 4 — Ajustar Tkz
-
-Una vez p_I<1 con buen T5, subir κ_z1 para cerrar Tkz:
-
-```matlab
-setenv('HA_IE_RUN_TAG', 'hong_nz14_DRS_k120');
-setenv('HA_IE_KAPPA_Z1', '0.120');
-% ... resto igual que PASO 1
-```
-
-Probar κ_z1 ∈ {0.120, 0.130, 0.150} hasta Tkz≈0.386.
-
-## PASO 5 — Si T5 no llega a 0.19
-
-Con Hong (ρ=0.860) el ahorro precautorio es más alto que con ENAHO GMM:
-
-- K sube → r* baja → w_F/w_I se dispara (~4 en modelo vs ~2.30 BCR)
-- Formal demasiado atractiva → Y_I bajo → T5 estructuralmente bajo
-
-Si con p_I≈0.95 y A_I=0.99, T5<0.15: **documentar como limitación estructural**.
-Ver `PLAN_CALIBRACION.md` paso 5 para redacción sugerida.
-
-## PASO 6 (opcional) — CRS Göbel
-
-```matlab
-setenv('HA_IE_RUN_TAG', 'hong_nz14_CRS_Gobel');
-setenv('HA_IE_ALPHA_I', '0.163');
-setenv('HA_IE_BETA_I', '0.837');
-setenv('HA_IE_INFORMAL_PROFIT_RULE', 'lump');
-model_main
-```
-
-## Historial de corridas
-
-| Run                 | ω_C | α_I  | β_I  | ν_I | p_I    | T4   | T5    | Tkz   |
-| ------------------- | ---- | ----- | ----- | ---- | ------ | ---- | ----- | ----- |
-| hong_nz14_om75_k110 | 0.75 | 0     | 0.60  | 0.60 | 0.45   | 0.50 | 0.067 | 0.114 |
-| hong_nz14_nu04      | 0.75 | 0     | 0.60  | 0.40 | 0.45   | 0.50 | 0.067 | 0.163 |
-| hong_nz14_DRSGobel  | 0.65 | 0.118 | 0.605 | 0.40 | 0.77   | 0.52 | 0.094 | 0.163 |
-| hong_nz14_DRS_om055 | 0.55 | 0.118 | 0.605 | 0.40 | 1.14✗ | 0.56 | 0.157 | 0.161 |
-
-## Pipeline de gráficos
-
-| Tipo             | Comando                                                              | Output  |
-| ---------------- | -------------------------------------------------------------------- | ------- |
-| Moll mechanism   | `python ploteo/moll_mechanism.py --mat-file <mat> --out-dir <dir>` | 11 PNGs |
-| Gasto formalidad | `python ploteo/moll_gasto.py --mat-file <mat> --out-dir <dir>`     | 1 PNG   |
-| OU diagnóstico  | `plot_ou_process_distributions('<mat>')`                           | PNGs    |
-| Slides           | `cd presentacion && pdflatex presentation_replication.tex`         | PDF     |
-
-## Archivos clave en este package
-
-| Archivo                                       | Qué es                                                    |
-| --------------------------------------------- | ---------------------------------------------------------- |
-| `model_main.m`                              | Solver principal                                          |
-| `ploteo/zero_drift_solver.m`               | Solver zero-drift vectorizado (dep de model_main, ex `zero_drift_grid_fast_v10_debtprem`) |
-| `PLAN_CALIBRACION.md`                       | Plan completo + bitácora                                 |
-| `CALIBRACION_CONTEXTO.md`                   | Documentación de parámetros                             |
-| `docs/referencias/hong_emmpc.pdf`           | Paper fuente del proceso z                                |
-| `ploteo/moll_mechanism.py`                  | Gráficos publicación                                    |
-| `ploteo/moll_gasto.py`                      | Gasto por formalidad                                      |
-| `presentacion/presentation_replication.tex` | Slides Beamer                                             |
-| `calibracion/escenarios.m`                  | Selector de escenarios                                    |

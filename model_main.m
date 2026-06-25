@@ -44,7 +44,7 @@ end
 clearvars; clc; close all;
 tic;
 
-global p_I omega_C eta_C sigma_C nu_I Frisch_F Frisch_I
+global p_I omega_C eta_C sigma_C nu_I Frisch_F Frisch_I tau_c
 global debt_spread_aa debt_spread_z debt_prem_chi debt_prem_eta debt_prem_rebate
 global HA_IE_VERBOSE HA_IE_PROFILE HA_IE_TIMINGS
 
@@ -116,6 +116,14 @@ HA_IE_TIMINGS = struct();
 ga     = 2;       % CRRA risk aversion coefficient γ
 rho    = 0.05;    % subjective discount rate ρ
 Frisch = 0.38;     % Frisch elasticity of labor supply φ
+
+env_ga = str2double(getenv('HA_IE_GA')); % _Env
+env_rho_ie = str2double(getenv('HA_IE_RHO')); % _Env
+env_Frisch = str2double(getenv('HA_IE_FRISCH')); % _Env
+if isfinite(env_ga) && env_ga > 0, ga = env_ga; end
+if isfinite(env_rho_ie) && env_rho_ie > 0, rho = env_rho_ie; end
+if isfinite(env_Frisch) && env_Frisch > 0, Frisch = env_Frisch; end
+
 Frisch_F = Frisch;
 Frisch_I = Frisch;
 
@@ -146,6 +154,11 @@ omega_C = 0.57;            % benchmark calib_nz20...om057 — bajar rompe p_I<1
 
 env_omega_C = str2double(getenv('HA_IE_OMEGA_C')); % _Env
 if isfinite(env_omega_C) && env_omega_C > 0 && env_omega_C < 1, omega_C = env_omega_C; end
+
+% Tax on formal consumption (IGV-style). Rebated lump-sum to households.
+tau_c = 0.18;  % 18% IGV Peru (default). Set HA_IE_TAU_C=0 for no tax.
+env_tau_c = str2double(getenv('HA_IE_TAU_C')); % _Env
+if isfinite(env_tau_c) && env_tau_c >= 0, tau_c = env_tau_c; end
 
 % Two-Firm
 % psi_F, psi_I: pesos de desutilidad del trabajo (parametros del hogar, NO de la firma)
@@ -600,6 +613,7 @@ fprintf('MODE=%d, FAST_DEBUG_RUN=%d, I=%d, amin=%.4f, amax=%.4f\n', ...
 fprintf('theta=%.4f, A_I=%.5f, alpha_I=%.4f, beta_I=%.4f, alpha+beta=%.4f, psi_F=%.4f, psi_I=%.4f\n', ...
     theta, A_I, alpha_I, beta_I, alpha_I + beta_I, psi_F, psi_I);
 fprintf('nu_I=%.4f  (informal usa z^nu_I; nu_I<1 atenúa productividad alta en informal)\n', nu_I);
+fprintf('sigma_C=%.2f, omega_C=%.2f, tau_c=%.2f  (CES: elasticidad, peso formal, IGV)\n', sigma_C, omega_C, tau_c);
 fprintf('Z_PROCESS=%s: Nz=%d, rho_z=%.3f, eta_z=%.4f, sd_logz=%.3f, E[z]=%.4f, z_range=[%.3f, %.3f], nnz(Qz)=%d\n', ...
     z_process_ar, Nz_ar, rho_z_ar, eta_z_ar, sd_logz_ar, z_ave, min(z), max(z), nnz(Qz_ar));
 fprintf('kappa_z1=%.4f, kappa_z2=%.4f, shape=%.2f; kappa(a) legacy desactivado (min=%.4f, extra=%.4f)\n', ...
@@ -698,7 +712,11 @@ if EQUILIBRIUM_MODE == 1
     v0 = zeros(I, Ns);
     for s = 1:Ns
         inc_s = (1-tau)*w_F_init*z(s) + w_I_init*theta*(z(s)^nu_I)*q_inf(s) + max(r,0.01)*a + Pi_I_share_init;
-        v0(:,s) = max(inc_s, 1e-6).^(1-ga)/(1-ga)/rho;
+        if abs(ga-1) < 1e-10
+            v0(:,s) = log(max(inc_s, 1e-6))/rho;
+        else
+            v0(:,s) = max(inc_s, 1e-6).^(1-ga)/(1-ga)/rho;
+        end
     end
 
     T_current   = 0;
@@ -749,7 +767,11 @@ elseif EQUILIBRIUM_MODE == 2
     for s = 1:Ns
         inc_s = (1-tau)*w_F_init*z(s) + w_I_init*theta*(z(s)^nu_I)*q_inf(s) ...
             + max(r_guess,0.01)*a - debt_spread_aa(:,s).*max(-a,0) + Pi_I_share_init;
-        v0(:,s) = max(inc_s, 1e-6).^(1-ga)/(1-ga)/rho;
+        if abs(ga-1) < 1e-10
+            v0(:,s) = log(max(inc_s, 1e-6))/rho;
+        else
+            v0(:,s) = max(inc_s, 1e-6).^(1-ga)/(1-ga)/rho;
+        end
     end
 
     [r_star, K_star, S_star, w_F_star, L_F_star, L_I_star, V, g, c, ell_F, ell_I, ...
@@ -784,6 +806,7 @@ elseif EQUILIBRIUM_MODE == 2
     Y_F = A_F* K_F_star^al * L_F_star^(1-al);
     C_agg = C_F_agg + p_I_star * C_I_agg;
     tax_rev = tau * w_F_star * L_F_star;
+    tax_igv_rev = tau_c * C_F_agg;  % IGV revenue
     KappaCost   = da * sum(sum(kappa_F_aa .* ell_F .* g));
     debt_balance_aa = max(-aa, 0);
     debt_indicator_aa = double(aa < 0);
@@ -892,8 +915,9 @@ else
     fprintf('Share informal (real):     Y_I/(Y_F+Y_I)         = %.4f\n', Y_I/(Y_F+Y_I));
     fprintf('Share informal (nominal):  p_I*Y_I/(Y_F+p_I*Y_I) = %.4f  [T5 target]\n', T5_nom);
     fprintf('--- Gobierno ---\n');
-    fprintf('Impuesto recaudado:        tau*wF*LF = %.4f\n', tax_rev);
-    fprintf('Transferencia fiscal:      T         = %.4f  (incluye prima si rebate=1)\n', T_star);
+    fprintf('Impuesto ingreso:          tau*wF*LF = %.4f\n', tax_rev);
+    fprintf('Impuesto consumo (IGV):    tau_c*C_F = %.4f\n', tax_igv_rev);
+    fprintf('Transferencia fiscal:      T         = %.4f  (ingreso+IGV + prima si rebate=1)\n', T_star);
     fprintf('Beneficios informales:     Pi_I      = %.4f  (= Pi_I_share)\n', profit_I_star);
     fprintf('--- Prima deuda z ---\n');
     fprintf('chi=%.5f, eta=%.3f, rebate=%d, max spread=%.5f\n', ...
@@ -1122,7 +1146,7 @@ else
     else
         fprintf('USE_Q=0: AR(1) z discretizado con %d nodos, sin heterogeneidad q\n', Ns);
     end
-    fprintf('p_I*=%.4f, omega_C=%.2f, sigma_C=%.2f,  amin=%.4f\n',  p_I_star, omega_C, sigma_C, amin);
+    fprintf('p_I*=%.4f, omega_C=%.2f, sigma_C=%.2f, tau_c=%.2f, amin=%.4f\n',  p_I_star, omega_C, sigma_C, tau_c, amin);
 end
 fprintf('========================================\n\n');
 
@@ -1332,7 +1356,8 @@ if EQUILIBRIUM_MODE == 2
         'mass_debt_by_z', mass_debt_by_z, 'mass_amin_by_z', mass_amin_by_z, ...
         'mean_assets_by_z', mean_assets_by_z, 'mean_cons_by_z', mean_cons_by_z, ...
         'ptf_gap', ptf_gap, 'p_I', p_I, 'omega_C', omega_C, ...
-        'eta_C', eta_C, 'sigma_C', sigma_C, 'zdiag', zdiag, ...
+        'eta_C', eta_C, 'sigma_C', sigma_C, 'tau_c', tau_c, ...
+        'tax_igv_rev', tax_igv_rev, 'zdiag', zdiag, ...
         'Nz_ar', Nz_ar, 'rho_z_ar', rho_z_ar, 'sd_logz_ar', sd_logz_ar, ...
         'eta_z_ar', eta_z_ar, 'dt_z_ar', dt_z_ar, 'mu_logz_ar', mu_logz_ar, ...
         'qz_scale_ar', qz_scale_ar, 'width_z_ar', width_z_ar, ...
@@ -1372,7 +1397,7 @@ if EQUILIBRIUM_MODE == 2
             'kappa_min', 'kappa_extra', 'gamma_k', 'a_bar_k', 'kappa_z1', 'kappa_z2', 'kappa_z_shape', 'T_kappa_z_model', 'T_kappa_z_data', ...
             'q_low', 'q_high', 'lambda_q_up', 'lambda_q_down', ...
             'mass_qH_ergodic', 'mean_q_ergodic', ...
-            'p_I', 'omega_C', 'eta_C', 'sigma_C', 'EQUILIBRIUM_MODE', 'amin', 'amax', 'tax_rev', ...
+            'p_I', 'omega_C', 'eta_C', 'sigma_C', 'tau_c', 'tax_igv_rev', 'EQUILIBRIUM_MODE', 'amin', 'amax', 'tax_rev', ...
             'zdiag', 'mass_z1', 'mass_z2', 'mean_a_z1', 'mean_a_z2', 'med_a_z1', 'med_a_z2', ...
             'mean_c_z1', 'mean_c_z2', 'mean_ellF_z1', 'mean_ellF_z2', ...
             'mean_ellI_z1', 'mean_ellI_z2', 'mean_rhs_z1', 'mean_rhs_z2', ...
@@ -1776,7 +1801,7 @@ function [S, KD, w_F, L_F, L_I, V, g, c, ell_F, ell_I, T_out, w_I_out, Pi_I_shar
     z_ave, I, da, aa, zz, maxit, crit, Delta, Aswitch, tau, H_bar, tol_T, max_iter_T, ...
     tol_wI, max_iter_wI, L_I_floor_wI, damp_wI_log, damp_piI, damp_T)
 
-global p_I kappa_F_vec kappa_F_aa qq_informal nu_I
+global p_I kappa_F_vec kappa_F_aa qq_informal nu_I tau_c
 global debt_spread_aa debt_spread_z debt_prem_rebate
 t_sgp = tic;
 p_I = p_I_candidate;
@@ -1904,9 +1929,15 @@ for it_wI = 1:max_iter_wI
             ell_F = ell_Ff.*If + ell_Fb.*Ib + ell_F0.*I0;
             ell_I = ell_If.*If + ell_Ib.*Ib + ell_I0.*I0;
 
-            u = c.^(1-ga)/(1-ga) ...
-                - psi_F*ell_F.^(1+1/Frisch)/(1+1/Frisch) ...
-                - psi_I*ell_I.^(1+1/Frisch)/(1+1/Frisch);
+            if abs(ga - 1) < 1e-10
+                u = log(c) ...
+                    - psi_F*ell_F.^(1+1/Frisch)/(1+1/Frisch) ...
+                    - psi_I*ell_I.^(1+1/Frisch)/(1+1/Frisch);
+            else
+                u = c.^(1-ga)/(1-ga) ...
+                    - psi_F*ell_F.^(1+1/Frisch)/(1+1/Frisch) ...
+                    - psi_I*ell_I.^(1+1/Frisch)/(1+1/Frisch);
+            end
 
             ss_Upwind = ssf.*If + ssb.*Ib;
             X = -min(ss_Upwind,0)/da;
@@ -1966,7 +1997,7 @@ for it_wI = 1:max_iter_wI
         C_F_current = da * sum(sum(g .* c_F));
 
         L_F = da * sum(sum(g .* zz .* ell_F));
-        T_new = tau * w_F * L_F;
+        T_new = tau * w_F * L_F + tau_c * C_F_current;  % income tax + IGV rebate
         DebtPremPayments_loop = da * sum(sum(g .* debt_spread_aa .* max(-aa,0)));
         if debt_prem_rebate
             T_new = T_new + DebtPremPayments_loop;
@@ -2226,53 +2257,65 @@ end
 %   xi = (omega_C*p_I/(1-omega_C))^sigma_C  (ratio demanda optimo cF/cI)
 %   Kappa = (omega_C*xi^eta_C + (1-omega_C))^(1/eta_C)  (deflactor CES)
 function [cF, cI, Ceff, exp_cons] = ces_consumption_from_dV_v10(dV, ga)
-global p_I omega_C eta_C sigma_C
+	global p_I omega_C eta_C sigma_C tau_c
 
-dV = max(real(dV), 1e-12);
+	dV = max(real(dV), 1e-12);
 
-xi = (omega_C*p_I / max(1-omega_C, 1e-12)).^sigma_C;
-Kappa = (omega_C*xi.^eta_C + (1-omega_C)).^(1/eta_C);
-M = omega_C * xi.^(eta_C-1) * Kappa.^(1-eta_C);
+	% Price of formal good includes consumption tax (IGV)
+	p_F_eff = 1 + tau_c;
+	p_rel = p_I / p_F_eff;   % relative price informal/formal
 
-Ceff = (M ./ dV).^(1/ga);
-cI = Ceff ./ Kappa;
-cF = xi .* cI;
-exp_cons = cF + p_I .* cI;
+	xi = (omega_C * p_rel / max(1-omega_C, 1e-12)).^sigma_C;
+	Kappa = (omega_C*xi.^eta_C + (1-omega_C)).^(1/eta_C);
+	M = omega_C * xi.^(eta_C-1) * Kappa.^(1-eta_C);
 
-if abs(eta_C) > 1e-10
-    A_F = omega_C.^(1/eta_C);
-    A_Ionly = max(1-omega_C, 1e-12).^(1/eta_C);
+	Ceff = (M ./ dV).^(1/ga);
+	cI = Ceff ./ Kappa;
+	cF = xi .* cI;
+	exp_cons = p_F_eff.*cF + p_I.*cI;   % includes tax on formal
 
-    cF_only = (A_F.^(1-ga) ./ dV).^(1/ga);
-    C_Fonly = A_F .* cF_only;
-    exp_Fonly = cF_only;
+	if abs(eta_C) > 1e-10
+	    A_F = omega_C.^(1/eta_C);
+	    A_Ionly = max(1-omega_C, 1e-12).^(1/eta_C);
 
-    cI_only = (A_Ionly.^(1-ga) ./ max(dV * p_I, 1e-12)).^(1/ga);
-    C_Ionly = A_Ionly .* cI_only;
-    exp_Ionly = p_I .* cI_only;
+	    % Corner F-only: price = 1+tau_c
+	    cF_only = (A_F.^(1-ga) ./ (dV .* p_F_eff)).^(1/ga);
+	    C_Fonly = A_F .* cF_only;
+	    exp_Fonly = p_F_eff .* cF_only;
 
-    obj_int = Ceff.^(1-ga)/(1-ga) - dV .* exp_cons;
-    obj_Fonly = C_Fonly.^(1-ga)/(1-ga) - dV .* exp_Fonly;
-    obj_Ionly = C_Ionly.^(1-ga)/(1-ga) - dV .* exp_Ionly;
+	    % Corner I-only: price = p_I (no tax on informal)
+	    cI_only = (A_Ionly.^(1-ga) ./ max(dV * p_I, 1e-12)).^(1/ga);
+	    C_Ionly = A_Ionly .* cI_only;
+	    exp_Ionly = p_I .* cI_only;
 
-    use_F = obj_Fonly > obj_int & obj_Fonly >= obj_Ionly;
-    use_I = obj_Ionly > obj_int & obj_Ionly > obj_Fonly;
+	    if abs(ga - 1) < 1e-10
+	        obj_int = log(Ceff) - dV .* exp_cons;
+	        obj_Fonly = log(C_Fonly) - dV .* exp_Fonly;
+	        obj_Ionly = log(C_Ionly) - dV .* exp_Ionly;
+	    else
+	        obj_int = Ceff.^(1-ga)/(1-ga) - dV .* exp_cons;
+	        obj_Fonly = C_Fonly.^(1-ga)/(1-ga) - dV .* exp_Fonly;
+	        obj_Ionly = C_Ionly.^(1-ga)/(1-ga) - dV .* exp_Ionly;
+	    end
 
-    cF(use_F) = cF_only(use_F);
-    cI(use_F) = 0;
-    Ceff(use_F) = C_Fonly(use_F);
-    exp_cons(use_F) = exp_Fonly(use_F);
+	    use_F = obj_Fonly > obj_int & obj_Fonly >= obj_Ionly;
+	    use_I = obj_Ionly > obj_int & obj_Ionly > obj_Fonly;
 
-    cF(use_I) = 0;
-    cI(use_I) = cI_only(use_I);
-    Ceff(use_I) = C_Ionly(use_I);
-    exp_cons(use_I) = exp_Ionly(use_I);
-end
+	    cF(use_F) = cF_only(use_F);
+	    cI(use_F) = 0;
+	    Ceff(use_F) = C_Fonly(use_F);
+	    exp_cons(use_F) = exp_Fonly(use_F);
 
-cF = max(real(cF), 0);
-cI = max(real(cI), 0);
-Ceff = max(real(Ceff), 1e-12);
-exp_cons = max(real(exp_cons), 1e-12);
+	    cF(use_I) = 0;
+	    cI(use_I) = cI_only(use_I);
+	    Ceff(use_I) = C_Ionly(use_I);
+	    exp_cons(use_I) = exp_Ionly(use_I);
+	end
+
+	cF = max(real(cF), 0);
+	cI = max(real(cI), 0);
+	Ceff = max(real(Ceff), 1e-12);
+	exp_cons = max(real(exp_cons), 1e-12);
 end
 
 
@@ -2440,14 +2483,16 @@ end
 % Salidas: cF (consumo formal), cI (consumo informal), exp_cons = cF + p_I*cI.
 % NO afecta en el solver; se llama solo desde los scripts de graficos.
 function [cF, cI, exp_cons] = ces_split_from_Ceff_v10(Ceff)
-global p_I omega_C eta_C sigma_C
+global p_I omega_C eta_C sigma_C tau_c
 
 Ceff = max(real(Ceff), 1e-12);
-xi = (omega_C*p_I / max(1-omega_C, 1e-12)).^sigma_C;
+p_F_eff = 1 + tau_c;
+p_rel = p_I / p_F_eff;
+xi = (omega_C * p_rel / max(1-omega_C, 1e-12)).^sigma_C;
 Kappa = (omega_C*xi.^eta_C + (1-omega_C)).^(1/eta_C);
 cI = Ceff ./ Kappa;
 cF = xi .* cI;
-exp_cons = cF + p_I .* cI;
+exp_cons = p_F_eff.*cF + p_I.*cI;
 end
 
 % =========================================================================

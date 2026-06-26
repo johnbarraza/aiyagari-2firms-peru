@@ -348,7 +348,11 @@ T1_ref     = 2.30;    % BCR, ratio salarial bruto w_F/(w_I*theta) — solo refer
 A_F = 1;       % PTF formal (normalizacion)
 al  = 0.636;   % capital share (Cespedes et al. 2014)
 d   = 0.10;    % depreciation, Castillo & Rojas (BCRP REE-28)
+env_al = str2double(getenv('HA_IE_AL')); % _Env
+env_d  = str2double(getenv('HA_IE_DELTA')); % _Env
 env_A_F= str2double(getenv('HA_IE_A_F')); % _Env, MIT/common aggregate shocks
+if isfinite(env_al) && env_al > 0 && env_al < 1, al = env_al; end
+if isfinite(env_d)  && env_d  > 0,               d  = env_d;  end
 if isfinite(env_A_F) && env_A_F> 0
     A_F= env_A_F;
 end
@@ -1417,7 +1421,7 @@ if EQUILIBRIUM_MODE == 2
             'informal_profit_rule', 'w_I_household_star', 'Pi_lump_star', ...
             'HA_IE_TIMINGS');
         fprintf('Resultados guardados en %s\n', results_file);
-        fprintf('Figuras OU/trampa: >> plot_ou_process_distributions(''%s'')\n\n', results_file);
+        fprintf('Figuras MATLAB: >> addpath(''ploteo''); plot_moll_matlab_all(''%s'')\n\n', results_file);
     catch ME_save
         fprintf('WARN: no se pudo guardar results_v10_latest.mat: %s\n', ME_save.message);
     end

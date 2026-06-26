@@ -1,3 +1,8 @@
+% ============================================================
+% DISABLED — plots migrados a Python.
+% Usar: python ploteo/plot_ou_results.py --mat-file <ruta>.mat
+% Este archivo se conserva como referencia pero NO debe ejecutarse.
+% ============================================================
 % plot_results_v10.m
 % Genera todas las figuras del modelo v10 R2.
 % Carga results_v10_latest.mat (guardado al final de aiyagari_2firms_v10_R2_precio_endogeno.m)

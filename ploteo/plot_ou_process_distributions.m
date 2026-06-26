@@ -1,3 +1,8 @@
+% ============================================================
+% DISABLED — plots migrados a Python.
+% Usar: python ploteo/plot_ou_results.py --mat-file <ruta>.mat
+% Este archivo se conserva como referencia pero NO debe ejecutarse.
+% ============================================================
 function plot_ou_process_distributions(mat_file)
 %PLOT_OU_PROCESS_DISTRIBUTIONS Clean OU-specific plots for ARz/debt-prem runs.
 %
@@ -345,8 +350,8 @@ gray = [0.45 0.45 0.45];
 Ns = numel(z);
 j_low = 1;
 j_high = Ns;
-z_low_label = sprintf('z minimo %.2f', z(j_low));
-z_high_label = sprintf('z maximo %.2f', z(j_high));
+z_low_label = sprintf('z_mín=%.2f', z(j_low));
+z_high_label = sprintf('z_máx=%.2f', z(j_high));
 p_I_val = read_scalar_from_context(ctx, {'p_I_star','p_I'}, NaN);
 if ~isfinite(p_I_val), p_I_val = 1; end
 informal_share_by_z = 1 - form_share_by_z;
@@ -390,9 +395,7 @@ for j = 1:Ns
 end
 
 % 1. Savings policy and wealth distribution, close to Moll Figure 2.
-fig = moll_figure([80 80 1180 520]);
-tiledlayout(fig, 1, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
-nexttile;
+fig = moll_figure([75 75 760 560]);
 hold on;
 for jj = 1:numel(idx_legend_z)
     j = idx_legend_z(jj);
@@ -408,8 +411,10 @@ xlabel('Riqueza, a');
 ylabel('Ahorro, s_j(a)');
 legend('Location', 'northeast', 'Interpreter', 'tex');
 moll_axis(gca);
+moll_caption(fig, 'Figura: politica de ahorro por productividad');
+save_png_local(fig, fullfile(moll_dir, 'moll_savings_policy.png'), 300);
 
-nexttile;
+fig = moll_figure([78 78 760 560]);
 hold on;
 for jj = 1:numel(idx_legend_z)
     j = idx_legend_z(jj);
@@ -426,8 +431,8 @@ xlabel('Riqueza, a');
 ylabel('Densidades, g_j(a)');
 legend('Location', 'northeast', 'Interpreter', 'tex');
 moll_axis(gca);
-moll_caption(fig, 'Figura: politica de ahorro y distribucion de riqueza implicada');
-save_png_local(fig, fullfile(moll_dir, 'moll_savings_and_wealth_distribution.png'), 300);
+moll_caption(fig, 'Figura: distribucion de riqueza por productividad');
+save_png_local(fig, fullfile(moll_dir, 'moll_wealth_distribution_by_z.png'), 300);
 
 % 2. Consumption policy.
 fig = moll_figure([90 90 1180 520]);
@@ -438,9 +443,9 @@ for jj = 1:numel(idx_legend_z)
     j = idx_legend_z(jj);
     [col_j, style_j, lw_j] = moll_z_line_style(j, Ns, z(j));
     if j == j_low
-        name_j = sprintf('c(a,z bajo=%.2f)', z(j));
+        name_j = sprintf('c(a,z_{min}=%.2f)', z(j));
     elseif j == j_high
-        name_j = sprintf('c(a,z alto=%.2f)', z(j));
+        name_j = sprintf('c(a,z_{max}=%.2f)', z(j));
     else
         name_j = sprintf('c(a,z=%.2f)', z(j));
     end
@@ -449,7 +454,7 @@ for jj = 1:numel(idx_legend_z)
 end
 xlim([zoom_lo, zoom_hi]);
 xlabel('Riqueza, a');
-ylabel('Consumo, c_j(a)');
+ylabel('Consumo efectivo CES, c(a)', 'Interpreter', 'tex');
 legend('Location', 'northwest', 'Interpreter', 'tex');
 moll_axis(gca);
 
@@ -458,16 +463,22 @@ hold on;
 for jj = 1:numel(idx_legend_z)
     j = idx_legend_z(jj);
     [col_j, style_j, lw_j] = moll_z_line_style(j, Ns, z(j));
-    name_j = sprintf('e_%d(a)', jj);
+    if j == j_low
+        name_j = sprintf('e(a,z_{min}=%.2f)', z(j));
+    elseif j == j_high
+        name_j = sprintf('e(a,z_{max}=%.2f)', z(j));
+    else
+        name_j = sprintf('e(a,z=%.2f)', z(j));
+    end
     plot(a, exp_cons(:, j), style_j, 'Color', col_j, 'LineWidth', lw_j, ...
         'DisplayName', name_j);
 end
 xlim([zoom_lo, zoom_hi]);
 xlabel('Riqueza, a');
-ylabel('Gasto, e_j(a)');
+ylabel('Gasto monetario, e(a) = c_F + p_I c_I', 'Interpreter', 'tex');
 legend('Location', 'northwest', 'Interpreter', 'tex');
 moll_axis(gca);
-moll_caption(fig, 'Figura: funciones de politica de consumo y gasto');
+moll_caption(fig, 'Figura: consumo efectivo CES (izq) y gasto monetario c_F+p_I c_I (der) por riqueza');
 save_png_local(fig, fullfile(moll_dir, 'moll_consumption_policy.png'), 300);
 
 % 2b. Moll-style policy cuts: consumption and total labor supply by wealth.
@@ -511,32 +522,7 @@ legend('Location', 'best', 'Interpreter', 'tex');
 moll_caption(fig, 'Figura: funciones de politica de consumo y oferta laboral');
 save_png_local(fig, fullfile(moll_dir, 'moll_consumption_labor_policy_by_wealth.png'), 300);
 
-% 3. Labor policy.
-fig = moll_figure([100 100 1180 520]);
-tiledlayout(fig, 1, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
-nexttile;
-plot(a, ell_F(:, j_low), '-', 'Color', blue, 'LineWidth', 2.0, 'DisplayName', 'l^F_1(a)');
-hold on;
-plot(a, ell_F(:, j_high), '--', 'Color', red, 'LineWidth', 2.0, 'DisplayName', 'l^F_2(a)');
-xlim([zoom_lo, zoom_hi]);
-xlabel('Riqueza, a');
-ylabel('Horas formales elegidas');
-legend('Location', 'best', 'Interpreter', 'tex');
-moll_axis(gca);
-
-nexttile;
-plot(a, ell_I(:, j_low), '-', 'Color', blue, 'LineWidth', 2.0, 'DisplayName', 'l^I_1(a)');
-hold on;
-plot(a, ell_I(:, j_high), '--', 'Color', red, 'LineWidth', 2.0, 'DisplayName', 'l^I_2(a)');
-xlim([zoom_lo, zoom_hi]);
-xlabel('Riqueza, a');
-ylabel('Horas informales elegidas');
-legend('Location', 'best', 'Interpreter', 'tex');
-moll_axis(gca);
-moll_caption(fig, 'Figura: funciones de oferta laboral formal e informal');
-save_png_local(fig, fullfile(moll_dir, 'moll_labor_policy.png'), 300);
-
-% 3b. Labor policy cuts: low, middle and high OU nodes.
+% 3. Labor policy cuts: low, middle and high OU nodes.
 fig = moll_figure([105 105 1180 520]);
 tiledlayout(fig, 1, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
 nexttile;
@@ -645,9 +631,7 @@ moll_caption(fig, 'Activos y gasto promedio por productividad');
 save_png_local(fig, fullfile(moll_dir, 'moll_conditional_moments_by_z.png'), 300);
 
 % 5b. Intensive-margin informality by productivity.
-fig = moll_figure([125 125 1180 520]);
-tiledlayout(fig, 1, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
-nexttile;
+fig = moll_figure([123 123 760 560]);
 plot(z, informal_share_by_z, '-', 'Color', red, 'LineWidth', 2.0, ...
     'Marker', 's', 'MarkerSize', 5, 'DisplayName', 'Horas informales / horas totales');
 hold on;
@@ -658,15 +642,36 @@ xlabel('Productividad, z');
 ylabel('Participacion de horas');
 legend('Location', 'best');
 moll_axis(gca);
+moll_caption(fig, 'Figura: informalidad y formalidad en margen intensivo por productividad');
+save_png_local(fig, fullfile(moll_dir, 'moll_informality_by_z.png'), 300);
 
+mean_a_debt_by_z = NaN(1, Ns);
+for jz = 1:Ns
+    mask_neg = (a < 0);
+    w_neg_j = g(mask_neg, jz) * da;
+    w_neg_tot = sum(w_neg_j);
+    if w_neg_tot > 1e-12
+        mean_a_debt_by_z(jz) = sum(a(mask_neg) .* w_neg_j) / w_neg_tot;
+    end
+end
+
+fig = moll_figure([124 124 1100 500]);
+tiledlayout(1, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
 nexttile;
 plot(z, mass_debt_by_z, '--s', 'Color', red, 'LineWidth', 2.0, 'MarkerSize', 5);
 ylim([0, min(1, max(0.05, 1.15 * max(mass_debt_by_z(:))))]);
 xlabel('Productividad, z');
-ylabel('Probabilidad de deuda, Pr(a<0|z)');
+ylabel('Pr(a<0|z)');
+title('Fracción en deuda por z', 'Interpreter', 'none');
 moll_axis(gca);
-moll_caption(fig, 'Informalidad en margen intensivo y endeudamiento por productividad');
-save_png_local(fig, fullfile(moll_dir, 'moll_informality_intensive_by_z.png'), 300);
+nexttile;
+plot(z, mean_a_debt_by_z, '--s', 'Color', blue, 'LineWidth', 2.0, 'MarkerSize', 5);
+xlabel('Productividad, z');
+ylabel('E[a | a<0, z]');
+title('Deuda media condicional por z', 'Interpreter', 'none');
+moll_axis(gca);
+moll_caption(fig, 'Figura: endeudamiento por productividad — fracción y media condicional');
+save_png_local(fig, fullfile(moll_dir, 'moll_debt_probability_by_z.png'), 300);
 
 % 6. Consumption distributions.
 w_all = g(:) * da;
@@ -756,7 +761,7 @@ save_png_local(fig, fullfile(moll_dir, 'moll_debt_premium_inequality_by_z.png'),
 [pop_c, lorenz_c_plot, gini_c_plot] = lorenz_from_context_or_data(ctx, ...
     'cum_pop_c', 'lorenz_c', 'Gini_c', exp_cons(:), w_all, true);
 if ~isempty(pop_a) || ~isempty(pop_c)
-    fig = moll_figure([150 150 760 560]);
+    fig = moll_figure([150 150 900 560]);
     plot([0 1], [0 1], ':', 'Color', gray, 'LineWidth', 1.2, 'DisplayName', 'Linea de 45 grados');
     hold on;
     if ~isempty(pop_a)
@@ -769,8 +774,9 @@ if ~isempty(pop_a) || ~isempty(pop_c)
     end
     xlabel('Poblacion acumulada');
     ylabel('Participacion acumulada');
+    xlim([0 1]);
+    ylim([0 1]);
     legend('Location', 'northwest');
-    axis square;
     moll_axis(gca);
     moll_caption(fig, 'Curvas de Lorenz y coeficientes de Gini');
     save_png_local(fig, fullfile(moll_dir, 'moll_lorenz_curves.png'), 300);
@@ -2435,14 +2441,14 @@ fprintf(fid, 'mat_tag=%s\n', mat_tag);
 fprintf(fid, 'principle=Moll-style output only: white background, blue solid vs red dashed, clean axes, and at most two panels per PNG.\n');
 
 fprintf(fid, '\n[generated_main_set]\n');
-fprintf(fid, 'moll_style_%s/moll_savings_and_wealth_distribution.png\n', mat_tag);
-fprintf(fid, '  Use: closest analogue to Moll savings/distribution figure; two panels.\n');
+fprintf(fid, 'moll_style_%s/moll_savings_policy.png\n', mat_tag);
+fprintf(fid, '  Use: savings policy only.\n');
+fprintf(fid, 'moll_style_%s/moll_wealth_distribution_by_z.png\n', mat_tag);
+fprintf(fid, '  Use: wealth distribution only.\n');
 fprintf(fid, 'moll_style_%s/moll_consumption_policy.png\n', mat_tag);
 fprintf(fid, '  Use: model policy functions over the asset state; two panels.\n');
 fprintf(fid, 'moll_style_%s/moll_consumption_labor_policy_by_wealth.png\n', mat_tag);
 fprintf(fid, '  Use: consumo y oferta laboral total contra riqueza para z bajo, medio y alto; dos paneles.\n');
-fprintf(fid, 'moll_style_%s/moll_labor_policy.png\n', mat_tag);
-fprintf(fid, '  Use: formal and informal labor policy functions; two panels.\n');
 fprintf(fid, 'moll_style_%s/moll_labor_policy_by_wealth.png\n', mat_tag);
 fprintf(fid, '  Use: formal and informal labor policy functions for z bajo, medio y alto; two panels.\n');
 fprintf(fid, 'moll_style_%s/moll_labor_supply_by_productivity.png\n', mat_tag);
@@ -2451,8 +2457,10 @@ fprintf(fid, 'moll_style_%s/moll_ou_stationary_masses.png\n', mat_tag);
 fprintf(fid, '  Use: OU invariant distribution vs model stationary mass; one panel.\n');
 fprintf(fid, 'moll_style_%s/moll_conditional_moments_by_z.png\n', mat_tag);
 fprintf(fid, '  Use: activos y gasto promedio por estado exogeno de productividad; dos paneles.\n');
-fprintf(fid, 'moll_style_%s/moll_informality_intensive_by_z.png\n', mat_tag);
-fprintf(fid, '  Use: informalidad en margen intensivo ell_I/(ell_F+ell_I), formalidad por horas, y deuda por productividad; dos paneles.\n');
+fprintf(fid, 'moll_style_%s/moll_informality_by_z.png\n', mat_tag);
+fprintf(fid, '  Use: informalidad/formalidad por productividad only.\n');
+fprintf(fid, 'moll_style_%s/moll_debt_probability_by_z.png\n', mat_tag);
+fprintf(fid, '  Use: Pr(a<0|z) only; separate debt diagnostic.\n');
 fprintf(fid, 'moll_style_%s/moll_consumption_distribution.png\n', mat_tag);
 fprintf(fid, '  Use: stationary consumption/expenditure distribution; one panel.\n');
 fprintf(fid, 'moll_style_%s/moll_consumption_components_distribution.png\n', mat_tag);
@@ -2815,13 +2823,13 @@ if j == 1
     col = [0.00 0.00 1.00];
     style = '-';
     lw = 2.1;
-    name = sprintf('z minimo=%.2f', zval);
+    name = sprintf('z_mín=%.2f', zval);
     visible = 'on';
 elseif j == Ns
     col = [1.00 0.00 0.00];
     style = '--';
     lw = 2.1;
-    name = sprintf('z maximo=%.2f', zval);
+    name = sprintf('z_máx=%.2f', zval);
     visible = 'on';
 elseif j == mid
     col = [0.00 0.00 1.00];

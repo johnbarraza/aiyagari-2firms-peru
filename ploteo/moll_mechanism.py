@@ -57,7 +57,7 @@ def annotate_stacked_percent(ax, x, bottom, values, total, color="white", min_he
 
 
 def caption(fig, text):
-    fig.text(0.5, 0.025, text, ha="center", va="bottom", fontsize=15)
+    fig.text(0.5, 0.01, text, ha="center", va="bottom", fontsize=10, color=GRAY, fontstyle="italic")
 
 
 def scalar(mat, name, default=np.nan):
@@ -212,25 +212,29 @@ def zoom_limits(a, g, da):
     return float(q[0]), float(q[1])
 
 
-def save_labeled_savings_wealth(a, z, g, da, savings):
+def save_savings_wealth_figures(a, z, g, da, savings):
     j_low = 0
     j_mid = len(z) // 2
     j_high = len(z) - 1
     xlo, xhi = zoom_limits(a, g, da)
 
-    fig, axes = plt.subplots(1, 2, figsize=(11.8, 5.2))
-    ax = axes[0]
+    fig, ax = plt.subplots(figsize=(7.6, 5.4))
     ax.plot(a, savings[:, j_low], color=BLUE, lw=2.1, label=f"s(a,z bajo={z[j_low]:.2f})")
     ax.plot(a, savings[:, j_high], color=RED, lw=2.1, ls="--", label=f"s(a,z alto={z[j_high]:.2f})")
     ax.axhline(0, color=BLACK, lw=0.8, ls=":")
+    ax.axvline(0, color=BLACK, lw=0.8, ls=":")
     ax.set_xlim(xlo, xhi)
     ax.set_xlabel("Riqueza, a")
     ax.set_ylabel("Ahorro, s(a,z)")
-    ax.set_title("Politica de ahorro", fontsize=12, fontweight="normal")
     ax.legend(loc="best")
     moll_axis(ax)
+    caption(fig, "Figura: politica de ahorro por productividad")
+    fig.tight_layout(rect=[0.04, 0.08, 0.99, 0.98])
+    savings_png = OUT_DIR / "moll_savings_policy.png"
+    fig.savefig(savings_png)
+    plt.close(fig)
 
-    ax = axes[1]
+    fig, ax = plt.subplots(figsize=(7.6, 5.4))
     for j, color, style, label in [
         (j_low, BLUE, "-", f"Densidad g(a | z bajo={z[j_low]:.2f})"),
         (j_mid, GRAY, "-", f"Densidad g(a | z mediano={z[j_mid]:.2f})"),
@@ -240,30 +244,20 @@ def save_labeled_savings_wealth(a, z, g, da, savings):
         density = g[:, j] / max(mass_j, 1e-12)
         density_display = density / max(np.nanmax(density), 1e-12)
         ax.plot(a, density_display, color=color, ls=style, lw=2.0, label=label)
+    ax.axvline(0, color=BLACK, lw=0.8, ls=":")
     ax.set_xlim(xlo, xhi)
     ax.set_ylim(0, 1.05)
     ax.set_xlabel("Riqueza, a")
     ax.set_ylabel("Densidad condicional normalizada")
-    ax.set_title("Distribucion de agentes por riqueza", fontsize=12, fontweight="normal")
-    ax.text(
-        0.02,
-        0.96,
-        "g no es consumo: es masa/densidad.\nAqui se normaliza cada curva\npara comparar la forma.",
-        ha="left",
-        va="top",
-        transform=ax.transAxes,
-        fontsize=9,
-    )
     ax.legend(loc="upper right", fontsize=8)
     moll_axis(ax)
-    caption(fig, "Figura: ahorro s(a,z) y distribucion estacionaria g(a|z) por productividad")
-    fig.tight_layout(rect=[0.03, 0.08, 0.99, 0.98])
-    png = OUT_DIR / "moll_savings_and_wealth_distribution_labeled.png"
-    fig.savefig(png)
-    plain_png = OUT_DIR / "moll_savings_and_wealth_distribution.png"
-    fig.savefig(plain_png)
+    caption(fig, "Figura: distribucion estacionaria de riqueza por productividad")
+    fig.tight_layout(rect=[0.04, 0.08, 0.99, 0.98])
+    wealth_png = OUT_DIR / "moll_wealth_distribution_by_z.png"
+    fig.savefig(wealth_png)
     plt.close(fig)
-    return png, plain_png
+
+    return savings_png, wealth_png
 
 
 def save_time_use_figures(z, g, da, ell_f, ell_i, mat):
@@ -321,6 +315,20 @@ def save_time_use_figures(z, g, da, ell_f, ell_i, mat):
     fig.savefig(png2)
     plt.close(fig)
 
+    fig, ax = plt.subplots(figsize=(8.0, 5.2))
+    ax.plot(z, share_f * 100, "-o", color=BLUE, lw=2.0, label="Formal")
+    ax.plot(z, share_i * 100, "--s", color=RED, lw=2.0, label="Informal")
+    ax.set_xlabel("Productividad, z")
+    ax.set_ylabel("% de horas trabajadas")
+    ax.set_ylim(0, 100)
+    ax.legend(loc="best")
+    moll_axis(ax)
+    caption(fig, "Figura: tendencia sectorial del trabajo por productividad, sin ocio")
+    fig.tight_layout(rect=[0.04, 0.08, 0.99, 0.98])
+    png3 = OUT_DIR / "moll_time_use_by_z_trend.png"
+    fig.savefig(png3)
+    plt.close(fig)
+
     txt = OUT_DIR / "moll_time_use_by_z.txt"
     with txt.open("w", encoding="utf-8") as f:
         f.write(
@@ -336,7 +344,7 @@ def save_time_use_figures(z, g, da, ell_f, ell_i, mat):
                 f"{100*mean_o[j]/total_time_j:.6f} {share_f[j]:.10f} {share_i[j]:.10f} "
                 f"{100*share_f[j]:.6f} {100*share_i[j]:.6f}\n"
             )
-    return png1, png2, txt
+    return png1, png2, png3, txt
 
 
 def save_income_decomposition(a, z, g, da, expenditure, comps):
@@ -412,34 +420,34 @@ def save_income_decomposition(a, z, g, da, expenditure, comps):
     debt_pct = 100.0 * vals[:, 4] / denom
     net_pct = 100.0 * net / denom
 
-    fig, ax = plt.subplots(figsize=(8.4, 5.4))
+    fig, ax = plt.subplots(figsize=(8.8, 5.6))
     bottom = np.zeros(5)
     for k, name in enumerate(names[:4]):
-        ax.bar(x, pct[:, k], bottom=bottom, color=colors[k], edgecolor=BLACK, linewidth=0.4, label=name)
+        ax.bar(x, vals[:, k], bottom=bottom, color=colors[k], edgecolor=BLACK, linewidth=0.4, label=name)
         for i in range(5):
-            if pct[i, k] >= 6:
+            if pct[i, k] >= 6 and vals[i, k] > 0:
                 ax.text(
                     x[i],
-                    bottom[i] + pct[i, k] / 2.0,
+                    bottom[i] + vals[i, k] / 2.0,
                     f"{pct[i, k]:.0f}%",
                     ha="center",
                     va="center",
                     fontsize=8,
                     color="white" if k in (0, 1) else "black",
                 )
-        bottom += pct[:, k]
-    ax.plot(x, debt_pct, color="#8a4fb4", lw=1.8, marker="s", ls="--", label="Costo deuda / ingreso bruto")
-    ax.plot(x, net_pct, color=BLACK, lw=1.8, marker="o", label="Ingreso neto / ingreso bruto")
+        bottom += vals[:, k]
+    if np.any(vals[:, 4] < -1e-8):
+        ax.plot(x, vals[:, 4], color="#8a4fb4", lw=1.8, marker="s", ls="--", label="Costo deuda")
+    ax.plot(x, net, color=BLACK, lw=1.8, marker="o", label="Ingreso neto")
     ax.axhline(0, color=BLACK, lw=0.8, ls=":")
-    ax.axhline(100, color=BLACK, lw=0.8, ls=":")
     ax.set_xticks(x, [f"Q{q}" for q in x])
     ax.set_xlabel("Quintil de riqueza")
-    ax.set_ylabel("Porcentaje del ingreso bruto")
-    ax.set_ylim(min(-20, np.nanmin(debt_pct) * 1.2), max(120, np.nanmax(net_pct) * 1.1))
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.18), ncol=3, fontsize=8)
+    ax.set_ylabel("Ingreso medio")
+    ax.set_ylim(min(-0.05, np.nanmin(vals[:, 4]) * 1.2), max(bottom) * 1.18)
+    ax.legend(loc="upper left", fontsize=8, ncol=2)
     moll_axis(ax)
-    caption(fig, "Figura: descomposicion porcentual del ingreso por quintil de riqueza")
-    fig.tight_layout(rect=[0.04, 0.08, 0.99, 0.90])
+    caption(fig, "Figura: ingreso medio por quintil; porcentajes dentro de cada barra")
+    fig.tight_layout(rect=[0.04, 0.08, 0.99, 0.98])
     pct_png = OUT_DIR / "moll_income_decomposition_percent_by_wealth_quintile.png"
     fig.savefig(pct_png)
     plt.close(fig)
@@ -529,6 +537,9 @@ def save_consumption_components_distribution(c_f, c_i, expenditure, p_i, a, z, g
     plt.close(fig)
 
     j_low, j_mid, j_high = 0, len(z) // 2, len(z) - 1
+    component_ratio = c_f / np.maximum(p_i * c_i, 1e-12)
+    ratio_mean = float(np.nanmean(component_ratio))
+    ratio_sd = float(np.nanstd(component_ratio))
     fig, axes = plt.subplots(1, 3, figsize=(15.2, 5.0), sharey=True)
     for ax, j, title, color in [
         (axes[0], j_low, f"z bajo={z[j_low]:.2f}", BLUE),
@@ -538,14 +549,25 @@ def save_consumption_components_distribution(c_f, c_i, expenditure, p_i, a, z, g
         wj = g[:, j] * da
         xfj, pfj = weighted_pdf(c_f[:, j], wj, 55, xlim)
         xij, pij = weighted_pdf(p_i * c_i[:, j], wj, 55, xlim)
-        ax.plot(xfj, pfj, "-", color=BLUE, lw=1.9, label="c_F")
-        ax.plot(xij, pij, "--", color=RED, lw=1.9, label="p_I c_I")
+        pfj_display = pfj / max(np.nanmax(pfj), 1e-12)
+        pij_display = pij / max(np.nanmax(pij), 1e-12)
+        mean_f_j = weighted_mean(c_f[:, j], wj)
+        mean_i_j = weighted_mean(p_i * c_i[:, j], wj)
+        ax.plot(xfj, pfj_display, "-", color=BLUE, lw=1.9, label=f"c_F, media={mean_f_j:.2f}")
+        ax.plot(xij, pij_display, "--", color=RED, lw=1.9, label=f"p_I c_I, media={mean_i_j:.2f}")
+        ax.axvline(mean_f_j, color=BLUE, lw=0.8, ls=":", alpha=0.75)
+        ax.axvline(mean_i_j, color=RED, lw=0.8, ls=":", alpha=0.75)
+        ax.set_ylim(0, 1.05)
         ax.set_title(title, fontsize=12, fontweight="normal")
         ax.set_xlabel("Gasto por componente")
         ax.legend(loc="best", fontsize=8)
         moll_axis(ax)
-    axes[0].set_ylabel("Densidad condicional")
-    caption(fig, "Figura: componentes de gasto condicionados por productividad z")
+    axes[0].set_ylabel("Densidad condicional normalizada")
+    if ratio_sd < 1e-8 and np.isfinite(ratio_mean):
+        note = f"Figura: componentes por productividad; c_F/(p_I c_I)={ratio_mean:.2f} constante por CES"
+    else:
+        note = "Figura: componentes de gasto por productividad; lineas verticales indican medias"
+    caption(fig, note)
     fig.tight_layout(rect=[0.03, 0.08, 0.99, 0.98])
     byz_png = OUT_DIR / "moll_consumption_components_distribution_by_z_groups.png"
     fig.savefig(byz_png)
@@ -558,15 +580,14 @@ def save_wealth_density_by_z(a, z, g, da):
     j_low = 0
     j_mid = len(z) // 2
     j_high = len(z) - 1
-    full_lo, full_hi = float(np.min(a)), float(np.max(a))
     w_a = np.maximum(np.sum(g, axis=1), 0.0) * da
-    zoom_lo, zoom_hi = weighted_quantile(a, w_a, [0.05, 0.95])
-    if not np.isfinite(zoom_lo) or not np.isfinite(zoom_hi) or zoom_hi <= zoom_lo:
-        zoom_lo, zoom_hi = zoom_limits(a, g, da)
+    xlo, xhi = weighted_quantile(a, w_a, [0.005, 0.995])
+    if not np.isfinite(xlo) or not np.isfinite(xhi) or xhi <= xlo:
+        xlo, xhi = zoom_limits(a, g, da)
 
     series = []
-    total_density = np.sum(g, axis=1)
-    series.append((total_density, BLACK, "-", "Total"))
+    total_density = np.sum(g, axis=1) / max(np.nanmax(np.sum(g, axis=1)), 1e-12)
+    series.append((total_density, BLACK, "-", "Total", weighted_mean(a, w_a)))
     for j, color, style, label in [
         (j_low, BLUE, "-", f"z bajo={z[j_low]:.2f}"),
         (j_mid, GRAY, "-", f"z mediano={z[j_mid]:.2f}"),
@@ -574,39 +595,22 @@ def save_wealth_density_by_z(a, z, g, da):
     ]:
         mass_j = np.sum(g[:, j]) * da
         density = g[:, j] / max(mass_j, 1e-12)
-        series.append((density, color, style, label))
+        density = density / max(np.nanmax(density), 1e-12)
+        series.append((density, color, style, label, weighted_mean(a, g[:, j] * da)))
 
-    zoom_mask = (a >= zoom_lo) & (a <= zoom_hi)
-    zoom_values = np.concatenate([s[0][zoom_mask] for s in series if np.any(zoom_mask)])
-    zoom_ymax = np.nanquantile(zoom_values[np.isfinite(zoom_values)], 0.98) * 1.25
-    if not np.isfinite(zoom_ymax) or zoom_ymax <= 0:
-        zoom_ymax = None
-
-    fig, axes = plt.subplots(1, 2, figsize=(11.8, 5.2))
-    ax = axes[0]
-    for density, color, style, label in series:
+    fig, ax = plt.subplots(figsize=(8.2, 5.4))
+    for density, color, style, label, mean_a in series:
         ax.plot(a, density, color=color, ls=style, lw=2.0, label=label)
-    ax.set_xlim(full_lo, full_hi)
+        if np.isfinite(mean_a):
+            ax.axvline(mean_a, color=color, ls=":", lw=0.8, alpha=0.65)
+    ax.set_xlim(float(xlo), float(xhi))
+    ax.set_ylim(0, 1.05)
     ax.set_xlabel("Riqueza, a")
-    ax.set_ylabel("Densidad de riqueza")
+    ax.set_ylabel("Densidad condicional normalizada")
     ax.legend(loc="best")
     moll_axis(ax)
-    ax.set_title("Soporte completo", fontsize=12, fontweight="normal")
-
-    ax = axes[1]
-    for density, color, style, label in series:
-        ax.plot(a, density, color=color, ls=style, lw=2.0, label=label)
-    ax.set_xlim(float(zoom_lo), float(zoom_hi))
-    if zoom_ymax is not None:
-        ax.set_ylim(0, zoom_ymax)
-    ax.set_xlabel("Riqueza, a")
-    ax.set_ylabel("Densidad de riqueza")
-    ax.legend(loc="best")
-    moll_axis(ax)
-    ax.set_title("Zoom central 90% de masa", fontsize=12, fontweight="normal")
-
-    caption(fig, "Figura: densidad de riqueza por estado de productividad")
-    fig.tight_layout(rect=[0.03, 0.08, 0.99, 0.98])
+    caption(fig, "Figura: densidad de riqueza por productividad; lineas verticales indican medias")
+    fig.tight_layout(rect=[0.04, 0.08, 0.99, 0.98])
     png = OUT_DIR / "moll_wealth_density_by_z_low_median_high.png"
     fig.savefig(png)
     plt.close(fig)
@@ -667,7 +671,7 @@ def main():
     comps = income_components(mat, a, z, g, expenditure, ell_f, ell_i)
 
     outputs = [
-        *save_labeled_savings_wealth(a, z, g, da, comps["savings"]),
+        *save_savings_wealth_figures(a, z, g, da, comps["savings"]),
         *save_consumption_distribution(c, c_f, c_i, expenditure, scalar(mat, "p_I_star", scalar(mat, "p_I", 1.0)), g, da),
         *save_consumption_components_distribution(c_f, c_i, expenditure, scalar(mat, "p_I_star", scalar(mat, "p_I", 1.0)), a, z, g, da),
         *save_time_use_figures(z, g, da, ell_f, ell_i, mat),

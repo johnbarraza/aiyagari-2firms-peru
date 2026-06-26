@@ -112,7 +112,7 @@ def plot_group_density(ax, x, w, mask, color, title, xlim):
     ax.text(
         0.98,
         0.92,
-        f"media={stats['mean']:.3f}\ndesv.est.={stats['sd']:.3f}\nmediana={stats['p50']:.3f}\nmasa={stats['mass']:.3f}",
+        f"media={stats['mean']:.3f}\ndesv.est.={stats['sd']:.3f}\nmediana={stats['p50']:.3f}\nfracción={100*stats['mass']:.1f}%",
         ha="right",
         va="top",
         transform=ax.transAxes,
@@ -151,6 +151,7 @@ def main():
 
     c_f, c_i, expenditure = ces_split_from_ceff(c, p_i, omega_c, eta_c, sigma_c)
     weights = (g * da).reshape(-1)
+    weights = weights / max(float(np.sum(weights)), 1e-12)
     x = expenditure.reshape(-1)
     formal = (ell_f.reshape(-1) >= ell_i.reshape(-1))
     informal = ~formal
@@ -168,13 +169,15 @@ def main():
     plot_group_density(axes[2], x, weights, total, GRAY, "Total", xlim)
     fig.text(
         0.5,
-        0.025,
+        0.01,
         "Figura: distribucion del gasto del modelo por formalidad dominante, desde el .mat de agentes heterogeneos",
         ha="center",
         va="bottom",
-        fontsize=15,
+        fontsize=10,
+        color=GRAY,
+        fontstyle="italic",
     )
-    fig.tight_layout(rect=[0.03, 0.08, 0.99, 0.98])
+    fig.tight_layout(rect=[0.03, 0.10, 0.99, 0.98])
 
     png = OUT_DIR / "moll_model_gasto_distribution_by_formality.png"
     fig.savefig(png)

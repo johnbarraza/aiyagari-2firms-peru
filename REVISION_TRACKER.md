@@ -6,13 +6,31 @@
 
 ---
 
+## JERARQUÍA DE TARGETS
+
+| Nivel | Momento | Dato Perú | Fuente |
+|-------|---------|-----------|--------|
+| **PRIMARIO** | T4 — share horas informal | 0.557 | INEI Cuenta Satélite 2021 |
+| **PRIMARIO** | T5 — share PBI informal | 0.190 | INEI Cuenta Satélite 2021 |
+| secundario | Tkz — gap formalidad por z | 0.386 | ENAHO quintiles |
+| secundario | Tgasto_tipo — ratio gasto Q5/Q1 | 1.913 | ENAHO |
+| secundario | p_I — precio bien informal | <1 (consistencia) | teoría |
+| validación externa | Gini_gasto | 0.401 | Banco Mundial (consumo, no riqueza) |
+| descriptivo | Gini_a (riqueza) | sin target formal | — |
+
+> **Nota Gini:** BM 0.401 es Gini de consumo/gasto (ENAHO-based), NO de riqueza.
+> No usar como target de `Gini_a`. El modelo debe computar Gini_gasto separado para comparar.
+> Gini_a del modelo es desconocido actualmente (no se ha extraído de los .mat).
+
+---
+
 ## ESTADO ACTUAL DE CORRIDAS
 
-| Run tag | FAST_DEBUG | I | Nz | A_I | psi_F | psi_I | κ_z1 | T4 | T5 | Tkz | Tgasto | r* | p_I | Gini_a |
-|---------|------------|---|----|-----|-------|-------|------|----|----|-----|--------|----|-----|--------|
-| `test_kz38_psii34` | ✅ true | 200 | 40 | 0.95 | 55 | 34 | 0.38 | 0.513 | 0.182 | 0.318 | 1.458 | 0.066 | 0.938 | ? |
-| `final_newCD_tuned` | ✅ true | 200 | 40 | 0.88 | 80 | 38 | 0.45 | 0.538 | 0.179 | ? | ? | 0.065 | 0.937 | ? |
-| **Dato Peru** | — | — | — | — | — | — | — | **0.557** | **0.190** | **0.386** | **1.913** | — | — | — |
+| Run tag | FAST_DEBUG | I | Nz | A_I | psi_F | psi_I | κ_z1 | T4 | T5 | Tkz | Tgasto | r* | p_I | Gini_a | Gini_gasto |
+|---------|------------|---|----|-----|-------|-------|------|----|----|-----|--------|----|-----|--------|------------|
+| `test_kz38_psii34` | ✅ true | 200 | 40 | 0.95 | 55 | 34 | 0.38 | 0.513 | 0.182 | 0.318 | 1.458 | 0.066 | 0.938 | ? | ? |
+| `final_newCD_tuned` | ✅ true | 200 | 40 | 0.88 | 80 | 38 | 0.45 | 0.538 | 0.179 | ? | ? | 0.065 | 0.937 | ? | ? |
+| **Dato Peru** | — | — | — | — | — | — | — | **0.557** | **0.190** | **0.386** | **1.913** | — | — | — | **0.401** |
 
 **NINGUNA CORRIDA ES PRODUCCIÓN** — ambas usan `FAST_DEBUG=true` (I=200, maxit=40, tolerancias flojas).
 La corrida canónica de producción (I=500, FAST_DEBUG=false) está pendiente.

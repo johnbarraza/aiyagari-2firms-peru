@@ -10,9 +10,10 @@
 %   >> calibracion/escenarios        % choose scenario A/B/C
 %
 % MODES:
-%   FAST_DEBUG_RUN = false  — full production run (~4 hours depedning guess value, I=500)
-%   FAST_DEBUG_RUN = true   — quick numerical check (~7 min, I=200)
-%   Override via env:  setenv('HA_IE_FAST_DEBUG','true')
+%   MODO_RAPIDO = false  — Modo Precisión: corrida completa (~4 h, I=500)
+%   MODO_RAPIDO = true   — Modo Rápido:    exploración rápida (~7 min, I=200)
+%   Override via env:  setenv('HA_IE_FAST_DEBUG','0')  % precision
+%                      setenv('HA_IE_FAST_DEBUG','1')  % rapido
 %
 % OUTPUT FILES:
 %   results_<RUN_TAG>.mat  — full equilibrium results for plotting
@@ -128,13 +129,13 @@ Frisch_F = Frisch;
 Frisch_I = Frisch;
 
 % Quick mode: smaller grid + looser tolerances for numerical checks only.
-FAST_DEBUG_RUN = true;  % true = quick check (~5 min), false = full run (~5 h)
+MODO_RAPIDO = true;  % true = quick check (~5 min), false = full run (~5 h)
 
 env_fast_debug = lower(strtrim(getenv('HA_IE_FAST_DEBUG'))); % _Env
 if any(strcmp(env_fast_debug, {'1','true','yes','on'}))
-    FAST_DEBUG_RUN = true;
+    MODO_RAPIDO = true;
 elseif any(strcmp(env_fast_debug, {'0','false','no','off'}))
-    FAST_DEBUG_RUN = false;
+    MODO_RAPIDO = false;
 end
 
 % Formal/informal consumption CES block
@@ -343,10 +344,11 @@ if isfinite(env_T6_Q5_data) && env_T6_Q5_data >= 0 && env_T6_Q5_data <= 1, T6_Q5
 T1_ref     = 2.30;    % BCR, ratio salarial bruto w_F/(w_I*theta) — solo referencia
 
 % Formal Firm: Y_F = A_F * K^al * L_F^(1-al)
-%   Cespedes, Aquije, Sanchez & Vera-Tudela (2014, BCRP REE-28):
-%   alpha=0.636 (capital), 1-alpha=0.364 (labor), CRS, firm-level SUNAT 2002-2011.
+%   Cespedes, Aquije, Sanchez & Vera-Tudela (2014, BCRP REE-28), datos SUNAT 2002-2011:
+%   MCO: alpha=0.636 | Efectos fijos: alpha=0.573 (preferido; controla heterogeneidad firma)
+%   Se usa 0.573 (EF) como default — logra A_I<1 sin forzar A_I artificialmente.
 A_F = 1;       % PTF formal (normalizacion)
-al  = 0.636;   % capital share (Cespedes et al. 2014)
+al  = 0.573;   % capital share formal — Cespedes et al. 2014, estimacion efectos fijos
 d   = 0.10;    % depreciation, Castillo & Rojas (BCRP REE-28)
 env_al = str2double(getenv('HA_IE_AL')); % _Env
 env_d  = str2double(getenv('HA_IE_DELTA')); % _Env
@@ -555,7 +557,7 @@ maxit = 100;
 crit  = 10^(-6);
 Delta = 1000;
 
-if FAST_DEBUG_RUN
+if MODO_RAPIDO
     I = 200;
     env_debug_I = str2double(getenv('HA_IE_DEBUG_I')); % _Env
     if isfinite(env_debug_I) && env_debug_I >= 50, I = round(env_debug_I); end
@@ -581,7 +583,7 @@ if FAST_DEBUG_RUN
     if isfinite(env_tol_T) && env_tol_T > 0, tol_T = env_tol_T; end
     if isfinite(env_tol_wI) && env_tol_wI > 0, tol_wI = env_tol_wI; end
     if isfinite(env_tol_pI) && env_tol_pI > 0, tol_pI = env_tol_pI; end
-    fprintf('=== FAST DEBUG RUN ACTIVE ===\n');
+    fprintf('=== MODO RAPIDO (exploración, grilla/iters reducidas) ===\n');
     fprintf('I=%d, maxit=%d, max_iter_T=%d, max_iter_wI=%d, max_iter_pI=%d\n\n', ...
         I, maxit, max_iter_T, max_iter_wI, max_iter_pI);
 end
@@ -605,15 +607,15 @@ elseif EQUILIBRIUM_MODE == 2
 else
     mode_label = sprintf('Modo desconocido: %d', EQUILIBRIUM_MODE);
 end
-if FAST_DEBUG_RUN
-    run_label = 'FAST DEBUG: SI (grilla/iteraciones reducidas)';
+if MODO_RAPIDO
+    run_label = 'MODO RÁPIDO (exploración, I=200)';
 else
-    run_label = 'FAST DEBUG: NO (corrida completa)';
+    run_label = 'MODO PRECISIÓN (producción, I=500)';
 end
 fprintf('Run mode: %s\n', mode_label);
 fprintf('Run speed: %s\n', run_label);
-fprintf('MODE=%d, FAST_DEBUG_RUN=%d, I=%d, amin=%.4f, amax=%.4f\n', ...
-    EQUILIBRIUM_MODE, FAST_DEBUG_RUN, I, amin, amax);
+fprintf('MODE=%d, MODO_RAPIDO=%d, I=%d, amin=%.4f, amax=%.4f\n', ...
+    EQUILIBRIUM_MODE, MODO_RAPIDO, I, amin, amax);
 fprintf('theta=%.4f, A_I=%.5f, alpha_I=%.4f, beta_I=%.4f, alpha+beta=%.4f, psi_F=%.4f, psi_I=%.4f\n', ...
     theta, A_I, alpha_I, beta_I, alpha_I + beta_I, psi_F, psi_I);
 fprintf('nu_I=%.4f  (informal usa z^nu_I; nu_I<1 atenúa productividad alta en informal)\n', nu_I);
@@ -1233,7 +1235,7 @@ if EQUILIBRIUM_MODE == 2
     run_config.calib_file = calib_file;
     run_config.metadata_file = metadata_file;
     run_config.mode = EQUILIBRIUM_MODE;
-    run_config.fast_debug = FAST_DEBUG_RUN;
+    run_config.modo_rapido = MODO_RAPIDO;
     run_config.verbose = HA_IE_VERBOSE;
     run_config.profile_enabled = HA_IE_PROFILE;
     run_config.total_elapsed = toc;
@@ -1249,7 +1251,7 @@ if EQUILIBRIUM_MODE == 2
         'kappa_targets', fullfile(repo_root, 'data', 'enaho', 'output', 'epen_kappa_moments_edu4_2025.csv'), ...
         'gasto_targets', fullfile(repo_root, 'data', 'enaho', 'output', 'enaho_model_consistent_gasto_targets_2015_2019.csv'));
     run_config.core = struct( ...
-        'EQUILIBRIUM_MODE', EQUILIBRIUM_MODE, 'FAST_DEBUG_RUN', FAST_DEBUG_RUN, ...
+        'EQUILIBRIUM_MODE', EQUILIBRIUM_MODE, 'modo_rapido', MODO_RAPIDO, ...
         'I', I, 'amin', amin, 'amax', amax, 'maxit', maxit, 'crit', crit, ...
         'max_iter_T', max_iter_T, 'max_iter_wI', max_iter_wI, 'max_iter_pI', max_iter_pI, ...
         'tol_T', tol_T, 'tol_wI', tol_wI, 'tol_pI', tol_pI, ...

@@ -26,6 +26,9 @@ Thumbs.db
 *.toc
 *.synctex.gz
 
+# Contexto privado de calibración (bitácoras, notas de sesión)
+.planning/
+
 # Outputs grandes (generados al correr model_main — no versionar)
 # Los .mat pequeños de referencia SÍ están incluidos (ver inputs/ y outputs/)
 mat_outputs/fastdebug_runs_ou_debtprem/

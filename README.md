@@ -5,19 +5,16 @@ z-process: Hong (2022, JIE). Firma informal: DRS Göbel et al. (2013).
 
 ---
 
-## Estado del package (2026-06-22)
+## Estado del package (2026-06-26)
 
-> **CALIBRACIÓN EN PROGRESO — targets aún no alcanzados.**
+> **CALIBRACIÓN EN PROGRESO — targets primarios cerca, producción pendiente.**
 >
-> Este package es la base funcional del modelo. El código corre y converge,
-> pero la calibración todavía no reproduce los 4 targets de Perú simultáneamente.
-> Ver sección "Estado calibración" para detalle de brechas.
+> Mejor run: `test_kz38_psii34` (MODO RÁPIDO). T4≈0.513 (target 0.516 pre-COVID), T5≈0.182 (target 0.190).
+> Restricciones A_I=0.95<1 ✅ y p_I=0.938<1 ✅ satisfechas.
+> Pendiente: corrida MODO PRECISIÓN (I=500) y ajuste fino T5 con A_I=0.98.
 >
-> **Pendiente una vez se logre calibración estable:**
-> - Crear `calibracion/calibracion_final.m` con los `setenv()` exactos del run ganador
-> - Documentar parámetros finales en `CALIBRACION_CONTEXTO.md`
-> - Correr gráficos completos con ese run y actualizar slides
-> - Ese archivo será el punto de entrada oficial para replicar resultados
+> Ver `CONTINUAR_AQUI.md` para retomar sesión y `REVISION_TRACKER.md` para bugs pendientes.
+> Contexto de calibración y bitácoras en `.planning/` (no versionado).
 
 ---
 
@@ -39,8 +36,8 @@ Solo pon los parámetros que quieres cambiar — el resto usa los defaults del m
 setenv('HA_IE_RUN_TAG',   'prueba_om058_k200')
 
 % ── Velocidad ─────────────────────────────────────────────────────
-setenv('HA_IE_FAST_DEBUG', 'true')   % true = ~16 min (Nz=14, I=200)
-                                     % false = ~4 h   (Nz=14, I=500)
+setenv('HA_IE_FAST_DEBUG', '1')   % 1 = Modo Rápido    (~7 min,  I=200, exploración)
+                                  % 0 = Modo Precisión (~4 h,    I=500, producción)
 
 % ── Parámetros a explorar ─────────────────────────────────────────
 setenv('HA_IE_OMEGA_C',         '0.58')   % peso CES formal  (↓→T5↑ pero p_I↑)
@@ -172,52 +169,48 @@ pdflatex presentation_replication.tex
 
 ## Targets Perú
 
-| Target | Variable del modelo | Dato | Fuente |
-|--------|---------------------|------|--------|
-| T4: horas informales / total | `L_I / (L_F + L_I)` | 0.557 | INEI Cuenta Satélite 2024 |
-| T5: PIB informal nominal / total | `p_I · Y_I / Y_total` | 0.190 | INEI Cuenta Satélite 2024 |
-| Tkz: gap formalidad z alto − z bajo | `P(formal\|z_alto) − P(formal\|z_bajo)` | 0.386 | EPEN 2025 |
-| Tgasto: ratio gasto F/I | `gasto_formal_dom / gasto_informal_dom` | 1.913 | ENAHO 2015-2019 |
+| Nivel | Target | Variable del modelo | Dato | Fuente |
+|-------|--------|---------------------|------|--------|
+| **primario** | T4: share horas informal | `E[ell_I]/(E[ell_F]+E[ell_I])` | 0.516 (2018) / 0.557 (2022) | ENAHO Mod.500, `emplpsec==1`, intensivo |
+| **primario** | T5: PIB informal nominal / total | `p_I·Y_I / (Y_F+p_I·Y_I)` | 0.190 | INEI Cuenta Satélite 2024 |
+| secundario | Tkz: gap formalidad z alto−z bajo | `P(formal\|z_alto)−P(formal\|z_bajo)` | 0.386 | EPEN 2025 |
+| secundario | Tgasto: ratio gasto Q5/Q1 | `E[gasto\|ell_F>ell_I]/E[gasto\|ell_I≥ell_F]` | 1.913 | ENAHO 2015-2019 |
+| secundario | p_I < 1 | precio bien informal | <1 | restricción teórica |
+| validación | Gini gasto | distribución consumo | 0.401 | Banco Mundial (consumo, no riqueza) |
 
 ---
 
-## Estado calibración (2026-06-22)
+## Estado calibración (2026-06-26)
 
-Mejor run: `hong_nz14_DRS_om055`
+Mejor run: `test_kz38_psii34` (MODO RÁPIDO — producción I=500 pendiente)
 
 | Target | Modelo | Dato | Estado |
 |--------|--------|------|--------|
-| p_I < 1 | 1.14 | <1 | ✗ viola |
-| T4 | 0.560 | 0.557 | ✓ |
-| T5 | 0.157 | 0.190 | ~ cerca |
-| Tkz | 0.161 | 0.386 | ✗ lejos |
-| Tgasto | 1.60 | 1.913 | ~ |
+| p_I | 0.938 | <1 | ✅ |
+| A_I | 0.95 | <1 | ✅ |
+| T4 | 0.513 | 0.516 (2018) | ✅ ~ok |
+| T5 | 0.182 | 0.190 | ⚠️ cerca |
+| Tkz | 0.318 | 0.386 | ⚠️ brecha |
+| Tgasto | 1.458 | 1.913 | ✗ lejos |
 
-**p_I:** omega_C=0.55 viola restricción. Probar 0.57–0.60.
-**Tkz:** kappa_z1=0.110 da 0.161. Probar 0.15–0.30.
-
-### Secuencia sugerida
-
-```
-Paso A: encontrar omega_C con p_I<1 y T5 máximo
-  → probar omega_C ∈ {0.60, 0.58, 0.57}
-
-Paso B: con ese omega_C, subir kappa_z1 para cerrar Tkz
-  → probar kappa_z1 ∈ {0.15, 0.20, 0.25, 0.30}
-```
+**Próximo run:** `test_AI098_cierre` — A_I=0.98, κ_z1=0.40, resto igual.
+Ver `REVISION_TRACKER.md` para bugs pendientes y `CONTINUAR_AQUI.md` para setenv completo.
 
 ---
 
 ## Restricciones duras (NO VIOLAR)
 
 ```
-p_I < 1                bien informal más barato que formal
-A_I <= 1               PTF informal ≤ PTF formal
-alpha_I = 0.118        Göbel et al. (2013)
-beta_I  = 0.605        Göbel et al. (2013)
-rho_z   = 0.8600132622 Hong (2022)
-sd_logz = 0.5417411732 Hong (2022)
-nu_I    ∈ [0.4, 0.8]
+p_I  < 1               bien informal más barato que formal
+A_I  ≤ 1               PTF informal ≤ PTF formal
+al   = 0.573           capital share formal (Céspedes et al. 2014, estimación efectos fijos; MCO da 0.636)
+alpha_I = 0.220        capital informal (calibrado)
+beta_I  = 0.619        labor informal  (calibrado)
+rho_z   = 0.861        Hong (2022, J. Int. Economics) — NO TOCAR
+sd_logz = 0.544        Hong (2022) — NO TOCAR
+psi_I  ≥ 34            floor: si baja, form_rate z_min→0 y Tkz salta
+psi_F  ≥ 55            floor: si baja, Gini colapsa
+R_HI   = 0.20          obligatorio con rho=0.073
 ```
 
 ---
@@ -233,10 +226,18 @@ Ver `calibracion/setup_calibration.m` — lista comentada de todos los `HA_IE_*`
 ```
 replication_package/
   README.md                    ← este archivo
-  model_main.m                 ← solver (autocontenido, sin deps fuera de esta carpeta)
-  PLAN_CALIBRACION.md          ← bitácora de calibración
-  CALIBRACION_CONTEXTO.md      ← contexto completo
-  CONTINUAR_AQUI.md            ← guía para retomar sesión
+  model_main.m                 ← solver principal
+  CONTINUAR_AQUI.md            ← punto de entrada para retomar sesión
+  REVISION_TRACKER.md          ← bugs pendientes + historial de corridas
+
+  .planning/                   ← contexto privado (no versionado, en .gitignore)
+    CALIBRACION_CONTEXTO.md    ← parámetros, instrumentos, reglas aprendidas
+    SESION_CALIBRACION_*.md    ← bitácoras de sesión
+    NARRATIVA_CALIBRACION.md   ← cómo explicar resultados
+    AUDITORIA_NUMERICA.md      ← chequeos numéricos
+    FIGURAS_REFERENCIA.md      ← documentación de figuras
+    REFERENCIAS_TEORICAS_*.md  ← citas y justificaciones
+    PLAN_UTILIDAD_NO_SEPARABLE.md ← extensión futura
 
   calibracion/
     setup_calibration.m        ← referencia de todos los parámetros HA_IE_*

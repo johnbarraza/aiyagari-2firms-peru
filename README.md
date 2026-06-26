@@ -1,4 +1,4 @@
-# HA-IE Replication Package — v10 ARz + DRS Göbel
+# HA-IE Replication Package — Modelo 2 Firmas HACT, Perú
 
 Modelo Aiyagari HACT 2 firmas (formal/informal), oferta laboral endógena, Perú.
 z-process: Hong (2022, JIE). Firma informal: DRS Göbel et al. (2013).
@@ -7,14 +7,15 @@ z-process: Hong (2022, JIE). Firma informal: DRS Göbel et al. (2013).
 
 ## Estado del package (2026-06-26)
 
-> **CALIBRACIÓN EN PROGRESO — targets primarios cerca, producción pendiente.**
+> **CALIBRACIÓN COMPLETA (MODO RÁPIDO) — targets primarios casi exactos.**
 >
-> Mejor run: `test_kz38_psii34` (MODO RÁPIDO). T4≈0.513 (target 0.516 pre-COVID), T5≈0.182 (target 0.190).
-> Restricciones A_I=0.95<1 ✅ y p_I=0.938<1 ✅ satisfechas.
-> Pendiente: corrida MODO PRECISIÓN (I=500) y ajuste fino T5 con A_I=0.98.
+> Run oficial: **`test_AI098_cierre`** (FAST_DEBUG=1, I=200, Nz=40, ~33 min).
+> T4=0.517 (target 0.516 ✅), T5=0.188 (target 0.190 ✅), Tkz=0.378 (target 0.386 ✅).
+> Restricciones A_I=0.98<1 ✅ y p_I=0.928<1 ✅ satisfechas.
+> Pendiente: corrida MODO PRECISIÓN (I=500) para validación final.
 >
+> Outputs en `outputs/stationary/test_AI098_cierre/` — ver `resumen_calibracion.txt`.
 > Ver `CONTINUAR_AQUI.md` para retomar sesión y `REVISION_TRACKER.md` para bugs pendientes.
-> Contexto de calibración y bitácoras en `.planning/` (no versionado).
 
 ---
 
@@ -182,19 +183,21 @@ pdflatex presentation_replication.tex
 
 ## Estado calibración (2026-06-26)
 
-Mejor run: `test_kz38_psii34` (MODO RÁPIDO — producción I=500 pendiente)
+Run oficial: **`test_AI098_cierre`** — A_I=0.98, κ_z1=0.40, psi_F=55, psi_I=34, amin=-1.0
 
 | Target | Modelo | Dato | Estado |
 |--------|--------|------|--------|
-| p_I | 0.938 | <1 | ✅ |
-| A_I | 0.95 | <1 | ✅ |
-| T4 | 0.513 | 0.516 (2018) | ✅ ~ok |
-| T5 | 0.182 | 0.190 | ⚠️ cerca |
-| Tkz | 0.318 | 0.386 | ⚠️ brecha |
-| Tgasto | 1.458 | 1.913 | ✗ lejos |
+| p_I | 0.928 | <1 | ✅ |
+| A_I | 0.98 | <1 | ✅ |
+| T4 | 0.517 | 0.516 (2018 pre-COVID) | ✅ |
+| T5 | 0.188 | 0.190 | ✅ cerca |
+| Tkz | 0.378 | 0.386 | ✅ cerca |
+| Tgasto | 1.465 | 1.913 | ✗ limitación estructural |
+| T6 | 0.044 | 0.530 | ✗ limitación estructural |
 
-**Próximo run:** `test_AI098_cierre` — A_I=0.98, κ_z1=0.40, resto igual.
-Ver `REVISION_TRACKER.md` para bugs pendientes y `CONTINUAR_AQUI.md` para setenv completo.
+**Limitaciones documentadas:** Tgasto y T6 requieren DRS informal (extensión futura).
+Ver `outputs/stationary/test_AI098_cierre/resumen_calibracion.txt` para valores completos.
+Ver `REVISION_TRACKER.md` para bugs pendientes y `CONTINUAR_AQUI.md` para setenv.
 
 ---
 

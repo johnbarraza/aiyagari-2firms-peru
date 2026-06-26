@@ -129,7 +129,7 @@ Frisch_F = Frisch;
 Frisch_I = Frisch;
 
 % Quick mode: smaller grid + looser tolerances for numerical checks only.
-MODO_RAPIDO = true;  % true = quick check (~5 min), false = full run (~5 h)
+MODO_RAPIDO = false;  % false = full run (~4 h, I=500); override with HA_IE_FAST_DEBUG=1
 
 env_fast_debug = lower(strtrim(getenv('HA_IE_FAST_DEBUG'))); % _Env
 if any(strcmp(env_fast_debug, {'1','true','yes','on'}))
@@ -2034,7 +2034,7 @@ for it_wI = 1:max_iter_wI
     [K_I, Y_I, w_I_new, Pi_I_new] = informal_firm_outcomes_v10( ...
         L_I, r, p_I, A_I, alpha_I, beta_I, d, L_I_floor_wI);
 
-    if abs(w_I_new - w_I) < tol_wI && abs(Pi_I_new - Pi_I_share) < tol_wI
+    if abs(w_I_new - w_I) < tol_wI && abs(Pi_I_new - Pi_I_share) / max(abs(Pi_I_share), 1e-8) < tol_wI
         w_I = w_I_new;
         Pi_I_share = Pi_I_new;
         L_I_prev = L_I;
@@ -2281,17 +2281,17 @@ function [cF, cI, Ceff, exp_cons] = ces_consumption_from_dV_v10(dV, ga)
 	exp_cons = p_F_eff.*cF + p_I.*cI;   % includes tax on formal
 
 	if abs(eta_C) > 1e-10
-	    A_F = omega_C.^(1/eta_C);
-	    A_Ionly = max(1-omega_C, 1e-12).^(1/eta_C);
+	    A_ces_F = omega_C.^(1/eta_C);
+	    A_ces_I = max(1-omega_C, 1e-12).^(1/eta_C);
 
 	    % Corner F-only: price = 1+tau_c
-	    cF_only = (A_F.^(1-ga) ./ (dV .* p_F_eff)).^(1/ga);
-	    C_Fonly = A_F .* cF_only;
+	    cF_only = (A_ces_F.^(1-ga) ./ (dV .* p_F_eff)).^(1/ga);
+	    C_Fonly = A_ces_F .* cF_only;
 	    exp_Fonly = p_F_eff .* cF_only;
 
 	    % Corner I-only: price = p_I (no tax on informal)
-	    cI_only = (A_Ionly.^(1-ga) ./ max(dV * p_I, 1e-12)).^(1/ga);
-	    C_Ionly = A_Ionly .* cI_only;
+	    cI_only = (A_ces_I.^(1-ga) ./ max(dV * p_I, 1e-12)).^(1/ga);
+	    C_Ionly = A_ces_I .* cI_only;
 	    exp_Ionly = p_I .* cI_only;
 
 	    if abs(ga - 1) < 1e-10

@@ -1,269 +1,217 @@
-# HA-IE Replication Package — Modelo 2 Firmas HACT, Perú
+# HA-IE Replication Package — Aiyagari 2 Firms, Endogenous Labor, Peru
 
-Modelo Aiyagari HACT 2 firmas (formal/informal), oferta laboral endógena, Perú.
-z-process: Hong (2022, JIE). Firma informal: DRS Göbel et al. (2013).
+Heterogeneous-agent continuous-time model (HACT) with two production sectors (formal/informal), endogenous labor supply, and idiosyncratic productivity risk. Applied to Peru.
 
----
-
-## Estado del package (2026-06-26)
-
-> **CALIBRACIÓN COMPLETA (MODO RÁPIDO) — targets primarios casi exactos.**
->
-> Run oficial: **`test_AI098_cierre`** (FAST_DEBUG=1, I=200, Nz=40, ~33 min).
-> T4=0.517 (target 0.516 ✅), T5=0.188 (target 0.190 ✅), Tkz=0.378 (target 0.386 ✅).
-> Restricciones A_I=0.98<1 ✅ y p_I=0.928<1 ✅ satisfechas.
-> Pendiente: corrida MODO PRECISIÓN (I=500) para validación final.
->
-> Outputs en `outputs/stationary/test_AI098_cierre/` — ver `resumen_calibracion.txt`.
-> Ver `CONTINUAR_AQUI.md` para retomar sesión y `REVISION_TRACKER.md` para bugs pendientes.
+**z-process:** OU continuous-time, calibrated from Hong (2022, *J. International Economics*).
+**Informal firm:** decreasing returns à la Göbel, Görg & Maioli (2013).
 
 ---
 
-## Cómo correr el modelo
+## Calibration status (2026-06-28)
 
-### Paso 1 — Abrir MATLAB y pararse en esta carpeta
+> **Production run complete.**
+>
+> Run: **`v10_prod_kz38_psii34`** — I=500, Nz=40, ~11 h.
+> Best fast run: **`test_kz38_psii34`** — I=200, Nz=40, ~30 min (error <0.3pp vs production).
+
+| Target | Model | Data | Source |
+|--------|-------|------|--------|
+| p_I | 0.943 | < 1 ✅ | theoretical |
+| T4: informal hours share | 0.510 | 0.557 | ENAHO 2022, Module 500 |
+| T5: informal GDP share | 0.182 | 0.190 | INEI Satellite Account 2024 |
+| Tkz: formality gap z₂−z₁ | 0.313 | 0.386 | EPEN 2025 |
+| Tgasto: expenditure ratio F/I | 1.451 | 1.913 | ENAHO 2015-2019 |
+
+**Documented limitations:** Tgasto and T6 require DRS informal extension (future work).
+
+---
+
+## Grid convergence results (2026-06-28)
+
+Speed-accuracy tradeoff varying Nz (z-grid), I=200 fixed. Ground truth = Nz=40, I=500.
+
+| Nz | Time (min) | Max error (r*, p_I) |
+|----|-----------|----------------------|
+| 7 | 11 | ~1.6% |
+| 14 | 18 | ~0.7% |
+| 24 | 44 | ~0.35% |
+| **30** | **41** | **<0.25%** ← sweet spot |
+| 40 (I=200) | 30 | ~0.1% (vs I=500) |
+| 40 (I=500) | 671 | 0% (ground truth) |
+
+**Recommendation:** use Nz=30 for calibration (41 min, <0.25% error). Nz=14 for fast exploration (18 min, <1% error).
+
+Figures: `outputs/grid_convergence/fig_grid_convergence.pdf`, `fig_tradeoff.pdf`.
+
+---
+
+## How to run
+
+### Step 1 — Open MATLAB, navigate here
 
 ```matlab
 cd('C:\...\replication_package')
 ```
 
-### Paso 2 — Setenv con los parámetros que quieres explorar
-
-`setenv()` persiste durante la sesión de MATLAB. No se borra al correr `model_main`.
-Solo pon los parámetros que quieres cambiar — el resto usa los defaults del modelo.
+### Step 2 — Set parameters via setenv
 
 ```matlab
-% ── Nombre del run (define la carpeta de output) ──────────────────
-setenv('HA_IE_RUN_TAG',   'prueba_om058_k200')
+% ── Run tag (defines output folder) ──────────────────────────────
+setenv('HA_IE_RUN_TAG',    'my_run_tag')
 
-% ── Velocidad ─────────────────────────────────────────────────────
-setenv('HA_IE_FAST_DEBUG', '1')   % 1 = Modo Rápido    (~7 min,  I=200, exploración)
-                                  % 0 = Modo Precisión (~4 h,    I=500, producción)
+% ── Speed ─────────────────────────────────────────────────────────
+setenv('HA_IE_FAST_DEBUG', '1')   % 1 = fast (~7-40 min, I=200, calibration)
+                                  % 0 = production (~11 h, I=500, final)
 
-% ── Parámetros a explorar ─────────────────────────────────────────
-setenv('HA_IE_OMEGA_C',         '0.58')   % peso CES formal  (↓→T5↑ pero p_I↑)
-setenv('HA_IE_KAPPA_Z1',        '0.200')  % barrera formal   (↑→Tkz↑)
-setenv('HA_IE_KAPPA_Z_SHAPE',   '2.0')    % curvatura barrera
-setenv('HA_IE_NU_I',            '0.40')   % exp z informal   (↓→Tkz↑)
-setenv('HA_IE_PSI_F',           '180')
-setenv('HA_IE_PSI_I',           '50')
+% ── z-grid (recommendation: Nz=30 for calibration, 40 for final) ─
+setenv('HA_IE_Z_N', '30')
 
-% ── Firma informal — NO TOCAR alpha_I/beta_I (Göbel 2013) ────────
-setenv('HA_IE_A_I',             '0.99')
-setenv('HA_IE_ALPHA_I',         '0.118')
-setenv('HA_IE_BETA_I',          '0.605')
+% ── Parameters to explore ─────────────────────────────────────────
+setenv('HA_IE_OMEGA_C',       '0.56')   % CES formal weight
+setenv('HA_IE_KAPPA_Z1',      '0.38')   % formal barrier (↑→Tkz↑)
+setenv('HA_IE_KAPPA_Z_SHAPE', '2.0')    % barrier curvature
+setenv('HA_IE_PSI_F',         '55')
+setenv('HA_IE_PSI_I',         '34')
 
-% ── z-process Hong 2022 — NO TOCAR rho/sd ────────────────────────
-setenv('HA_IE_Z_N',   '14')
+% ── Informal firm — DO NOT CHANGE (Göbel 2013 calibration) ───────
+setenv('HA_IE_A_I',     '0.95')
+setenv('HA_IE_ALPHA_I', '0.220')
+setenv('HA_IE_BETA_I',  '0.619')
+
+% ── z-process Hong (2022) — DO NOT CHANGE ─────────────────────────
 setenv('HA_IE_Z_RHO', '0.8600132622')
 setenv('HA_IE_Z_SD',  '0.5417411732')
-
-% ── Otros ────────────────────────────────────────────────────────
-setenv('HA_IE_AMIN',                 '-1')
-setenv('HA_IE_R_HI',                 '0.15')
-setenv('HA_IE_INFORMAL_PROFIT_RULE', 'hours')
-setenv('HA_IE_VERBOSE',              '0')
 ```
 
-### Paso 3 — Correr
+### Step 3 — Run
 
 ```matlab
 model_main
 ```
 
-Para el siguiente run solo cambia los setenv que quieres modificar y vuelve a correr.
+---
+
+## Output
+
+Each run creates a folder at `outputs/stationary/<RUN_TAG>/`:
+
+| File | Contents |
+|------|----------|
+| `results_<TAG>.mat` | Full equilibrium: a, z, g, c, ell_F, ell_I, r*, K*, w_F*, p_I*, etc. |
+| `calib_<TAG>.mat` | Parameters used |
+| `run_metadata.txt` | Targets vs model (p_I, T4, T5, Tkz, Tgasto, r*, K*) |
 
 ---
 
-## Output del modelo
+## Plots
 
-Cada run genera una carpeta en:
-
-```
-outputs/stationary/<RUN_TAG>/
-```
-
-Archivos generados:
-
-| Archivo | Contenido |
-|---------|-----------|
-| `results_<TAG>.mat` | Equilibrio completo: a, z, g, c, ell_F, ell_I, r*, K*, w_F*, p_I*, etc. |
-| `calib_<TAG>.mat` | Resumen de parámetros usados |
-| `run_metadata.txt` | Targets vs modelo (p_I, T4, T5, Tkz, Tgasto, r*, K*) |
-
----
-
-## Generar gráficos
-
-Los scripts de Python leen el `.mat` y generan PNGs en `<carpeta_run>/plots_moll/`.
-
-### Desde MATLAB (recomendado)
+### From MATLAB
 
 ```matlab
 TAG = getenv('HA_IE_RUN_TAG');
 MAT = sprintf('outputs/stationary/%s/results_%s.mat', TAG, TAG);
 OUT = sprintf('outputs/stationary/%s/plots_moll', TAG);
-
 system(sprintf('python ploteo/moll_mechanism.py --mat-file "%s" --out-dir "%s"', MAT, OUT));
 system(sprintf('python ploteo/moll_gasto.py     --mat-file "%s" --out-dir "%s"', MAT, OUT));
 ```
 
-### Desde terminal
+### Grid convergence figure
 
-```bash
-cd replication_package
-
-python ploteo/moll_mechanism.py \
-  --mat-file "outputs/stationary/prueba_om058_k200/results_prueba_om058_k200.mat" \
-  --out-dir  "outputs/stationary/prueba_om058_k200/plots_moll"
-
-python ploteo/moll_gasto.py \
-  --mat-file "outputs/stationary/prueba_om058_k200/results_prueba_om058_k200.mat" \
-  --out-dir  "outputs/stationary/prueba_om058_k200/plots_moll"
+```matlab
+addpath('calibracion')
+grid_convergence_test('plot')   % regenerate figures from saved .mat
+% grid_convergence_test         % re-run all configurations (~45 min)
 ```
-
-Si omites `--out-dir`, los PNGs van al mismo directorio que el `.mat` en subcarpeta `plots_moll/`.
 
 ---
 
-## Qué genera cada script
+## What each script produces
 
 ### `moll_mechanism.py` — 11 PNGs + 5 TXTs
 
-| Archivo | Qué muestra |
-|---------|-------------|
-| `moll_savings_and_wealth_distribution.png` | Política de ahorro s(a,z) para z bajo vs alto **+** densidad de riqueza g(a\|z) condicional por z |
-| `moll_savings_and_wealth_distribution_labeled.png` | Igual con caption de publicación |
-| `moll_time_use_by_z_with_leisure.png` | Barras apiladas: horas formal / informal / ocio por cada nodo z |
-| `moll_time_use_by_z_excluding_leisure.png` | Participación sectorial del trabajo (formal/informal) sin ocio, por z |
-| `moll_consumption_distribution.png` | Distribución de consumo efectivo C (agrega utilidad) vs gasto X = c_F + p_I·c_I |
-| `moll_consumption_components_distribution.png` | Distribución de c_F y p_I·c_I, agregado todos los z |
-| `moll_consumption_components_distribution_by_z_groups.png` | Componentes c_F y p_I·c_I condicionados en z bajo / mediano / alto (3 paneles) |
-| `moll_income_decomposition_by_wealth_quintile.png` | Ingreso medio por quintil de riqueza, descompuesto en: labor formal, labor informal, capital, transferencias, costo deuda |
-| `moll_income_decomposition_percent_by_wealth_quintile.png` | Mismo en % del ingreso bruto por quintil |
-| `moll_wealth_density_by_z_low_median_high.png` | Densidad de riqueza total y por z bajo/mediano/alto — panel completo + zoom 90% de masa |
-| `moll_equilibrium_asset_market.png` | Curvas S(r) y K^D(r): intersección = equilibrio r*, K* (solo en modo GE) |
+| File | What it shows |
+|------|--------------|
+| `moll_savings_and_wealth_distribution.png` | Savings policy s(a,z) + wealth density g(a\|z) by z |
+| `moll_time_use_by_z_with_leisure.png` | Hours: formal / informal / leisure by z node |
+| `moll_time_use_by_z_excluding_leisure.png` | Sectoral labor participation (formal/informal) by z |
+| `moll_consumption_distribution.png` | Effective consumption C vs expenditure X = c_F + p_I·c_I |
+| `moll_consumption_components_distribution.png` | c_F and p_I·c_I distributions (all z) |
+| `moll_consumption_components_distribution_by_z_groups.png` | Components by z low/median/high |
+| `moll_income_decomposition_by_wealth_quintile.png` | Income by wealth quintile: labor F, labor I, capital, transfers |
+| `moll_income_decomposition_percent_by_wealth_quintile.png` | Same in % of gross income |
+| `moll_wealth_density_by_z_low_median_high.png` | Wealth density total + by z groups |
+| `moll_equilibrium_asset_market.png` | S(r) and K^D(r) curves: intersection = r*, K* (GE only) |
 
-### `moll_gasto.py` — 1 PNG + 1 TXT
+### `moll_gasto.py` — 1 PNG
 
-| Archivo | Qué muestra |
-|---------|-------------|
-| `moll_model_gasto_distribution_by_formality.png` | Distribución del gasto X = c_F + p_I·c_I, separado en: agentes formal-dominantes (ell_F ≥ ell_I), informal-dominantes, y total — histograma + KDE ponderada |
-
----
-
-## Actualizar slides
-
-```
-presentacion/presentation_replication.tex
-  → cambiar \graphicspath{{../outputs/stationary/<TAG>/plots_moll/}}
-  → actualizar tabla de targets en slide "Calibración"
-```
-
-Compilar:
-```bash
-cd presentacion
-pdflatex presentation_replication.tex
-```
+| File | What it shows |
+|------|--------------|
+| `moll_model_gasto_distribution_by_formality.png` | Expenditure X distribution by formality status (formal-dominant / informal-dominant / total) |
 
 ---
 
-## Targets Perú
+## Calibration targets
 
-| Nivel | Target | Variable del modelo | Dato | Fuente |
-|-------|--------|---------------------|------|--------|
-| **primario** | T4: share horas informal | `E[ell_I]/(E[ell_F]+E[ell_I])` | 0.516 (2018) / 0.557 (2022) | ENAHO Mod.500, `emplpsec==1`, intensivo |
-| **primario** | T5: PIB informal nominal / total | `p_I·Y_I / (Y_F+p_I·Y_I)` | 0.190 | INEI Cuenta Satélite 2024 |
-| secundario | Tkz: gap formalidad z alto−z bajo | `P(formal\|z_alto)−P(formal\|z_bajo)` | 0.386 | EPEN 2025 |
-| secundario | Tgasto: ratio gasto Q5/Q1 | `E[gasto\|ell_F>ell_I]/E[gasto\|ell_I≥ell_F]` | 1.913 | ENAHO 2015-2019 |
-| secundario | p_I < 1 | precio bien informal | <1 | restricción teórica |
-| validación | Gini gasto | distribución consumo | 0.401 | Banco Mundial (consumo, no riqueza) |
-
----
-
-## Estado calibración (2026-06-26)
-
-Run oficial: **`test_AI098_cierre`** — A_I=0.98, κ_z1=0.40, psi_F=55, psi_I=34, amin=-1.0
-
-| Target | Modelo | Dato | Estado |
-|--------|--------|------|--------|
-| p_I | 0.928 | <1 | ✅ |
-| A_I | 0.98 | <1 | ✅ |
-| T4 | 0.517 | 0.516 (2018 pre-COVID) | ✅ |
-| T5 | 0.188 | 0.190 | ✅ cerca |
-| Tkz | 0.378 | 0.386 | ✅ cerca |
-| Tgasto | 1.465 | 1.913 | ✗ limitación estructural |
-| T6 | 0.044 | 0.530 | ✗ limitación estructural |
-
-**Limitaciones documentadas:** Tgasto y T6 requieren DRS informal (extensión futura).
-Ver `outputs/stationary/test_AI098_cierre/resumen_calibracion.txt` para valores completos.
-Ver `REVISION_TRACKER.md` para bugs pendientes y `CONTINUAR_AQUI.md` para setenv.
+| Level | Target | Model variable | Data | Source |
+|-------|--------|---------------|------|--------|
+| **primary** | T4: informal hours share | `E[ell_I]/(E[ell_F]+E[ell_I])` | 0.557 (2022) | ENAHO Mod.500, `emplpsec==1`, intensive margin |
+| **primary** | T5: informal nominal GDP | `p_I·Y_I / (Y_F+p_I·Y_I)` | 0.190 | INEI Satellite Account 2024 |
+| secondary | Tkz: formality gap z₂−z₁ | `P(formal\|z_high)−P(formal\|z_low)` | 0.386 | EPEN 2025 |
+| secondary | Tgasto: expenditure ratio | `E[X\|ell_F>ell_I]/E[X\|ell_I≥ell_F]` | 1.913 | ENAHO 2015-2019 |
+| secondary | p_I < 1 | informal good price | < 1 | theoretical constraint |
+| validation | Expenditure Gini | consumption distribution | 0.401 | World Bank (consumption, not wealth) |
 
 ---
 
-## Restricciones duras (NO VIOLAR)
+## Hard constraints (DO NOT VIOLATE)
 
 ```
-p_I  < 1               bien informal más barato que formal
-A_I  ≤ 1               PTF informal ≤ PTF formal
-al   = 0.573           capital share formal (Céspedes et al. 2014, estimación efectos fijos; MCO da 0.636)
-alpha_I = 0.220        capital informal (calibrado)
-beta_I  = 0.619        labor informal  (calibrado)
-rho_z   = 0.861        Hong (2022, J. Int. Economics) — NO TOCAR
-sd_logz = 0.544        Hong (2022) — NO TOCAR
-psi_I  ≥ 34            floor: si baja, form_rate z_min→0 y Tkz salta
-psi_F  ≥ 55            floor: si baja, Gini colapsa
-R_HI   = 0.20          obligatorio con rho=0.073
+p_I   < 1          informal good cheaper than formal
+A_I   ≤ 1          informal TFP ≤ formal TFP
+al    = 0.573       formal capital share (Céspedes et al. 2014, FE estimate)
+alpha_I = 0.220     informal capital elasticity (calibrated)
+beta_I  = 0.619     informal labor elasticity (calibrated)
+rho_z   = 0.861     Hong (2022, J. Int. Economics) — DO NOT CHANGE
+sd_logz = 0.544     Hong (2022) — DO NOT CHANGE
+psi_I  ≥ 34         floor: lower → formality rate at z_min → 0, Tkz spikes
+psi_F  ≥ 55         floor: lower → Gini collapses
 ```
 
 ---
 
-## Todos los parámetros disponibles via setenv
-
-Ver `calibracion/setup_calibration.m` — lista comentada de todos los `HA_IE_*` con rangos y fuentes.
-
----
-
-## Estructura
+## Repository structure
 
 ```
 replication_package/
-  README.md                    ← este archivo
-  model_main.m                 ← solver principal
-  CONTINUAR_AQUI.md            ← punto de entrada para retomar sesión
-  REVISION_TRACKER.md          ← bugs pendientes + historial de corridas
-
-  .planning/                   ← contexto privado (no versionado, en .gitignore)
-    CALIBRACION_CONTEXTO.md    ← parámetros, instrumentos, reglas aprendidas
-    SESION_CALIBRACION_*.md    ← bitácoras de sesión
-    NARRATIVA_CALIBRACION.md   ← cómo explicar resultados
-    AUDITORIA_NUMERICA.md      ← chequeos numéricos
-    FIGURAS_REFERENCIA.md      ← documentación de figuras
-    REFERENCIAS_TEORICAS_*.md  ← citas y justificaciones
-    PLAN_UTILIDAD_NO_SEPARABLE.md ← extensión futura
+  README.md                    ← this file
+  model_main.m                 ← main solver (HACT 2-firm model)
+  CONTINUAR_AQUI.md            ← session handoff notes
+  REVISION_TRACKER.md          ← bugs and run history
 
   calibracion/
-    setup_calibration.m        ← referencia de todos los parámetros HA_IE_*
-    escenarios.m               ← bloques setenv por escenario (A/B/C)
-    convergence_test.m
+    setup_calibration.m        ← reference for all HA_IE_* parameters with ranges
+    escenarios.m               ← setenv blocks by calibration scenario
+    grid_convergence_test.m    ← speed-accuracy sweep (Nz={7,14,24,30,40})
 
   ploteo/
-    moll_mechanism.py          ← genera 11 PNGs de mecanismo del modelo
-    moll_gasto.py              ← genera 1 PNG de distribución de gasto
-    zero_drift_solver.m        ← solver zero-drift vectorizado con prima de deuda (dep de model_main)
-    plot_distributions.m       ← diagnóstico OU (MATLAB)
-    plot_results.m
+    moll_mechanism.py          ← 11 PNGs of model mechanism
+    moll_gasto.py              ← 1 PNG of expenditure distribution
+    zero_drift_solver.m        ← zero-drift solver (dependency of model_main)
+    plot_distributions.m       ← OU diagnostic (MATLAB)
 
-  docs/referencias/            ← papers fuente
-  presentacion/                ← slides Beamer LaTeX
-  inputs/                      ← .mat de referencia
-  outputs/stationary/          ← output de cada run (auto-generado)
+  outputs/
+    stationary/                ← one folder per run (auto-generated)
+    grid_convergence/          ← speed-accuracy figures and CSV
+
+  docs/referencias/            ← source papers
+  presentacion/                ← Beamer LaTeX slides
+  inputs/                      ← reference .mat files
 ```
 
 ---
 
-## Requisitos
+## Requirements
 
-- MATLAB (cualquier versión reciente)
-- Python 3 con `numpy scipy matplotlib`:  `pip install numpy scipy matplotlib`
-- pdflatex (solo para compilar slides)
+- MATLAB (recent version)
+- Python 3: `pip install numpy scipy matplotlib`
+- pdflatex (only for compiling slides)

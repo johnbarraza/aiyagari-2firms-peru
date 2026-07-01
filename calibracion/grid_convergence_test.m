@@ -385,7 +385,7 @@ end
 %% ─── FIGURA 2: tradeoff frontier (tiempo X, max-error Y) ────────────────────
 function plot_tradeoff_fig(results, out_dir)
 % Curva Pareto: X = tiempo (min, log), Y = max |% error| sobre [r*, p_I] (log).
-% Muestra el "elbow" y anota el sweet spot Nz=30.
+% La eleccion final de grilla usa Nz=40 por estabilidad numerica.
 
 n    = numel(results);
 gt   = results(n);
@@ -411,7 +411,7 @@ idx_fb      = find(is_fallback);
 
 c_main   = [0.15 0.40 0.75];
 c_fallbk = [0.55 0.55 0.55];
-c_sweet  = [0.85 0.25 0.10];   % rojo para sweet spot
+c_ref    = [0.85 0.25 0.10];   % rojo para grilla recomendada
 
 % ── datos limpios ordenados por tiempo ───────────────────────────────────────
 xc = elapsed_min(idx_clean);
@@ -443,12 +443,12 @@ for k = 1:numel(idx_clean)
     yv = max_err(idx_clean(k));
     if ~isfinite(xv) || ~isfinite(yv) || yv <= 0, continue; end
     nz_k = nz_vec(idx_clean(k));
-    % sweet spot Nz=30: label rojo + anotación
-    if nz_k == 30
-        plot(xv, yv, 'o','Color',c_sweet,'MarkerFaceColor',c_sweet,...
+    % Nz=40 es la grilla final recomendada; Nz=30 no se marca como optimo.
+    if nz_k == 40
+        plot(xv, yv, 'o','Color',c_ref,'MarkerFaceColor',c_ref,...
             'MarkerEdgeColor',[1 1 1],'MarkerSize',9,'LineWidth',1.3);
-        text(xv*1.06, yv*1.35, sprintf('N_z=%d\n(sweet spot)', nz_k),...
-            'FontSize',8,'Color',c_sweet,'FontWeight','bold','Interpreter','tex');
+        text(xv*1.06, yv*1.35, sprintf('N_z=%d\n(grilla final)', nz_k),...
+            'FontSize',8,'Color',c_ref,'FontWeight','bold','Interpreter','tex');
     else
         text(xv*1.06, yv*1.2, sprintf('N_z=%d', nz_k),...
             'FontSize',8,'Color',c_main,'Interpreter','tex');

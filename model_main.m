@@ -240,7 +240,7 @@ end
 %
 % Set HA_IE_Z_PROCESS='rouwenhorst' to recover the dense discrete Markov
 % approximation used in earlier ARz drafts.
-Nz_ar      = 20;   % benchmark calib_nz20: Nz=7 NO converge (bracket r)
+Nz_ar      = 20;   % default interno; usar HA_IE_Z_N=40 para resultados finales
 rho_z_ar   = 0.8600132622;
 sd_logz_ar = 0.5417411732;
 % Baseline thesis specification: keep Hong values above. Use HA_IE_Z_RHO
@@ -520,7 +520,7 @@ end
 
 % Numerical safeguards for structural R2 loop.
 L_I_floor_wI = 1e-4;      % floor only for wage/profit updates when L_I is tiny
-damp_wI_log  = 0.10;      % log damping on w_I updates
+damp_wI_log  = 0.25;      % log damping on w_I updates (0.10 too slow: needs 40+ iters to reach tol 1e-5)
 damp_piI     = 0.10;      % level damping on Pi_I_share updates
 damp_T       = 0.15;      % level damping on T updates
 
@@ -1421,7 +1421,7 @@ if EQUILIBRIUM_MODE == 2
             'lorenz_a', 'lorenz_c', 'lorenz_c_by_a', 'cum_pop_a', 'cum_pop_c', 'g_marg_a', ...
             'T4_data', 'T5_data', 'TgFI_data', 'T6_data', 'T6_Q1_data', 'T6_Q5_data', 'T1_ref', ...
             'informal_profit_rule', 'w_I_household_star', 'Pi_lump_star', ...
-            'HA_IE_TIMINGS');
+            'HA_IE_TIMINGS', 'total_elapsed');
         fprintf('Resultados guardados en %s\n', results_file);
         fprintf('Figuras MATLAB: >> addpath(''ploteo''); plot_moll_matlab_all(''%s'')\n\n', results_file);
     catch ME_save
@@ -1638,6 +1638,11 @@ best_abs = Inf;
 best_res = struct();
 bracket_found = false;
 
+% Coarse wI iters for grid scan: only need correct sign of C_I-Y_I, not precision.
+% Fine iters reserved for bisection phase where accuracy matters.
+max_iter_wI_scan  = min(max_iter_wI, 8);
+damp_wI_scan      = max(damp_wI_log, 0.30);
+
 for expand_iter = 0:max_pI_expand
     if expand_iter == 0
         p_grid = base_grid;
@@ -1654,7 +1659,7 @@ for expand_iter = 0:max_pI_expand
             solve_given_prices_v10(r, p_grid(ip), v0_init, T_init, w_I_init, Pi_I_init, ...
             a, z, la, ga, rho, Frisch, psi_F, psi_I, theta, A_F, al, d, A_I, alpha_I, beta_I, ...
             z_ave, I, da, aa, zz, maxit, crit, Delta, Aswitch, tau, H_bar, tol_T, ...
-            max_iter_T, tol_wI, max_iter_wI, L_I_floor_wI, damp_wI_log, damp_piI, damp_T);
+            max_iter_T, tol_wI, max_iter_wI_scan, L_I_floor_wI, damp_wI_scan, damp_piI, damp_T);
 
         exc(ip) = CI_t - YI_t;
         res{ip} = struct('S', S_t, 'KD', KD_t, 'w_F', w_F_t, 'L_F', L_F_t, 'L_I', L_I_t, ...
@@ -2555,7 +2560,7 @@ try
     fprintf(fid, 'calib_file=%s\n', ha_meta_str(run_config.calib_file));
     fprintf(fid, 'metadata_file=%s\n', ha_meta_str(run_config.metadata_file));
     fprintf(fid, 'mode=%s\n', ha_meta_str(run_config.mode));
-    fprintf(fid, 'fast_debug=%s\n', ha_meta_str(run_config.fast_debug));
+    fprintf(fid, 'fast_debug=%s\n', ha_meta_str(run_config.modo_rapido));
     fprintf(fid, 'verbose=%s\n', ha_meta_str(run_config.verbose));
     fprintf(fid, 'profile_enabled=%s\n', ha_meta_str(run_config.profile_enabled));
     fprintf(fid, 'total_elapsed=%.6f\n', run_config.total_elapsed);

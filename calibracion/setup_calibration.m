@@ -38,7 +38,7 @@ setenv('HA_IE_BETA_I',           '0.605');    % retornos escala labor (Göbel 20
 
 %% PROCESO z — Hong (2022, JIE) — NO TOCAR
 setenv('HA_IE_Z_PROCESS',        'ou');
-setenv('HA_IE_Z_N',              '14');       % Nz=7 exploración, 14 calibración, 40 validación
+setenv('HA_IE_Z_N',              '40');       % Nz=40 final; Nz=7/14/24/30 solo para tradeoff velocidad-precision
 setenv('HA_IE_Z_RHO',            '0.8600132622');  % 0.963^4 (trimestral → anual)
 setenv('HA_IE_Z_SD',             '0.5417411732');  % 0.146/sqrt(1-0.963^2)
 setenv('HA_IE_Z_MU',             '0.0');

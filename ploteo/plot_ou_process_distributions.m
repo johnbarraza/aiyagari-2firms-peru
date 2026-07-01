@@ -1,6 +1,5 @@
 % ============================================================
-% DISABLED — plots migrados a Python.
-% Usar: python ploteo/plot_ou_results.py --mat-file <ruta>.mat
+% LEGACY - usar plot_moll_matlab_all.m para el flujo actual.
 % Este archivo se conserva como referencia pero NO debe ejecutarse.
 % ============================================================
 function plot_ou_process_distributions(mat_file)

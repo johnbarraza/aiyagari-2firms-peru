@@ -7,6 +7,8 @@ modelo de agentes heterogeneos en tiempo continuo usado en el documento final:
 
 Repositorio de replicacion:
 https://github.com/johnbarraza/aiyagari-2firms-peru
+Link del documento
+https://github.com/johnbarraza/aiyagari-2firms-peru/blob/codex/organize-replication-package/docs/INFORMALIDAD_RIQUEZA_HA_PERU.pdf 
 
 ## Documento final
 
@@ -20,14 +22,12 @@ https://github.com/johnbarraza/aiyagari-2firms-peru
 | Archivo | Uso |
 |---|---|
 | `model_main.m` | Solver principal. Corre el modelo con los valores finales por defecto |
+
 | `ploteo/plot_moll_matlab_all.m` | Genera figuras desde un `results_*.mat` |
 | `calibracion/grid_convergence_test.m` | Reproduce la prueba de tradeoff velocidad-precision |
 | `calibracion/setup_calibration.m` | Helper opcional para fijar explicitamente los mismos parametros finales |
 
 El unico punto de entrada en la raiz para replicar el modelo es `model_main.m`.
-El empaquetador se movio a `scripts/generar_paquete_final.m` porque no calcula
-el equilibrio: solo reconstruye figuras, resumen y zip desde resultados ya
-guardados.
 
 Para replicar desde cero, correr:
 
@@ -38,7 +38,7 @@ model_main
 No es necesario usar `setenv` para la especificacion base: `model_main.m` ya
 incluye los valores finales usados en la corrida de cierre (`Nz=40`, regla
 `hours`, y parametros calibrados finales). Las variables de entorno quedan solo
-para ejercicios de robustez.
+para ejercicios de robustez o para ajustes rápidos.
 
 La corrida final usada por el documento es:
 

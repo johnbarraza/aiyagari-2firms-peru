@@ -4,21 +4,17 @@
 %  Original name: aiyagari_2firms_v10_R2_precio_endogeno_ARz_debtprem.m
 %
 % USAGE:
-%   >> model_main                    % run with current defaults
-%   >> run_replication               % run full replication pipeline
-%   >> calibracion/setup_calibration % load documented setenv values
-%   >> calibracion/escenarios        % choose scenario A/B/C
+%   >> model_main                    % run with final paper defaults
+%   >> generar_paquete_final         % rebuild figures/summary from saved final run
 %
 % MODES:
-%   MODO_RAPIDO = false  — Modo Precisión: corrida completa (~4 h, I=500)
-%   MODO_RAPIDO = true   — Modo Rápido:    exploración rápida (~7 min, I=200)
-%   Override via env:  setenv('HA_IE_FAST_DEBUG','0')  % precision
-%                      setenv('HA_IE_FAST_DEBUG','1')  % rapido
+%   Default package run uses the final closing configuration: I=200, Nz=40.
+%   Optional robustness/production runs can override grid size via env vars.
 %
 % OUTPUT FILES:
 %   results_<RUN_TAG>.mat  — full equilibrium results for plotting
 %   calib_<RUN_TAG>.mat    — calibration parameter summary
-%   Default RUN_TAG = 'v10_latest'. Override: setenv('HA_IE_RUN_TAG','myrun')
+%   Default RUN_TAG = timestamp automatico. Override opcional: HA_IE_RUN_TAG.
 %
 % CORE CONVENTIONS:
 %   1. Formal good is numeraire: p_F = 1.
@@ -31,8 +27,8 @@
 %   5. Debt premium: spread_b(z)*max(-a,0), calibrated by HA_IE_DEBT_PREM_*.
 %   6. Utility: CES over (c_F, c_I) with explicit corner checks.
 
-% Parámetros via setenv() ANTES de correr. Defaults hardcodeados en Sección 1.
-% Ningún archivo externo se carga — setenv() del usuario siempre tiene prioridad.
+% Los defaults de la Sección 1 replican la especificación base del paquete.
+% Las variables HA_IE_* son opcionales y solo deben usarse para robustez.
 
 % Add package subdirs to path (ploteo/, calibracion/ aux functions)
 script_dir_local = fileparts(mfilename('fullpath'));
@@ -62,10 +58,9 @@ elseif isfinite(env_eq_mode) && env_eq_mode == 3
     error('EQUILIBRIUM_MODE=3 was removed from v10. Use mode 2 with HA_IE_* environment overrides.');
 end
 
-% IGNORAR.RUN_TAG: tag appended to output filenames so runs don't overwrite each other.
+% RUN_TAG: tag appended to output filenames so runs don't overwrite each other.
 %   Default: timestamp automatico 'v10_YYYYMMDD_HHMMSS'
-%   Benchmark fijo: setenv('HA_IE_RUN_TAG','final')  -> results_final.mat
-%   Siempre sobreescribir: setenv('HA_IE_RUN_TAG','latest') -> results_latest.mat
+%   Optional override: define HA_IE_RUN_TAG before running model_main.
 RUN_TAG = strtrim(getenv('HA_IE_RUN_TAG'));
 if isempty(RUN_TAG)
     RUN_TAG = ['v10_' datestr(now, 'yyyymmdd_HHMMSS')];
@@ -128,8 +123,9 @@ if isfinite(env_Frisch) && env_Frisch > 0, Frisch = env_Frisch; end
 Frisch_F = Frisch;
 Frisch_I = Frisch;
 
-% Quick mode: smaller grid + looser tolerances for numerical checks only.
-MODO_RAPIDO = false;  % false = full run (~4 h, I=500); override with HA_IE_FAST_DEBUG=1
+% Default final package run. It matches the saved closing run:
+% outputs/stationary/test_AI098_cierre/results_test_AI098_cierre.mat
+MODO_RAPIDO = true;  % true = I=200/Nz=40 final package run; false = I=500 robustness
 
 env_fast_debug = lower(strtrim(getenv('HA_IE_FAST_DEBUG'))); % _Env
 if any(strcmp(env_fast_debug, {'1','true','yes','on'}))
@@ -151,13 +147,13 @@ env_sigma_C = str2double(getenv('HA_IE_SIGMA_C')); % _Env
 if isfinite(env_sigma_C) && env_sigma_C > 0, sigma_C = env_sigma_C; end
 
 eta_C   = 1 - 1/sigma_C;   % CES curvature
-omega_C = 0.57;            % benchmark calib_nz20...om057 — bajar rompe p_I<1
+omega_C = 0.56;            % final package calibration
 
 env_omega_C = str2double(getenv('HA_IE_OMEGA_C')); % _Env
 if isfinite(env_omega_C) && env_omega_C > 0 && env_omega_C < 1, omega_C = env_omega_C; end
 
 % Tax on formal consumption (IGV-style). Rebated lump-sum to households.
-tau_c = 0.18;  % 18% IGV Peru (default). Set HA_IE_TAU_C=0 for no tax.
+tau_c = 0.00;  % final package calibration: no consumption tax wedge
 env_tau_c = str2double(getenv('HA_IE_TAU_C')); % _Env
 if isfinite(env_tau_c) && env_tau_c >= 0, tau_c = env_tau_c; end
 
@@ -166,8 +162,8 @@ if isfinite(env_tau_c) && env_tau_c >= 0, tau_c = env_tau_c; end
 %   Con H_bar=Inf:  nivel de psi determina horas totales; ratio determina split F/I
 %   Con H_bar=1:    nivel de psi debe ser BAJO para que el tope binde (psi ~ 20-50)
 %                   ratio psi_F/psi_I ≈ 1.57 para split T4=0.556 (FOC KKT con phi=0.5)
-psi_F = 180.0;   % benchmark calib_nz20_AI099_b060_k110_psi180_om057 → T4≈0.562
-psi_I = 50.0;     % benchmark calib_nz20_AI099_b060_k110_psi180_om057 → T4≈0.562
+psi_F = 55.0;    % final package calibration
+psi_I = 34.0;    % final package calibration
 theta = 1.0;      % informal productivity attenuation factor θ ∈ (0,1]
 nu_I  = 0.60;     % ventaja comparativa formal: benchmark usa 0.60
 
@@ -240,12 +236,12 @@ end
 %
 % Set HA_IE_Z_PROCESS='rouwenhorst' to recover the dense discrete Markov
 % approximation used in earlier ARz drafts.
-Nz_ar      = 20;   % benchmark calib_nz20: Nz=7 NO converge (bracket r)
-rho_z_ar   = 0.8600132622;
-sd_logz_ar = 0.5417411732;
+Nz_ar      = 40;   % final package grid
+rho_z_ar   = 0.861;
+sd_logz_ar = 0.544;
 % Baseline thesis specification: keep Hong values above. Use HA_IE_Z_RHO
 % and HA_IE_Z_SD only for explicit robustness runs.
-width_z_ar = NaN;
+width_z_ar = 2.5;
 mu_logz_ar = 0.0;
 dt_z_ar    = 1.0;
 z_process_ar = lower(strtrim(getenv('HA_IE_Z_PROCESS')));
@@ -372,13 +368,11 @@ end
 %     Cespedes, Aquije, Sanchez & Vera-Tudela (2014, BCRP REE-28):
 %       Formal: alpha=0.636, 1-alpha=0.364 (CRS, firm-level SUNAT)
 %
-%   SCENARIOS (set via HA_IE_ALPHA_I / HA_IE_BETA_I):
-%     A) Sin capital informal: alpha_I=0, beta_I=0.696 (legacy DRS, calibrar A_I→T5)
-%     B) CRS Gobel:          alpha_I=0.163, beta_I=0.837 (Pi_I=0, distribucion lump-sum)
-%     C) DRS Gobel original: alpha_I=0.118, beta_I=0.605 (Pi_I>0, hours rule funciona)
-A_I    = 0.99;   % benchmark calib_nz20_AI099: PTF informal (T5 tension → 0.13 vs 0.19)
-alpha_I = 0.0;   % informal capital share (0 = legacy sin K informal)
-beta_I = 0.696;  % informal labor share / DRS exponent
+%   Final package calibration uses capital in the informal technology and
+%   distributes informal profits proportionally to informal effective hours.
+A_I    = 0.98;   % final package calibration
+alpha_I = 0.220; % final package calibration
+beta_I = 0.619;  % final package calibration
 
 env_A_I = str2double(getenv('HA_IE_A_I'));       % _Env
 env_alpha_I = str2double(getenv('HA_IE_ALPHA_I')); % _Env
@@ -465,7 +459,7 @@ kappa_extra = 0.0;
 %   maximo kappa_z1 en z_min, cero/normalizada en z_max y suavizada por
 %   kappa_z_shape. kappa_z1 se calibra a Tkz; la forma no es un costo
 %   observado directamente sino una barrera reducida de acceso formal.
-kappa_z1 = 0.110; % benchmark calib_nz20...k110 → Tkz≈0.373
+kappa_z1 = 0.400; % final package calibration
 kappa_z2 = 0.0;   % normalizado a 0
 kappa_z_shape = 1.0; % benchmark: lineal
 
@@ -520,7 +514,7 @@ end
 
 % Numerical safeguards for structural R2 loop.
 L_I_floor_wI = 1e-4;      % floor only for wage/profit updates when L_I is tiny
-damp_wI_log  = 0.10;      % log damping on w_I updates
+damp_wI_log  = 0.25;      % log damping on w_I updates (0.10 too slow: needs 40+ iters to reach tol 1e-5)
 damp_piI     = 0.10;      % level damping on Pi_I_share updates
 damp_T       = 0.15;      % level damping on T updates
 
@@ -550,7 +544,7 @@ if isfinite(env_amax) && env_amax > amin, amax = env_amax; end
 a    = linspace(amin, amax, I)';
 da   = (amax - amin)/(I - 1);
 
-aa = [a, a];
+aa = repmat(a, 1, length(z));
 zz = ones(I,1)*z;
 
 maxit = 100;
@@ -563,7 +557,7 @@ if MODO_RAPIDO
     if isfinite(env_debug_I) && env_debug_I >= 50, I = round(env_debug_I); end
     a = linspace(amin, amax, I)';
     da = (amax - amin)/(I - 1);
-    aa = [a, a];
+    aa = repmat(a, 1, length(z));
     zz = ones(I,1)*z;
     maxit = 40;
     crit = 1e-5;
@@ -1421,7 +1415,7 @@ if EQUILIBRIUM_MODE == 2
             'lorenz_a', 'lorenz_c', 'lorenz_c_by_a', 'cum_pop_a', 'cum_pop_c', 'g_marg_a', ...
             'T4_data', 'T5_data', 'TgFI_data', 'T6_data', 'T6_Q1_data', 'T6_Q5_data', 'T1_ref', ...
             'informal_profit_rule', 'w_I_household_star', 'Pi_lump_star', ...
-            'HA_IE_TIMINGS');
+            'HA_IE_TIMINGS', 'total_elapsed');
         fprintf('Resultados guardados en %s\n', results_file);
         fprintf('Figuras MATLAB: >> addpath(''ploteo''); plot_moll_matlab_all(''%s'')\n\n', results_file);
     catch ME_save
@@ -1638,6 +1632,11 @@ best_abs = Inf;
 best_res = struct();
 bracket_found = false;
 
+% Coarse wI iters for grid scan: only need correct sign of C_I-Y_I, not precision.
+% Fine iters reserved for bisection phase where accuracy matters.
+max_iter_wI_scan  = min(max_iter_wI, 8);
+damp_wI_scan      = max(damp_wI_log, 0.30);
+
 for expand_iter = 0:max_pI_expand
     if expand_iter == 0
         p_grid = base_grid;
@@ -1654,7 +1653,7 @@ for expand_iter = 0:max_pI_expand
             solve_given_prices_v10(r, p_grid(ip), v0_init, T_init, w_I_init, Pi_I_init, ...
             a, z, la, ga, rho, Frisch, psi_F, psi_I, theta, A_F, al, d, A_I, alpha_I, beta_I, ...
             z_ave, I, da, aa, zz, maxit, crit, Delta, Aswitch, tau, H_bar, tol_T, ...
-            max_iter_T, tol_wI, max_iter_wI, L_I_floor_wI, damp_wI_log, damp_piI, damp_T);
+            max_iter_T, tol_wI, max_iter_wI_scan, L_I_floor_wI, damp_wI_scan, damp_piI, damp_T);
 
         exc(ip) = CI_t - YI_t;
         res{ip} = struct('S', S_t, 'KD', KD_t, 'w_F', w_F_t, 'L_F', L_F_t, 'L_I', L_I_t, ...
@@ -2518,7 +2517,7 @@ keys = { ...
     'HA_IE_ZDRIFT_FAST_ITERS', 'HA_IE_ZDRIFT_FAST_TOL', 'HA_IE_ZDRIFT_FAST_MAXSTEP', ...
     'HA_IE_A_F', 'HA_IE_A_I', 'HA_IE_ALPHA_I', 'HA_IE_BETA_I', ...
     'HA_IE_THETA', 'HA_IE_NU_I', 'HA_IE_PSI_F', 'HA_IE_PSI_I', ...
-    'HA_IE_OMEGA_C', 'HA_IE_SIGMA_C', ...
+    'HA_IE_OMEGA_C', 'HA_IE_SIGMA_C', 'HA_IE_TAU_C', ...
     'HA_IE_KAPPA_Z1', 'HA_IE_KAPPA_Z_SHAPE', ...
     'HA_IE_T4_DATA', 'HA_IE_T5_DATA', 'HA_IE_TKZ_DATA', 'HA_IE_TGASTO_TIPO_DATA', ...
     'HA_IE_T6_DATA', 'HA_IE_T6_Q1_DATA', 'HA_IE_T6_Q5_DATA', ...
@@ -2555,7 +2554,7 @@ try
     fprintf(fid, 'calib_file=%s\n', ha_meta_str(run_config.calib_file));
     fprintf(fid, 'metadata_file=%s\n', ha_meta_str(run_config.metadata_file));
     fprintf(fid, 'mode=%s\n', ha_meta_str(run_config.mode));
-    fprintf(fid, 'fast_debug=%s\n', ha_meta_str(run_config.fast_debug));
+    fprintf(fid, 'fast_debug=%s\n', ha_meta_str(run_config.modo_rapido));
     fprintf(fid, 'verbose=%s\n', ha_meta_str(run_config.verbose));
     fprintf(fid, 'profile_enabled=%s\n', ha_meta_str(run_config.profile_enabled));
     fprintf(fid, 'total_elapsed=%.6f\n', run_config.total_elapsed);

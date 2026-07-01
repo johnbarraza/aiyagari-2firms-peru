@@ -1,6 +1,6 @@
 %% generar_paquete_final.m
-% Genera figuras + resumen .txt desde el mejor run (test_AI098_cierre)
-% y empaqueta todo en un .zip listo para entregar.
+% Genera figuras + resumen .txt desde la corrida final guardada
+% y empaqueta todo en un .zip listo para entregar. No resuelve el modelo.
 %
 % USO: >> generar_paquete_final
 %

@@ -2,7 +2,8 @@
 % Genera figuras + resumen .txt desde la corrida final guardada
 % y empaqueta todo en un .zip listo para entregar. No resuelve el modelo.
 %
-% USO: >> generar_paquete_final
+% USO desde la raiz del paquete:
+%   >> run('scripts/generar_paquete_final.m')
 %
 % SALIDA: outputs/stationary/test_AI098_cierre/
 %   plots_matlab/   <- PNGs (~33 figuras)
@@ -11,11 +12,13 @@
 
 script_dir = fileparts(mfilename('fullpath'));
 if isempty(script_dir), script_dir = pwd; end
-addpath(script_dir);
-addpath(fullfile(script_dir, 'ploteo'));
+package_root = fileparts(script_dir);
+if isempty(package_root), package_root = pwd; end
+addpath(package_root);
+addpath(fullfile(package_root, 'ploteo'));
 
 RUN_TAG  = 'test_AI098_cierre';
-run_dir  = fullfile(script_dir, 'outputs', 'stationary', RUN_TAG);
+run_dir  = fullfile(package_root, 'outputs', 'stationary', RUN_TAG);
 mat_file = fullfile(run_dir, ['results_' RUN_TAG '.mat']);
 txt_file = fullfile(run_dir, 'resumen_calibracion.txt');
 zip_file = fullfile(run_dir, 'paquete_final.zip');

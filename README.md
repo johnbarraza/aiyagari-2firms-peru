@@ -12,23 +12,22 @@ https://github.com/johnbarraza/aiyagari-2firms-peru
 
 | Archivo | Contenido |
 |---|---|
-| `docs/IE2_ENTREGA_FINAL_CORREGIDA.md` | Fuente Markdown/LaTeX del documento final |
-| `docs/IE2_ENTREGA_FINAL_CORREGIDA.pdf` | PDF final compilado |
+| `docs/INFORMALIDAD_RIQUEZA_HA_PERU.md` | Fuente Markdown/LaTeX del documento final |
+| `docs/INFORMALIDAD_RIQUEZA_HA_PERU.pdf` | PDF final compilado |
 
 ## Codigo de replicacion
 
 | Archivo | Uso |
 |---|---|
 | `model_main.m` | Solver principal. Corre el modelo con los valores finales por defecto |
-| `generar_paquete_final.m` | Script de empaquetado. No resuelve el modelo; regenera figuras, resumen y zip desde la corrida final guardada |
 | `ploteo/plot_moll_matlab_all.m` | Genera figuras desde un `results_*.mat` |
 | `calibracion/grid_convergence_test.m` | Reproduce la prueba de tradeoff velocidad-precision |
 | `calibracion/setup_calibration.m` | Helper opcional para fijar explicitamente los mismos parametros finales |
 
-Hay dos scripts en la raiz porque cumplen funciones distintas:
-`model_main.m` es el codigo economico-computacional que calcula el equilibrio;
-`generar_paquete_final.m` solo toma resultados ya guardados y reconstruye las
-figuras, el resumen y el zip de entrega.
+El unico punto de entrada en la raiz para replicar el modelo es `model_main.m`.
+El empaquetador se movio a `scripts/generar_paquete_final.m` porque no calcula
+el equilibrio: solo reconstruye figuras, resumen y zip desde resultados ya
+guardados.
 
 Para replicar desde cero, correr:
 
@@ -62,7 +61,8 @@ replication_package/
   README.md
   INSTRUCCIONES.md
   model_main.m
-  generar_paquete_final.m
+  scripts/
+    generar_paquete_final.m
   .planning/
     CONTINUAR_AQUI.md
   calibracion/

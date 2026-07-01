@@ -751,23 +751,23 @@ Este anexo presenta una validación empírica complementaria basada en ENAHO 201
 
 El gasto ajustado BnD se define como gasto total del hogar menos gasto en equipamiento del hogar, televisión, electrodomésticos, muebles y enseres. Los resultados usan factores de expansión `factor07`.
 
-![](anexos/distribuciones_gasto_formalidad_2015_2019/gasto_bnd_2015.jpeg)
+![](images/gasto_bnd_2015.jpeg)
 
 *Figura D1: Distribución del gasto ajustado BnD por formalidad del jefe de hogar, 2015. Panel izquierdo: hogares con jefe formal; panel central: hogares con jefe informal; panel derecho: total de hogares.*
 
-![](anexos/distribuciones_gasto_formalidad_2015_2019/gasto_bnd_2016.jpeg)
+![](images/gasto_bnd_2016.jpeg)
 
 *Figura D2: Distribución del gasto ajustado BnD por formalidad del jefe de hogar, 2016.*
 
-![](anexos/distribuciones_gasto_formalidad_2015_2019/gasto_bnd_2017.jpeg)
+![](images/gasto_bnd_2017.jpeg)
 
 *Figura D3: Distribución del gasto ajustado BnD por formalidad del jefe de hogar, 2017.*
 
-![](anexos/distribuciones_gasto_formalidad_2015_2019/gasto_bnd_2018.jpeg)
+![](images/gasto_bnd_2018.jpeg)
 
 *Figura D4: Distribución del gasto ajustado BnD por formalidad del jefe de hogar, 2018.*
 
-![](anexos/distribuciones_gasto_formalidad_2015_2019/gasto_bnd_2019.jpeg)
+![](images/gasto_bnd_2019.jpeg)
 
 *Figura D5: Distribución del gasto ajustado BnD por formalidad del jefe de hogar, 2019.*
 

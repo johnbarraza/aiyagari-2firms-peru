@@ -43,7 +43,7 @@ plot_moll_matlab_all(MAT, OUT)
 Para regenerar el paquete final desde la corrida final guardada:
 
 ```matlab
-generar_paquete_final
+run('scripts/generar_paquete_final.m')
 ```
 
 Esto crea:

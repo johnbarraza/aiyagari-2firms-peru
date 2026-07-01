@@ -7,6 +7,7 @@ modelo de agentes heterogeneos en tiempo continuo usado en el documento final:
 
 Repositorio de replicacion:
 https://github.com/johnbarraza/aiyagari-2firms-peru
+
 Link del documento
 https://github.com/johnbarraza/aiyagari-2firms-peru/blob/codex/organize-replication-package/docs/INFORMALIDAD_RIQUEZA_HA_PERU.pdf 
 

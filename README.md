@@ -5,7 +5,8 @@ modelo de agentes heterogeneos en tiempo continuo usado en el documento final:
 
 **Informalidad y Distribucion de Riqueza: Un Modelo de Agentes Heterogeneos con Oferta Laboral Endogena**
 
-El paquete esta preparado para MATLAB. No requiere codigo Python.
+Repositorio de replicacion:
+https://github.com/johnbarraza/aiyagari-2firms-peru
 
 ## Documento final
 
@@ -18,15 +19,27 @@ El paquete esta preparado para MATLAB. No requiere codigo Python.
 
 | Archivo | Uso |
 |---|---|
-| `model_main.m` | Solver principal del modelo |
-| `generar_paquete_final.m` | Regenera figuras, resumen y zip de entrega desde `test_AI098_cierre` |
+| `model_main.m` | Solver principal. Corre el modelo con los valores finales por defecto |
+| `generar_paquete_final.m` | Script de empaquetado. No resuelve el modelo; regenera figuras, resumen y zip desde la corrida final guardada |
 | `ploteo/plot_moll_matlab_all.m` | Genera figuras desde un `results_*.mat` |
 | `calibracion/grid_convergence_test.m` | Reproduce la prueba de tradeoff velocidad-precision |
-| `calibracion/setup_calibration.m` | Configura parametros base |
+| `calibracion/setup_calibration.m` | Helper opcional para fijar explicitamente los mismos parametros finales |
 
-Los dos scripts principales se dejan en la raiz del paquete porque son los
-puntos de entrada de la replicacion: `model_main.m` corre el modelo y
-`generar_paquete_final.m` reconstruye las salidas finales.
+Hay dos scripts en la raiz porque cumplen funciones distintas:
+`model_main.m` es el codigo economico-computacional que calcula el equilibrio;
+`generar_paquete_final.m` solo toma resultados ya guardados y reconstruye las
+figuras, el resumen y el zip de entrega.
+
+Para replicar desde cero, correr:
+
+```matlab
+model_main
+```
+
+No es necesario usar `setenv` para la especificacion base: `model_main.m` ya
+incluye los valores finales usados en la corrida de cierre (`Nz=40`, regla
+`hours`, y parametros calibrados finales). Las variables de entorno quedan solo
+para ejercicios de robustez.
 
 La corrida final usada por el documento es:
 

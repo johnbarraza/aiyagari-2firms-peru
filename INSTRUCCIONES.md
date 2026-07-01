@@ -9,27 +9,23 @@ de este directorio `replication_package`.
 cd('C:\Users\johnb\Documents\GitHub\HA-IE2025\Code\CONTINUOUS_TIME\Aiyagari_firmas\try_endog_labor_2_firms\replication_package')
 ```
 
-## 2. Correr el modelo
+## 2. Correr el modelo desde cero
 
-Corrida de trabajo con la grilla final `Nz=40`:
+El script principal ya contiene los valores finales de la especificacion base
+del documento: `Nz=40`, regla de beneficios `hours`, grilla de riqueza
+`I=200` y parametros calibrados finales. No se necesita definir variables de
+entorno para replicar la corrida base.
 
 ```matlab
-setenv('HA_IE_RUN_TAG', 'mi_corrida')
-setenv('HA_IE_FAST_DEBUG', '1')
-setenv('HA_IE_Z_N', '40')
-
 model_main
 ```
 
-Corrida final de produccion:
+Los resultados nuevos quedan en `outputs/stationary/<RUN_TAG>/`. Si no se fija
+un `RUN_TAG`, MATLAB crea una carpeta con timestamp para no sobreescribir la
+corrida final guardada.
 
-```matlab
-setenv('HA_IE_RUN_TAG', 'test_AI098_cierre')
-setenv('HA_IE_FAST_DEBUG', '0')
-setenv('HA_IE_Z_N', '40')
-
-model_main
-```
+Las variables `HA_IE_*` se mantienen solo para ejercicios de robustez, por
+ejemplo cambiar `I`, `Nz`, tolerancias o el nombre de la corrida.
 
 ## 3. Regenerar figuras
 
@@ -44,7 +40,7 @@ OUT = sprintf('outputs/stationary/%s/plots_matlab', TAG);
 plot_moll_matlab_all(MAT, OUT)
 ```
 
-Para regenerar el paquete final desde `test_AI098_cierre`:
+Para regenerar el paquete final desde la corrida final guardada:
 
 ```matlab
 generar_paquete_final
@@ -93,7 +89,7 @@ Las salidas quedan en:
 outputs/grid_convergence/
 ```
 
-## 5. Inputs
+## 5. Inputs y corrida guardada
 
 No hay `.mat` externo requerido en `inputs/`. La corrida final ya esta en:
 

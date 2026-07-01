@@ -12,7 +12,10 @@ Enzo Andrés Nevado Martínez}\\[0.8cm]
 
 {\normalsize \textbf{Asesor:} César Saturnino Salinas Depaz}\\[0.8cm]
 
-{\normalsize Lima, Junio 2026}
+{\normalsize Lima, Junio 2026}\\[0.5cm]
+
+{\normalsize \textbf{Código de replicación:}\\
+\url{https://github.com/johnbarraza/aiyagari-2firms-peru}}
 \end{center}
 
 \newpage

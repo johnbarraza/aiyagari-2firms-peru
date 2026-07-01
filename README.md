@@ -6,7 +6,7 @@ modelo de agentes heterogeneos en tiempo continuo usado en el documento final:
 **Informalidad y Distribucion de Riqueza: Un Modelo de Agentes Heterogeneos con Oferta Laboral Endogena**
 
 Link del documento
-https://github.com/johnbarraza/aiyagari-2firms-peru/blob/codex/organize-replication-package/docs/INFORMALIDAD_RIQUEZA_HA_PERU.pdf 
+[Doc ](https://github.com/johnbarraza/aiyagari-2firms-peru/blob/master/docs/INFORMALIDAD_RIQUEZA_HA_PERU.pdf)
 
 ## Documento final
 

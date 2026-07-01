@@ -5,7 +5,6 @@
 %
 % USAGE:
 %   >> model_main                    % run with final paper defaults
-%   >> generar_paquete_final         % rebuild figures/summary from saved final run
 %
 % MODES:
 %   Default package run uses the final closing configuration: I=200, Nz=40.

@@ -23,7 +23,7 @@ La economía peruana exhibe una elevada informalidad laboral (71.1% en 2023 seg�
 
 El objetivo es cuantificar los efectos de la informalidad sobre la distribución de riqueza, no explicar sus causas. El modelo utiliza únicamente datos agregados, evitando requerimientos de microdatos individuales. La hipótesis central sostiene que la informalidad genera un mecanismo de baja acumulación para agentes de menor riqueza, acentuando la desigualdad. Dicho mecanismo combina supuestos de diseño (barreras de acceso decrecientes en productividad, prima de deuda diferencial) con resultados endógenos que emergen del equilibrio general (sorting laboral, acumulación patrimonial diferencial, retroalimentación entre informalidad y baja riqueza).
 
-La corrida de cierre `test_AI098_cierre` replica razonablemente los agregados primarios: T4 (fracción de horas informales) = 51.7% frente a un promedio pre-COVID de 50.9% (2015-2019), T5 (PBI informal) = 18.8% (dato: 19.0%) y Tkz = 37.8% (dato: 38.6%). Como robustez, el promedio T4 para años COVID/post disponibles excluyendo 2021 es 55.9%, frente al cual el modelo queda 4.2 puntos porcentuales por debajo. El modelo subestima el gradiente de informalidad por quintil de riqueza ($T_{6,\text{modelo}} = 4.4\%$ vs. dato 53.0%), lo cual se atribuye a la ausencia del margen extensivo. Adicionalmente, la oferta laboral endógena actúa como canal de auto-aseguramiento parcial frente a shocks de productividad, reduciendo (pero no eliminando) la severidad del mecanismo de baja acumulación.
+La calibración final replica razonablemente los agregados primarios: T4 (fracción de horas informales) = 51.7% frente a un promedio pre-COVID de 50.9% (2015-2019), T5 (PBI informal) = 18.8% (dato: 19.0%) y Tkz = 37.8% (dato: 38.6%). Como robustez, el promedio T4 para años COVID/post disponibles excluyendo 2021 es 55.9%, frente al cual el modelo queda 4.2 puntos porcentuales por debajo. El modelo subestima el gradiente de informalidad por quintil de riqueza (T6 del modelo = 4.4% vs. dato = 53.0%), lo cual se atribuye a la ausencia del margen extensivo. Adicionalmente, la oferta laboral endógena actúa como canal de auto-aseguramiento parcial frente a shocks de productividad, reduciendo (pero no eliminando) la severidad del mecanismo de baja acumulación.
 
 **Palabras Clave**: Informalidad, Distribución de la Riqueza, Agentes Heterogéneos, Oferta Laboral Endógena, Tiempo Continuo, Macroeconomía, Perú, Proceso OU, Diferencias Finitas.
 
@@ -35,7 +35,7 @@ The Peruvian economy exhibits high labor informality (71.1% in 2023, according t
 
 The objective is to quantify the effects of informality on wealth distribution, rather than to explain its structural causes. The model uses only aggregate data. The central hypothesis posits that informality generates a low-accumulation mechanism for lower-wealth agents, exacerbating inequality. This mechanism combines design assumptions (productivity-decreasing access barriers, differential debt premium) with endogenous results that emerge from general equilibrium (labor sorting, differential wealth accumulation, feedback between informality and low wealth).
 
-The closing run `test_AI098_cierre` replicates the main aggregates reasonably well: T4 (informal hours share) = 51.7% against a pre-COVID average of 50.9% (2015-2019), T5 (informal GDP) = 18.8% (data: 19.0%), and Tkz = 37.8% (data: 38.6%). As a robustness check, the T4 average for available COVID/post-COVID years excluding 2021 is 55.9%, relative to which the model is 4.2 percentage points lower. The model undershoots the informality gradient by wealth quintile (T6_model = 4.4% vs. data 53.0%), attributed to the absence of the extensive margin. Additionally, endogenous labor supply acts as a partial self-insurance channel against productivity shocks, reducing (but not eliminating) the severity of the low-accumulation mechanism.
+The final calibration replicates the main aggregates reasonably well: T4 (informal hours share) = 51.7% against a pre-COVID average of 50.9% (2015-2019), T5 (informal GDP) = 18.8% (data: 19.0%), and Tkz = 37.8% (data: 38.6%). As a robustness check, the T4 average for available COVID/post-COVID years excluding 2021 is 55.9%, relative to which the model is 4.2 percentage points lower. The model undershoots the informality gradient by wealth quintile (model T6 = 4.4% vs. data = 53.0%), attributed to the absence of the extensive margin. Additionally, endogenous labor supply acts as a partial self-insurance channel against productivity shocks, reducing (but not eliminating) the severity of the low-accumulation mechanism.
 
 **Keywords**: Informality, Wealth Distribution, Heterogeneous Agents, Endogenous Labor Supply, Continuous Time, Macroeconomics, Peru, OU Process, Finite Differences.
 
@@ -105,7 +105,11 @@ Se plantea un modelo de equilibrio general con agentes heterogéneos diseñado p
 
 El punto de partida es un modelo neoclásico de mercados incompletos, en la tradición de Aiyagari (1994) y Huggett (1993), adaptado a tiempo continuo. Esta elección metodológica, popularizada por Achdou et al. (2022), ofrece ventajas sustanciales en términos de tratabilidad analítica y eficiencia computacional, lo cual resulta crucial para resolver modelos con distribución de riqueza y productividad.
 
-En este paradigma, la dinámica de la economía se resume en dos ecuaciones diferenciales parciales acopladas. La primera es la Ecuación de Hamilton-Jacobi-Bellman (HJB), que describe el problema de optimización dinámica de un hogar individual que toma precios como dados. La segunda es la Ecuación de Kolmogorov Forward (KF), también conocida como Fokker-Planck, que gobierna la evolución de la distribución de hogares a través de los estados individuales (riqueza y productividad). Intuitivamente, la HJB resuelve el comportamiento óptimo de los agentes, mientras que la KF describe cómo estas decisiones individuales se agregan para determinar la distribución estacionaria de riqueza, la cual a su vez afecta los precios de equilibrio general.
+En este paradigma, cada hogar enfrenta una secuencia de decisiones intertemporales bajo incertidumbre. En cada instante observa su riqueza $a$ y su productividad $z$, decide cuánto consumir y cuánto ahorrar, y toma como dados los precios agregados. Si el hogar recibe un shock favorable de productividad, aumenta su ingreso laboral potencial y puede acumular activos con mayor facilidad; si recibe un shock desfavorable, reduce ahorro, consume parte de sus activos o se endeuda hasta el límite permitido. El mecanismo central del modelo base es, por tanto, la interacción entre riesgo idiosincrático no asegurable, ahorro precautorio y restricción de endeudamiento.
+
+La dinámica de la economía se resume en dos ecuaciones diferenciales parciales acopladas. La primera es la Ecuación de Hamilton-Jacobi-Bellman (HJB), que describe el problema de optimización dinámica de un hogar individual que toma precios como dados. La HJB determina las reglas de decisión: cuánto consumir y cómo ajustar la riqueza para cada combinación de activos y productividad. La segunda es la Ecuación de Kolmogorov Forward (KF), también conocida como Fokker-Planck, que toma esas reglas de decisión y calcula cómo se desplaza la masa de hogares dentro del espacio de estados. Si muchos hogares pobres tienen bajos ingresos y poca capacidad de ahorro, la distribución estacionaria concentra más masa en niveles bajos de riqueza; si algunos hogares reciben shocks positivos persistentes, se desplazan hacia niveles mayores de activos.
+
+El equilibrio general cierra el modelo porque la suma de decisiones individuales debe ser compatible con los mercados agregados. La oferta de ahorro de los hogares determina el capital disponible; la demanda de capital de las firmas determina la tasa de interés; y la tasa de interés vuelve a afectar las decisiones de ahorro de los hogares. El equilibrio estacionario se obtiene cuando las políticas individuales, la distribución de hogares y los precios agregados son mutuamente consistentes. En la extensión de esta tesis, ese mismo mecanismo se mantiene, pero la decisión laboral se abre en dos sectores: formal e informal.
 
 ## 3.2 Nuestra Extensión del Modelo
 
@@ -179,7 +183,7 @@ $$
 Y_I = p_I \cdot A_I K_I^{\alpha_I} L_I^{\beta_I}
 $$
 
-con $\alpha_I + \beta_I \leq 1$ (rendimientos decrecientes o constantes a escala). Los beneficios $\Pi_I = (1 - \beta_I) p_I Y_I / (\alpha_I + \beta_I)$ se distribuyen a los hogares en proporción a sus horas informales (regla *hours*). El precio relativo $p_I$ se determina endógenamente para vaciar el mercado de bienes informales: $C_I = Y_I$.
+con $\alpha_I + \beta_I \leq 1$ (rendimientos decrecientes o constantes a escala). Los beneficios $\Pi_I = (1 - \beta_I) p_I Y_I / (\alpha_I + \beta_I)$ se distribuyen a los hogares de manera proporcional a sus horas informales. El precio relativo $p_I$ se determina endógenamente para vaciar el mercado de bienes informales: $C_I = Y_I$.
 
 ### 3.3 Gobierno
 
@@ -291,7 +295,7 @@ Y cuatro **momentos secundarios** (chequeos externos, no vinculantes en calibrac
 
 # 5. ANÁLISIS DE RESULTADOS
 
-El análisis se desarrolla a partir del equilibrio estacionario del modelo calibrado con los parámetros de la Tabla 1 y Tabla 2. La corrida de referencia (*benchmark*) es `test_AI098_cierre`, seleccionada porque ofrece el mejor ajuste conjunto de los momentos primarios manteniendo coherencia económica: $A_I < A_F$, $p_I < 1$, endeudamiento positivo y $r^* < \rho$.
+El análisis se desarrolla a partir del equilibrio estacionario del modelo calibrado con los parámetros de la Tabla 1 y Tabla 2. La calibración final fue seleccionada porque ofrece el mejor ajuste conjunto de los momentos primarios manteniendo coherencia económica: $A_I < A_F$, $p_I < 1$, endeudamiento positivo y $r^* < \rho$.
 
 ## 5.1 Resumen de Momentos de Equilibrio
 
@@ -320,7 +324,7 @@ El análisis se desarrolla a partir del equilibrio estacionario del modelo calib
 
 ![](images/moll_time_use_by_z_excluding_leisure_matlab.png)
 
-*Figura 1: Composición de la oferta laboral por nivel de productividad z (margen intensivo). Corrida benchmark `test_AI098_cierre`. Cada barra muestra la fracción de horas destinadas al sector formal (azul) e informal (naranja) para cada estado de productividad discretizado.*
+*Figura 1: Composición de la oferta laboral por nivel de productividad z (margen intensivo) en la calibración final. Cada barra muestra la fracción de horas destinadas al sector formal (azul) e informal (naranja) para cada estado de productividad discretizado.*
 
 El Gráfico 1 presenta la oferta laboral destinada a los sectores formal e informal según el nivel de productividad de cada individuo. Los resultados muestran una relación positiva entre productividad y participación en el sector formal. Conforme aumenta z, los agentes destinan una proporción creciente de sus horas al trabajo formal, mientras que los individuos de menor productividad concentran sus horas en el sector informal.
 
@@ -390,6 +394,8 @@ El modelo genera el sorting cualitativo correcto: los agentes con baja productiv
 
 *Figura 6a: Densidad kernel del gasto total (cF + pI·cI) para hogares clasificados como formal-dominantes (>50% horas en formal) vs. informal-dominantes (<50% horas en formal). El modelo captura la brecha pero la subestima.*
 
+**Leyenda de clasificación:** en el modelo, un hogar/estado se clasifica como **formal-dominante** si las horas formales superan a las horas informales ($\ell_F > \ell_I$), equivalente a una participación formal mayor a 50% del tiempo laboral total. Se clasifica como **informal-dominante** si las horas informales son mayores o iguales a las formales ($\ell_I \geq \ell_F$). Esta regla usa el margen intensivo del modelo; no es una clasificación extensiva de empleo principal.
+
 ![](images/moll_model_gasto_distribution_by_formality_overlay.png)
 
 *Figura 6b: Versión superpuesta de la distribución del gasto total para hogares formal-dominantes e informal-dominantes. Ambas densidades se presentan en el mismo lienzo para facilitar la comparación de ubicación, dispersión y solapamiento.*
@@ -398,13 +404,9 @@ El modelo genera el sorting cualitativo correcto: los agentes con baja productiv
 
 *Figura 6c: Distribución del gasto total para hogares formal-dominantes, informal-dominantes y el total de la economía. La línea total permite ubicar la mezcla agregada entre ambos grupos.*
 
-![](images/moll_enaho_gasto_bnd_moments_2015_2019.png)
-
-*Figura 6d: Evidencia ENAHO 2015-2019 sobre gasto ajustado BnD por formalidad del jefe de hogar. Los hogares formales muestran mayor gasto promedio y mayor dispersión que los hogares informales durante todo el período.*
-
 El ratio de gasto promedio entre hogares formal-dominantes e informal-dominantes es $T_{\text{gasto},\text{modelo}} = 1.465$ (dato: 1.913). El modelo captura cualitativamente la brecha pero la subestima en magnitud. Esto sugiere que existen otras fuentes de heterogeneidad en el gasto (capital humano, composición del hogar, acceso a servicios públicos) que el modelo no incorpora.
 
-El documento local `distribuciones_gasto_formalidad_2015_2019.docx` sirve como validación empírica complementaria: muestra que, en ENAHO 2015-2019, el gasto ajustado promedio de hogares con jefe formal es sistemáticamente mayor y más disperso que el de hogares con jefe informal. La calibración principal, sin embargo, usa una definición más cercana al modelo: clasificación por horas dominantes (`dominant_hours`) y gasto mensual per cápita, que arroja $T_{\text{gasto},\text{dato}} = 1.913$. La clasificación por formalidad del jefe de hogar produce un ratio cercano pero algo mayor ($\approx 1.97$), por lo que se usa como chequeo visual y no como target vinculante.
+Como validación empírica complementaria, el Anexo D reporta las distribuciones y tablas ENAHO 2015-2019 de gasto ajustado por formalidad del jefe de hogar. Ese anexo muestra que el gasto de hogares con jefe formal es sistemáticamente mayor y más disperso que el de hogares con jefe informal. Esta evidencia se usa como chequeo visual; el target principal mantiene la clasificación intensiva por horas dominantes y gasto mensual per cápita, con $T_{\text{gasto},\text{dato}} = 1.913$.
 
 ## 5.8 Mercado de Activos y Equilibrio General
 
@@ -495,7 +497,7 @@ En consecuencia, el canal de seguro es **asimétrico**: actúa con mayor efectiv
 
 La limitación más importante del modelo es que opera **exclusivamente en el margen intensivo**. Todos los agentes asignan horas a ambos sectores simultáneamente ($\ell_F \geq 0$, $\ell_I \geq 0$), y la solución puede ser una solución interior o de esquina, pero nunca una decisión discreta de participación sectorial.
 
-En la realidad, la mayoría de los trabajadores son 100% formales o 100% informales en su empleo principal. Las estadísticas de EPEN/ENAHO reportan esta clasificación discreta. Esto genera la discrepancia masiva en T6: el modelo arroja $T_{6,\text{modelo}} = 4.4\%$ (ratio de informalidad Q1 vs. Q5 en horas) mientras que el dato es $T_{6,\text{dato}} = 53.0\%$.
+En la realidad, la mayoría de los trabajadores son 100% formales o 100% informales en su empleo principal. Las estadísticas de EPEN/ENAHO reportan esta clasificación discreta. Esto genera la discrepancia masiva en T6: el modelo arroja 4.4% para el ratio de informalidad Q1 vs. Q5 en horas, mientras que el dato observado es 53.0%.
 
 Esta brecha no indica un mal desempeño del modelo en su dimensión de diseño (margen intensivo), sino que refleja la limitación fundamental de no modelar la decisión discreta de participación. Para reproducir T6 correctamente se requeriría incorporar un costo fijo de entrada al sector formal, que generaría corner solutions donde algunos agentes eligen no trabajar formalmente.
 
@@ -653,7 +655,11 @@ Horvath, J. (2017). Business Cycles, Informal Economy, and Interest Rates in Eme
 
 Huggett, M. (1993). The Risk-Free Rate in Heterogeneous-Agent Incomplete-Insurance Economies. *Journal of Economic Dynamics and Control*, 17(5-6), 953-969.
 
-INEI (2024). Perú: Comportamiento de los indicadores de mercado laboral a nivel nacional. Cuarto trimestre 2023. Encuesta Permanente de Empleo Nacional.
+INEI (2018). *Perú: Evolución de los indicadores de empleo e ingresos por departamento, 2007-2017*. Instituto Nacional de Estadística e Informática. Fuente de datos: Encuesta Nacional de Hogares. https://www.inei.gob.pe/media/MenuRecursivo/publicaciones_digitales/Est/Lib1537/libro.pdf
+
+INEI (2022). *Producción y empleo informal en el Perú: Cuenta Satélite de la Economía Informal 2007-2021*. Instituto Nacional de Estadística e Informática. Fuente de datos: Cuentas Nacionales y ENAHO. https://www.inei.gob.pe/media/MenuRecursivo/publicaciones_digitales/Est/Lib1878/libro.pdf
+
+INEI (2024). *Perú: Comportamiento de los indicadores del mercado laboral a nivel nacional y en 26 ciudades. Primer trimestre 2024*. Instituto Nacional de Estadística e Informática. Fuente de datos: Encuesta Permanente de Empleo Nacional. https://www.inei.gob.pe/media/MenuRecursivo/boletines/02-informe-tecnico-empleo-nacional-primer-trimestre-2024.pdf
 
 INEI (2025). *Producción y empleo informal en el Perú: Cuenta Satélite de la Economía Informal 2022-2024*. Instituto Nacional de Estadística e Informática.
 
@@ -671,6 +677,8 @@ Moll, B. (n.d.). *Codes: A collection of codes that solve a number of heterogene
 
 OIT (2025). Panorama Laboral 2024: América Latina y el Caribe. Organización Internacional del Trabajo.
 
+Proyecto COSME. (2025). *Informalidad en el Perú: caracterización del empleo informal. Empleo informal en Perú - 2023. Principales características y elementos diferenciales en base a la Encuesta Permanente de Empleo Nacional - EPEN 2023*. Universidad Internacional de La Rioja. https://gruposinvestigacion.unir.net/cosme/wp-content/uploads/sites/139/2025/05/INFORMALIDAD-EN-PERU-2023-Caracterizacion-del-empleo-informal.pdf
+
 Pijoan-Más, M. (2006). Precautionary savings or working longer hours? *Review of Economic Dynamics*, 9(2), 326-352.
 
 Prebisch, R. (1949). *El desarrollo económico de la América Latina y algunos de sus principales problemas*. CEPAL.
@@ -687,21 +695,21 @@ Stiglitz, J. & Weiss, A. (1992). Credit Rationing in Markets with Imperfect Info
 
 ## Anexo A: Figuras de Datos Empíricos
 
-![](images/image10.png)
+![](images/inei_cuadro_1_20_empleo_informal_formal_2024.png)
 
-*Figura F1: Participación del sector informal en el PBI, Perú 2007-2022 (INEI, Cuentas Nacionales)*
+*Figura F1: Tasa de empleo informal y formal según sexo, grupo de edad y nivel educativo alcanzado. Fuente: INEI (2024), Cuadro N.° 1.20, Encuesta Permanente de Empleo Nacional (EPEN), periodo abril 2023-marzo 2024. Esta figura documenta el fuerte gradiente educativo de la informalidad: la tasa informal cae desde 93.7% para población con primaria o menor nivel hasta 40.8% para quienes alcanzan educación superior universitaria.*
 
-![](images/image11.png)
+![](images/inei_cuadro_7_5_quintiles_2016_2017.png)
 
-*Figura F2: Tasa de empleo informal y formal, Perú (INEI-EPEN). Nota: esta estadística mide el margen extensivo (fracción de trabajadores cuyo empleo principal es informal), distinto del margen intensivo (fracción de horas) que el modelo replica.*
+*Figura F2: Población ocupada por empleo informal según quintiles, 2016 y 2017. Fuente: INEI (2018), Cuadro N.° 7.5, elaborado con la Encuesta Nacional de Hogares. El cuadro muestra que la tasa de empleo informal es decreciente por quintil: en 2017 alcanza 97.1% en el I quintil y 44.1% en el V quintil. Esta brecha motiva el target T6 usado como validación externa del modelo.*
 
-![](images/image12.png)
+![](images/inei_grafico_1_6_empleo_equivalente_2020_2021.png)
 
-*Figura F3: Tasa de empleo informal y formal según sexo, grupo de edad y nivel educativo - Cuadro 1.20 (INEI-EPEN)*
+*Figura F3: Empleo equivalente según condición de informalidad, 2020 y 2021. Fuente: INEI (2022), Gráfico 1.6, Cuenta Satélite de la Economía Informal 2007-2021. Nota metodológica: esta figura usa empleo equivalente de Cuentas Nacionales, no personas ocupadas directamente. Por ello se usa como contexto macroeconómico y no se mezcla como target directo con los cuadros de población ocupada.*
 
-![](images/image13.png)
+![](images/informalidad_peru_2023_nivel_educativo.png)
 
-*Figura F4: Situación del empleo por nivel educativo alcanzado, Perú 2023 (INEI-EPEN)*
+*Figura F4: Situación del empleo por nivel educativo alcanzado, Perú 2023. Fuente: Proyecto COSME (2025), informe académico "Informalidad en el Perú: caracterización del empleo informal. Empleo informal en Perú - 2023", elaborado con EPEN 2023. La tabla refuerza la relación entre educación e informalidad: dentro del empleo informal, la mayor concentración se ubica en secundaria (46.25%) y primaria (20.26%), mientras que el empleo formal se concentra más en educación técnica, universitaria y posgrado.*
 
 ## Anexo B: Parámetros Técnicos del Modelo Computacional
 
@@ -720,15 +728,84 @@ Stiglitz, J. & Weiss, A. (1992). Credit Rationing in Markets with Imperfect Info
 
 Las siguientes correcciones fueron incorporadas en esta versión con respecto al borrador previo:
 
-| Sección              | Error previo                                  | Corrección                                                                                                                              |
-| :-------------------- | :-------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
-| Tabla 1 (parámetros) | αK = 0.35 (PWT 11.0)                         | αK = 0.573 (Céspedes et al. 2014, ajustado)                                                                                            |
-| Tabla 1               | βI = 0.67 (Ayres et al. 2025)                | αI=0.22, βI=0.619 (calibración interna, Göbel 2013)                                                                                  |
-| Tabla 1               | ρz = 1.0 (normalización)                    | ρz = 0.861 (Hong 2022, ENAHO 2004-2016)                                                                                                 |
-| Tabla 1               | γ = 2, ρ = 0.05                             | γ = 1 (log), ρ = 0.073 (consistente con r\*=6.6%)                                                                                      |
-| Tabla 2               | Target T5 = 18.5%                             | Target T5 = 19.0% (INEI CS 2024)                                                                                                         |
-| Tabla 2               | Target T4 = 55.7% como benchmark principal     | Target principal T4 = 50.9% (promedio ENAHO 2015-2019); robustez = 55.9% para 2020, 2022 y 2023, excluyendo 2021                        |
-| Sección 5            | "La simulación genera 70.2% de informalidad" | T4_modelo = 51.7% (horas, intensivo). El 70.2% es margen extensivo EPEN, no el target del modelo.                                        |
-| Sección 5            | T5_modelo = 18.3%                             | T5_modelo = 18.8%                                                                                                                        |
-| Conclusiones          | "52.5% laboral, 19.8% PBI"                    | T4_modelo = 51.7%, T5_modelo = 18.8%, Tkz_modelo = 37.8%                                                                                |
-| Sección 6            | Limitaciones breves                           | Ampliadas con: trampa de pobreza (supuesto vs. resultado), canal de seguro laboral, sin extensivo, sin hetero firmas, utilidad separable |
+**Tabla 1 (parámetros).** Se corrigió la participación del capital formal de $\alpha_K = 0.35$ a $\alpha_K = 0.573$, siguiendo Céspedes et al. (2014). También se reemplazó la tecnología informal previa por $\alpha_I = 0.22$ y $\beta_I = 0.619$, consistentes con la calibración interna y la referencia de Göbel et al. (2013).
+
+**Proceso de productividad.** Se reemplazó la normalización $\rho_z = 1.0$ por $\rho_z = 0.861$, estimado a partir de Hong (2022) con panel ENAHO 2004-2016.
+
+**Preferencias y tasa de descuento.** Se corrigió la especificación previa $\gamma = 2$, $\rho = 0.05$ por utilidad logarítmica ($\gamma = 1$) y $\rho = 0.073$, consistente con una tasa de equilibrio $r^* = 6.6\%$.
+
+**Targets de calibración.** El target T5 se actualizó de 18.5% a 19.0%, usando la Cuenta Satélite del INEI. El target principal T4 se fijó en 50.9%, promedio ENAHO 2015-2019; el promedio 2020, 2022 y 2023 excluyendo 2021 se mantiene como robustez y equivale a 55.9%.
+
+**Resultados de la Sección 5.** Se eliminó la interpretación de 70.2% como resultado del modelo. Esa cifra corresponde al margen extensivo de EPEN, mientras que el modelo reproduce un margen intensivo de horas: $T4_{\text{modelo}} = 51.7\%$.
+
+**PBI informal y conclusiones.** Se actualizó $T5_{\text{modelo}}$ de 18.3% a 18.8%. Las conclusiones ahora reportan $T4_{\text{modelo}} = 51.7\%$, $T5_{\text{modelo}} = 18.8\%$ y $Tkz_{\text{modelo}} = 37.8\%$.
+
+**Discusión de limitaciones.** Se amplió la discusión sobre trampa de pobreza, canal de seguro laboral, ausencia de margen extensivo, ausencia de heterogeneidad de firmas y utilidad separable.
+
+## Anexo D: Distribuciones de Gasto por Formalidad del Jefe de Hogar, ENAHO 2015-2019
+
+Este anexo presenta una validación empírica complementaria basada en ENAHO 2015-2019. La clasificación empírica se realiza por formalidad del jefe de hogar; en hogares unipersonales se usa la formalidad de la persona única. Esta definición no es el target principal del modelo, pero permite contrastar visualmente si el gasto observado de hogares formales e informales se ordena de manera consistente con el mecanismo calibrado.
+
+El gasto ajustado BnD se define como gasto total del hogar menos gasto en equipamiento del hogar, televisión, electrodomésticos, muebles y enseres. Los resultados usan factores de expansión `factor07`.
+
+![](anexos/distribuciones_gasto_formalidad_2015_2019/gasto_bnd_2015.jpeg)
+
+*Figura D1: Distribución del gasto ajustado BnD por formalidad del jefe de hogar, 2015. Panel izquierdo: hogares con jefe formal; panel central: hogares con jefe informal; panel derecho: total de hogares.*
+
+![](anexos/distribuciones_gasto_formalidad_2015_2019/gasto_bnd_2016.jpeg)
+
+*Figura D2: Distribución del gasto ajustado BnD por formalidad del jefe de hogar, 2016.*
+
+![](anexos/distribuciones_gasto_formalidad_2015_2019/gasto_bnd_2017.jpeg)
+
+*Figura D3: Distribución del gasto ajustado BnD por formalidad del jefe de hogar, 2017.*
+
+![](anexos/distribuciones_gasto_formalidad_2015_2019/gasto_bnd_2018.jpeg)
+
+*Figura D4: Distribución del gasto ajustado BnD por formalidad del jefe de hogar, 2018.*
+
+![](anexos/distribuciones_gasto_formalidad_2015_2019/gasto_bnd_2019.jpeg)
+
+*Figura D5: Distribución del gasto ajustado BnD por formalidad del jefe de hogar, 2019.*
+
+**Tabla D1: Gasto ajustado BnD promedio expandido por formalidad del jefe de hogar (soles corrientes)**
+
+| Año  | Gasto formal | Gasto informal | Gasto total | Diferencia |
+|------|-------------:|---------------:|------------:|-----------:|
+| 2015 | 29415.92 | 14760.78 | 44176.70 | 14655.14 |
+| 2016 | 30972.93 | 15338.69 | 46311.62 | 15634.24 |
+| 2017 | 31848.96 | 15376.82 | 47225.78 | 16472.14 |
+| 2018 | 32644.25 | 15532.38 | 48176.63 | 17111.87 |
+| 2019 | 33214.85 | 15854.65 | 49069.50 | 17360.20 |
+
+**Tabla D2: Desviación estándar expandida del gasto ajustado BnD por formalidad del jefe de hogar**
+
+| Año  | SD gasto formal | SD gasto informal | SD total | Diferencia SD |
+|------|----------------:|------------------:|---------:|--------------:|
+| 2015 | 19358.52 | 11849.74 | 16049.43 | 7508.78 |
+| 2016 | 20058.44 | 12487.90 | 16707.61 | 7570.54 |
+| 2017 | 20402.88 | 12787.84 | 17026.54 | 7615.04 |
+| 2018 | 21335.79 | 12896.09 | 17628.46 | 8439.70 |
+| 2019 | 22095.74 | 12641.63 | 18000.45 | 9454.11 |
+
+**Tabla D3: Gasto total del hogar (GASHOG1D) promedio expandido por formalidad del jefe de hogar (soles corrientes)**
+
+| Año  | Gasto formal | Gasto informal | Gasto total | Diferencia |
+|------|-------------:|---------------:|------------:|-----------:|
+| 2015 | 31416.98 | 15600.98 | 47017.96 | 15816.00 |
+| 2016 | 32950.20 | 16210.21 | 49160.41 | 16739.99 |
+| 2017 | 33891.77 | 16235.75 | 50127.52 | 17656.02 |
+| 2018 | 34767.52 | 16409.78 | 51177.30 | 18357.74 |
+| 2019 | 35441.96 | 16749.94 | 52191.90 | 18692.02 |
+
+**Tabla D4: Desviación estándar expandida del gasto total del hogar (GASHOG1D) por formalidad del jefe de hogar**
+
+| Año  | SD gasto formal | SD gasto informal | SD total | Diferencia SD |
+|------|----------------:|------------------:|---------:|--------------:|
+| 2015 | 21232.80 | 12403.88 | 17388.04 | 8828.92 |
+| 2016 | 21653.81 | 13148.32 | 17913.21 | 8505.49 |
+| 2017 | 22023.69 | 13448.88 | 18247.13 | 8574.81 |
+| 2018 | 23179.89 | 13532.90 | 18979.55 | 9646.99 |
+| 2019 | 23806.03 | 13286.70 | 19277.75 | 10519.33 |
+
+Fuente: ENAHO 2015-2019, INEI. La evidencia del anexo confirma que los hogares con jefe formal presentan mayor gasto promedio y mayor dispersión en todos los años, aunque esta clasificación por jefe de hogar se mantiene como validación visual y no como target vinculante del modelo.

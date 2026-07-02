@@ -6,7 +6,7 @@ de este directorio `replication_package`.
 ## 1. Ubicarse en el paquete
 
 ```matlab
-cd('C:\Users\johnb\Documents\GitHub\HA-IE2025\Code\CONTINUOUS_TIME\Aiyagari_firmas\try_endog_labor_2_firms\replication_package')
+cd('C:\Users\"user"\Documents\GitHub\HA-IE2025\Code\CONTINUOUS_TIME\Aiyagari_firmas\try_endog_labor_2_firms\replication_package')
 ```
 
 ## 2. Correr el modelo desde cero

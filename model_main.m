@@ -1316,7 +1316,10 @@ if EQUILIBRIUM_MODE == 2
     run_config.core = struct( ...
         'EQUILIBRIUM_MODE', EQUILIBRIUM_MODE, 'modo_rapido', MODO_RAPIDO, ...
         'ga', ga, 'rho', rho, 'Frisch', Frisch, 'al', al, 'd', d, 'tau', tau, ...
-        'r_low', r_low, 'r_high', r_high, ...
+        'r_low', ha_ge_field(ge_history,'r_low'), ...
+        'r_high', ha_ge_field(ge_history,'r_high'), ...
+        'r_low_final', ha_ge_field(ge_history,'r_low_fin'), ...
+        'r_high_final', ha_ge_field(ge_history,'r_high_fin'), ...
         'I', I, 'amin', amin, 'amax', amax, 'maxit', maxit, 'crit', crit, ...
         'max_iter_T', max_iter_T, 'max_iter_wI', max_iter_wI, 'max_iter_pI', max_iter_pI, ...
         'tol_T', tol_T, 'tol_wI', tol_wI, 'tol_pI', tol_pI, ...
@@ -1525,7 +1528,10 @@ function [r_star, K_star, S_star, w_F_star, L_F_star, L_I_star, V, g, c, ell_F, 
                max_pI_expand, L_I_floor_wI, damp_wI_log, damp_piI, damp_T)
 
 % El bracket debe contener el r* de la especificacion base: el documento
-% reporta r*=0.066, fuera del rango [-0.04, 0.0499] que se usaba antes.
+% reporta r*=0.066, fuera del rango [-0.04, 0.0499] que se usaba antes. Con
+% ese rango la corrida no daba un resultado erroneo en silencio: el chequeo de
+% signos sobre excess_low y excess_high de mas abajo aborta con 'invalid
+% bracket in r'. Pero impedia reproducir la corrida de cierre sin intervenir.
 r_low  = -0.04;
 r_high =  0.20;
 env_r_lo = str2double(getenv('HA_IE_R_LO')); % _Env
@@ -1534,6 +1540,11 @@ if isfinite(env_r_lo) && isfinite(env_r_hi) && env_r_lo < env_r_hi
     r_low  = env_r_lo;
     r_high = env_r_hi;
 end
+% Bracket tal como quedo configurado, antes de que la biseccion lo estreche.
+% Es el que importa para reproducir la corrida.
+r_low_cfg  = r_low;
+r_high_cfg = r_high;
+
 tol_r = 1e-5;
 max_bisect = 60;
 env_tol_r = str2double(getenv('HA_IE_TOL_R'));
@@ -1615,20 +1626,17 @@ for iter = 1:max_bisect
     p_I_mid = pI_tmp;
 end
 
-% Guardia de bracket: si la biseccion termina pegada a un extremo, el cero de
-% S(r)-KD(r) esta fuera del rango y lo que se reporta NO es un equilibrio.
-% Sin este chequeo el solver devolvia en silencio un punto de borde.
-bracket_span = 0.20 * max(r_high - r_low, eps);
+% Aviso de no convergencia. El caso de "el equilibrio esta fuera del bracket"
+% ya lo cubre el chequeo de signos sobre excess_low y excess_high de mas
+% arriba, que aborta antes de iterar. Aqui solo queda el caso de que la
+% biseccion agote max_bisect sin alcanzar tol_r, que no es un error pero no
+% debe pasar inadvertido: los momentos se calculan igual sobre un r que no
+% vacia del todo el mercado de activos.
 if abs(excess_mid) > tol_r
-    if abs(r - r_low) < bracket_span || abs(r - r_high) < bracket_span
-        error(['La biseccion de r termino en r=%.6f, pegada a un extremo del ' ...
-               'bracket [%.4f, %.4f], con exceso de capital %.3e. El equilibrio ' ...
-               'esta fuera del rango: ampliar con HA_IE_R_LO y HA_IE_R_HI.'], ...
-               r, r_low, r_high, excess_mid);
-    else
-        warning(['La biseccion de r no alcanzo la tolerancia: r=%.6f, exceso ' ...
-                 '%.3e frente a tol=%.1e.'], r, excess_mid, tol_r);
-    end
+    warning(['La biseccion de r agoto las iteraciones sin alcanzar la ' ...
+             'tolerancia: r=%.6f, exceso de capital %.3e frente a tol=%.1e. ' ...
+             'Subir HA_IE_MAX_BISECT_R o revisar el bracket.'], ...
+             r, excess_mid, tol_r);
 end
 
 r_star = r;
@@ -1645,7 +1653,23 @@ Y_I_out = YI_tmp;
 C_I_agg_out = CI_tmp;
 C_F_agg_out = CF_tmp;
 v0_out = v0_tmp;
+% El bracket efectivo viaja al script en ge_history para que el metadata lo
+% pueda registrar: r_low y r_high son locales a esta funcion.
+ge_history.r_low       = r_low_cfg;    % bracket configurado
+ge_history.r_high      = r_high_cfg;
+ge_history.r_low_fin   = r_low;        % bracket al terminar la biseccion
+ge_history.r_high_fin  = r_high;
 ge_history = sort_ge_history_v10(ge_history);
+end
+
+
+function v = ha_ge_field(ge_history, name)
+% Lee un escalar de ge_history; NaN si la corrida no lo produjo (p.ej. modo 1).
+if isstruct(ge_history) && isfield(ge_history, name) && isscalar(ge_history.(name))
+    v = ge_history.(name);
+else
+    v = NaN;
+end
 end
 
 
@@ -1682,6 +1706,8 @@ end
 
 
 function ge_history = sort_ge_history_v10(ge_history)
+% Solo ordena los campos vectoriales; los escalares (bracket) quedan intactos
+% porque el bucle de abajo exige numel(vals) == numel(order).
 [r_sorted, order] = sort(ge_history.r_grid(:));
 fields = fieldnames(ge_history);
 for jf = 1:numel(fields)

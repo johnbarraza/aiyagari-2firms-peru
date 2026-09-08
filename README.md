@@ -237,18 +237,25 @@ cuantificadas están en la sección 4 del
 ### La corrida de cierre no se reproducía con los valores por defecto
 
 Hasta septiembre de 2026, `model_main` con sus defaults **no** reproducía la
-corrida que reporta el documento: convergía en silencio a otro equilibrio, sin
-mensaje de error. Tres causas, ninguna registrada en el metadata de la corrida.
-El script traía `gamma=2` y `rho=0.05` de la especificación previa, mientras la
-corrida final usaba `gamma=1` y `rho=0.073`. Y el bracket de bisección de `r`
-llegaba solo hasta `0.0499`, por debajo del `r*=0.066` reportado.
+corrida que reporta el documento, por dos motivos de distinta gravedad.
+
+El grave es **silencioso**: el script traía `gamma=2` y `rho=0.05` de la
+especificación previa, mientras la corrida final usaba `gamma=1` y `rho=0.073`.
+Con esos defaults el modelo converge a un equilibrio distinto sin emitir ningún
+aviso. Ninguno de los dos quedaba registrado en el metadata, y `gamma` no se
+guardaba en ningún archivo: hubo que inferirlo numéricamente de la política de
+consumo de la corrida.
+
+El otro es **ruidoso**: el bracket de bisección de `r` llegaba solo hasta
+`0.0499`, por debajo del `r*=0.066` reportado. Con la calibración correcta eso
+no produce un resultado erróneo, porque el chequeo de signos que el solver ya
+hacía sobre los extremos aborta con `invalid bracket in r`. Impedía reproducir
+la corrida, pero avisaba.
 
 Está corregido: los defaults son los del documento, el bracket contiene el
-equilibrio, el solver ahora **falla con un error explícito** si la bisección
-termina pegada a un extremo del bracket en vez de reportar ese punto como
-equilibrio, y el metadata registra `gamma`, `rho`, `Frisch`, `alpha_K`, `delta`,
-`tau` y el bracket. El valor de `gamma` no se guardaba en ningún archivo y hubo
-que inferirlo numéricamente de la política de consumo de la corrida.
+equilibrio, el solver avisa si la bisección agota iteraciones sin alcanzar
+tolerancia, y el metadata registra `gamma`, `rho`, `Frisch`, `alpha_K`, `delta`,
+`tau` y el bracket configurado junto al final.
 
 ## Calibración y datos
 

@@ -169,6 +169,15 @@ precisamente en los parámetros que fijan `r*`.
 `r*` reportado es **0.066040**, fuera del bracket. `FAST_DEBUG` no lo modifica. La
 corrida usó `HA_IE_R_HI=0.20`, que sí quedó registrado en `[env]`.
 
+**Corrección posterior sobre la causa 2.** Al probar el arreglo se verificó que
+esta causa **no** produce un resultado erróneo en silencio: el solver ya hacía un
+chequeo de signos sobre `excess_low` y `excess_high` que aborta con `invalid
+bracket in r` cuando el equilibrio cae fuera. Impedía reproducir la corrida, pero
+avisaba. La causa silenciosa es la 1, y ahora sabemos que son dos parámetros y no
+uno. El guardia adicional que se había agregado aquí resultó incorrecto —se
+disparaba en cualquier corrida no convergida, porque la bisección siempre deja
+`r` sobre uno de los extremos— y se reemplazó por un aviso de no convergencia.
+
 **Evidencia.** Una primera corrida lanzada solo con `HA_IE_FAST_DEBUG=true`, tal
 como indica `INSTRUCCIONES.md`, convergía a `r ≈ 0.0419`, `K ≈ 8.25`,
 `p_I ≈ 0.954` — contra `r* = 0.0660`, `K* = 5.138`, `p_I* = 0.928` del baseline.

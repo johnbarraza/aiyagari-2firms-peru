@@ -36,12 +36,14 @@ run('lean/scripts/matlab/reproducir_cierre.m')
 ```
 
 > **Nota historica.** Hasta septiembre de 2026 los defaults del script eran
-> `gamma=2`, `rho=0.05` y un bracket `r` maximo de `0.0499`. Con esos valores
-> `model_main` **no** reproducia la corrida de cierre: convergia en silencio a
-> otro equilibrio, porque el `r*` reportado cae fuera de ese bracket y porque la
-> corrida final sobreescribia `gamma` y `rho` por variables de entorno que el
-> metadata no registraba. Los defaults ya se corrigieron y el solver ahora falla
-> con un error explicito si la bisection termina pegada a un extremo del bracket.
+> `gamma=2`, `rho=0.05` y un bracket `r` maximo de `0.0499`, y `model_main` no
+> reproducia la corrida de cierre. Lo grave era silencioso: con `gamma=2` y
+> `rho=0.05` el modelo converge a otro equilibrio sin avisar, y la corrida final
+> sobreescribia ambos por variables de entorno que el metadata no registraba. El
+> bracket, en cambio, avisaba: con la calibracion correcta el `r*` reportado cae
+> fuera de el y el chequeo de signos del solver aborta con `invalid bracket in
+> r`. Los defaults ya se corrigieron y el metadata registra ahora los parametros
+> de preferencias y el bracket.
 
 Los resultados nuevos quedan en `outputs/stationary/<RUN_TAG>/`. Si no se fija
 un `RUN_TAG`, MATLAB crea una carpeta con timestamp para no sobreescribir la

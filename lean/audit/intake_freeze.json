@@ -1,0 +1,168 @@
+{
+  "schema": 1,
+  "paper": "BN26InformalityWealthPeru",
+  "acceptance_credential": false,
+  "future_paper_intake_only": true,
+  "state": "draft",
+  "inventory_scope": "complete named theoretical source surface",
+  "inventory_complete": false,
+  "source_item_identity": "source-location+normalized-statement-sha256-v1",
+  "source_artifact_path": "papers/BN26InformalityWealthPeru/source-audited.tex",
+  "source_artifact_sha256": "2b7c3362e5845d109839829e8af95ec2453e20588b259efed69338a1ac7929ef",
+  "source_version": "Anexo Matematico v10 ARz DebtPrem, Junio 2026 (aiyagari-2firms-peru)",
+  "source_text_artifact": null,
+  "items": [
+    {
+      "source_item": "Generador OU discretizado: filas suman cero",
+      "source_location": "Section 2.2, Equation eq:Qz_construction, anexo_matematico.tex:97",
+      "source_statement_sha256": "991120445c2bae81a54ed322774a69e4d6d9a4f2cabf4d040e4afec7cccbf0fd",
+      "source_kind": "claim",
+      "spec_declaration": "paper_ou_generator_rows_sum_zeroSpec",
+      "proof_declaration": "paper_ou_generator_rows_sum_zero",
+      "dependency_order": 1,
+      "depends_on_source_items": [],
+      "owner": "unassigned",
+      "source_atoms": [],
+      "acceptance_conditions": [
+        "all exact source atoms are byte-pinned and semantically complete",
+        "the transparent Spec is equivalent to the full source target",
+        "every visible premise has source or checked derivation provenance",
+        "the proof closes without paper-local placeholders"
+      ]
+    },
+    {
+      "source_item": "Prima de deuda estrictamente decreciente en la productividad",
+      "source_location": "Section 3.2, Equation eq:debtprem, anexo_matematico.tex:148",
+      "source_statement_sha256": "cce52491806cb1764ff7f1215671e0d86be1b396762f7526996b889734efa534",
+      "source_kind": "claim",
+      "spec_declaration": "paper_debt_premium_decreasing_in_productivitySpec",
+      "proof_declaration": "paper_debt_premium_decreasing_in_productivity",
+      "dependency_order": 2,
+      "depends_on_source_items": [],
+      "owner": "unassigned",
+      "source_atoms": [],
+      "acceptance_conditions": [
+        "all exact source atoms are byte-pinned and semantically complete",
+        "the transparent Spec is equivalent to the full source target",
+        "every visible premise has source or checked derivation provenance",
+        "the proof closes without paper-local placeholders"
+      ]
+    },
+    {
+      "source_item": "Consumo CES optimo: ratio de demanda y deflactor",
+      "source_location": "Section 3.5, Equation eq:ces_foc, anexo_matematico.tex:188",
+      "source_statement_sha256": "c12882464efe77c660783317205754c9b3fcec0e022df5fd4cb6d61cea151eac",
+      "source_kind": "claim",
+      "spec_declaration": "paper_ces_optimal_demand_ratioSpec",
+      "proof_declaration": "paper_ces_optimal_demand_ratio",
+      "dependency_order": 3,
+      "depends_on_source_items": [],
+      "owner": "unassigned",
+      "source_atoms": [],
+      "acceptance_conditions": [
+        "all exact source atoms are byte-pinned and semantically complete",
+        "the transparent Spec is equivalent to the full source target",
+        "every visible premise has source or checked derivation provenance",
+        "the proof closes without paper-local placeholders"
+      ]
+    },
+    {
+      "source_item": "Oferta laboral interior: condicion de primer orden y optimalidad global",
+      "source_location": "Section 3.6, Equation eq:foc_F, anexo_matematico.tex:206",
+      "source_statement_sha256": "abe530d1949e1155775491345318293cc7f9c51025ee134b5a96b67b408dc790",
+      "source_kind": "claim",
+      "spec_declaration": "paper_interior_labor_first_order_conditionSpec",
+      "proof_declaration": "paper_interior_labor_first_order_condition",
+      "dependency_order": 4,
+      "depends_on_source_items": [],
+      "owner": "unassigned",
+      "source_atoms": [],
+      "acceptance_conditions": [
+        "all exact source atoms are byte-pinned and semantically complete",
+        "the transparent Spec is equivalent to the full source target",
+        "every visible premise has source or checked derivation provenance",
+        "the proof closes without paper-local placeholders"
+      ]
+    },
+    {
+      "source_item": "Caso vinculante KKT: monotonia estricta y casos de esquina",
+      "source_location": "Section 3.6, Equation eq:kkt_binding, anexo_matematico.tex:211",
+      "source_statement_sha256": "63da49dd00bfab9a07451978f6657722aa80c8d76746d799377601d3c18328c4",
+      "source_kind": "claim",
+      "spec_declaration": "paper_binding_labor_kkt_monotone_and_cornersSpec",
+      "proof_declaration": "paper_binding_labor_kkt_monotone_and_corners",
+      "dependency_order": 5,
+      "depends_on_source_items": [],
+      "owner": "unassigned",
+      "source_atoms": [],
+      "acceptance_conditions": [
+        "all exact source atoms are byte-pinned and semantically complete",
+        "the transparent Spec is equivalent to the full source target",
+        "every visible premise has source or checked derivation provenance",
+        "the proof closes without paper-local placeholders"
+      ]
+    },
+    {
+      "source_item": "Firma formal Cobb-Douglas CRS: CPO estaticas y agotamiento del producto",
+      "source_location": "Section 4.1, Equation eq:formal_foc, anexo_matematico.tex:243",
+      "source_statement_sha256": "1d40808ce8be705df46a5c38214cf71568b5c898005704048fbb119366b931bb",
+      "source_kind": "claim",
+      "spec_declaration": "paper_formal_firm_first_order_conditionsSpec",
+      "proof_declaration": "paper_formal_firm_first_order_conditions",
+      "dependency_order": 6,
+      "depends_on_source_items": [],
+      "owner": "unassigned",
+      "source_atoms": [],
+      "acceptance_conditions": [
+        "all exact source atoms are byte-pinned and semantically complete",
+        "the transparent Spec is equivalent to the full source target",
+        "every visible premise has source or checked derivation provenance",
+        "the proof closes without paper-local placeholders"
+      ]
+    },
+    {
+      "source_item": "Firma informal: PMgL, demanda de capital y beneficio residual",
+      "source_location": "Section 4.2, Equation eq:PiI, anexo_matematico.tex:268",
+      "source_statement_sha256": "5a3698e7f1e0654425430f1b15531ff0863fe72f8ab0f4479c8ea6559160cad8",
+      "source_kind": "claim",
+      "spec_declaration": "paper_informal_firm_profit_exhaustionSpec",
+      "proof_declaration": "paper_informal_firm_profit_exhaustion",
+      "dependency_order": 7,
+      "depends_on_source_items": [],
+      "owner": "unassigned",
+      "source_atoms": [],
+      "acceptance_conditions": [
+        "all exact source atoms are byte-pinned and semantically complete",
+        "the transparent Spec is equivalent to the full source target",
+        "every visible premise has source or checked derivation provenance",
+        "the proof closes without paper-local placeholders"
+      ]
+    },
+    {
+      "source_item": "Vaciamiento del mercado de bien formal (Ley de Walras)",
+      "source_location": "Section 5.2, anexo_matematico.tex:302",
+      "source_statement_sha256": "8f60717803247c5b6a08019b3b481a65ba4f60c25ad0a7009f70c179032dccfb",
+      "source_kind": "claim",
+      "spec_declaration": "paper_walras_formal_goods_marketSpec",
+      "proof_declaration": "paper_walras_formal_goods_market",
+      "dependency_order": 8,
+      "depends_on_source_items": [],
+      "owner": "unassigned",
+      "source_atoms": [],
+      "acceptance_conditions": [
+        "all exact source atoms are byte-pinned and semantically complete",
+        "the transparent Spec is equivalent to the full source target",
+        "every visible premise has source or checked derivation provenance",
+        "the proof closes without paper-local placeholders"
+      ]
+    }
+  ],
+  "seal_requirements": {
+    "state": "sealed",
+    "inventory_complete": true,
+    "every_item_has_owner": true,
+    "dependency_order_is_total": true,
+    "every_source_atom_has_locator_exact_byte_slice_quote_and_sha256": true,
+    "pdf_atoms_use_pinned_normalized_source_text_receipt": true
+  }
+}

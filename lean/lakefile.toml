@@ -1,0 +1,25 @@
+name = "BN26InformalityWealthPeru"
+version = "0.1.0"
+keywords = ["economics", "formalization", "lean4", "heterogeneous-agents"]
+defaultTargets = ["BN26InformalityWealthPeru"]
+
+[leanOptions]
+pp.unicode.fun = true
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+weak.linter.unnecessarySimpa = false
+weak.linter.unusedDecidableInType = false
+weak.linter.unusedFintypeInType = false
+weak.linter.unusedSectionVars = false
+weak.linter.unusedVariables = false
+weak.linter.flexible = false
+weak.linter.style.longLine = false
+weak.linter.style.whitespace = false
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.30.0-rc2"
+
+[[lean_lib]]
+name = "BN26InformalityWealthPeru"

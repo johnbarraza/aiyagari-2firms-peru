@@ -1,0 +1,193 @@
+{
+  "schema": 1,
+  "paper": "BN26InformalityWealthPeru",
+  "source_url": "https://github.com/johnbarraza/aiyagari-2firms-peru",
+  "source_version": "Anexo Matematico v10 ARz DebtPrem, Junio 2026 (aiyagari-2firms-peru)",
+  "source_artifact_path": "papers/BN26InformalityWealthPeru/source-audited.tex",
+  "source_artifact_sha256": "2b7c3362e5845d109839829e8af95ec2453e20588b259efed69338a1ac7929ef",
+  "source_inventory_kind": "pinned_statement_target_scaffold",
+  "source_curated": false,
+  "seed_scaffold": true,
+  "source_coverage_mode": "named_theoretical_statements",
+  "semantic_contract_policy": {
+    "schema": 1,
+    "activation": "Before Lean drafting, independently inventory every material source atom against exact pinned source quote bytes; do not infer that inventory from declaration, binder, field, or function names. After a source item has an audited paper-local specification and a theorem/lemma proving or refuting it, add top-level semantic_contract_schema: 1, classify every item with an explicit claim_bearing Boolean, and record semantic_contract for each true item. At formalized closeout, also add source_claim_atoms_schema: 1 and source_spec_correspondence_schema: 1. Bind each atom to an elaborated Spec component and account for every material Lean-closure terminal, including proof and instance arguments, by source atom, approved source correction/additional assumption, checked Lean derivation, or version-pinned foundation basis. Each statement-first row supplies an inactive semantic_contract_template pairing its transparent `...Spec : Prop` with its theorem/lemma. Promote that exact template only after the independent source audit passes, the theorem has exactly the transparent Spec type, the closure record passes, and the proof hole is replaced. Do not manufacture a contract from the temporary by-sorry statement skeleton alone. Legacy v10 evidence remains readable but is not a v11 realization credential. For a source-game result whose feasible-action equilibrium comparison uses a conditional/posterior or observation-contingent value, add the separately byte-pinned `semantic_context_requirements` kind `strategic_observation_totality`; it requires an explicit off-path/zero-probability totality audit and cannot be satisfied by a Lean-only default value.",
+    "required_fields": [
+      "spec_declaration",
+      "evidence_declaration",
+      "evidence_mode",
+      "semantic_shape"
+    ],
+    "evidence_modes": [
+      "proves",
+      "refutes"
+    ],
+    "semantic_shapes": [
+      "plain"
+    ],
+    "shape_policy": "Only plain exact-proposition contracts are currently enforced. Do not record a specialized runtime, preprocessing, or refinement shape until the audit implements its structural check.",
+    "source_defect_routing": "Every repaired_in_lean source-proof defect must be linked from a successfully checked contract item through source_defect_ids."
+  },
+  "items": {
+    "paper_ou_generator_rows_sum_zero": {
+      "statement": "Con mu_i = eta (mu_logz - x_i), sigma^2_diff = 2 eta sigma_logz^2, chi_i = -min(mu_i,0)/Delta_x + sigma^2_diff/(2 Delta_x^2), zeta_i = max(mu_i,0)/Delta_x + sigma^2_diff/(2 Delta_x^2) y psi_i = -chi_i - zeta_i, se obtiene una matriz tridiagonal sparse Q_z con filas que suman cero. En los bordes (i=1, i=N_z), chi_1 y zeta_{N_z} se absorben en psi_1 y psi_{N_z} respectivamente (barreras reflectoras), de modo que las filas de borde tambien suman cero.",
+      "source_item": "Generador OU discretizado: filas suman cero",
+      "source_kind": "claim",
+      "source_location": "Section 2.2, Equation eq:Qz_construction, anexo_matematico.tex:97",
+      "source_url": "https://github.com/johnbarraza/aiyagari-2firms-peru",
+      "source_status": "pinned statement-spec transcription; independent source audit pending",
+      "spec_lean_declarations": [
+        "paper_ou_generator_rows_sum_zeroSpec"
+      ],
+      "proof_lean_declarations": [
+        "paper_ou_generator_rows_sum_zero"
+      ],
+      "semantic_contract_template": {
+        "spec_declaration": "paper_ou_generator_rows_sum_zeroSpec",
+        "evidence_declaration": "paper_ou_generator_rows_sum_zero",
+        "evidence_mode": "proves",
+        "semantic_shape": "plain"
+      }
+    },
+    "paper_debt_premium_decreasing_in_productivity": {
+      "statement": "La prima de deuda es chi(z) = chi_0 (z_1/z)^{eta_chi} con chi_0 = 0.02 y eta_chi = 1.0. La prima es mayor para agentes de baja productividad: chi(z_min) > chi(z_max).",
+      "source_item": "Prima de deuda estrictamente decreciente en la productividad",
+      "source_kind": "claim",
+      "source_location": "Section 3.2, Equation eq:debtprem, anexo_matematico.tex:148",
+      "source_url": "https://github.com/johnbarraza/aiyagari-2firms-peru",
+      "source_status": "pinned statement-spec transcription; independent source audit pending",
+      "spec_lean_declarations": [
+        "paper_debt_premium_decreasing_in_productivitySpec"
+      ],
+      "proof_lean_declarations": [
+        "paper_debt_premium_decreasing_in_productivity"
+      ],
+      "semantic_contract_template": {
+        "spec_declaration": "paper_debt_premium_decreasing_in_productivitySpec",
+        "evidence_declaration": "paper_debt_premium_decreasing_in_productivity",
+        "evidence_mode": "proves",
+        "semantic_shape": "plain"
+      }
+    },
+    "paper_ces_optimal_demand_ratio": {
+      "statement": "Con xi = (omega_C p_I/(1-omega_C))^{sigma_C} y eta_C = 1 - 1/sigma_C, el reparto optimo entre bien formal e informal satisface c_F = xi c_I, la condicion de tangencia p_I omega_C c_F^{eta_C-1} = (1-omega_C) c_I^{eta_C-1}, y el agregado CES se factoriza como C = K c_I con deflactor K = (omega_C xi^{eta_C} + (1-omega_C))^{1/eta_C}.",
+      "source_item": "Consumo CES optimo: ratio de demanda y deflactor",
+      "source_kind": "claim",
+      "source_location": "Section 3.5, Equation eq:ces_foc, anexo_matematico.tex:188",
+      "source_url": "https://github.com/johnbarraza/aiyagari-2firms-peru",
+      "source_status": "pinned statement-spec transcription; independent source audit pending",
+      "spec_lean_declarations": [
+        "paper_ces_optimal_demand_ratioSpec"
+      ],
+      "proof_lean_declarations": [
+        "paper_ces_optimal_demand_ratio"
+      ],
+      "semantic_contract_template": {
+        "spec_declaration": "paper_ces_optimal_demand_ratioSpec",
+        "evidence_declaration": "paper_ces_optimal_demand_ratio",
+        "evidence_mode": "proves",
+        "semantic_shape": "plain"
+      }
+    },
+    "paper_interior_labor_first_order_condition": {
+      "statement": "En el caso interior la oferta laboral no restringida es ell^{unc} = (dV_a v w/psi)^{phi}, donde w es el salario efectivo del sector y psi su desutilidad marginal. Equivalentemente, ell^{unc} iguala el beneficio marginal dV_a v w con el costo marginal psi ell^{1/phi} de la desutilidad psi ell^{1+1/phi}/(1+1/phi), y maximiza el excedente instantaneo del hogar sobre ell >= 0.",
+      "source_item": "Oferta laboral interior: condicion de primer orden y optimalidad global",
+      "source_kind": "claim",
+      "source_location": "Section 3.6, Equation eq:foc_F, anexo_matematico.tex:206",
+      "source_url": "https://github.com/johnbarraza/aiyagari-2firms-peru",
+      "source_status": "pinned statement-spec transcription; independent source audit pending",
+      "spec_lean_declarations": [
+        "paper_interior_labor_first_order_conditionSpec"
+      ],
+      "proof_lean_declarations": [
+        "paper_interior_labor_first_order_condition"
+      ],
+      "semantic_contract_template": {
+        "spec_declaration": "paper_interior_labor_first_order_conditionSpec",
+        "evidence_declaration": "paper_interior_labor_first_order_condition",
+        "evidence_mode": "proves",
+        "semantic_shape": "plain"
+      }
+    },
+    "paper_binding_labor_kkt_monotone_and_corners": {
+      "statement": "Cuando la restriccion ell_F + ell_I <= H_bar es vinculante, ell_F resuelve psi_F ell_F^{1/phi} - psi_I (H_bar - ell_F)^{1/phi} = dV_a v (w_F^{net} - w_I^{eff}). El lado izquierdo es estrictamente creciente en ell_F sobre [0, H_bar], vale -psi_I H_bar^{1/phi} en ell_F = 0 y psi_F H_bar^{1/phi} en ell_F = H_bar. Casos de esquina: ell_F = H_bar si el lado derecho es mayor o igual que psi_F H_bar^{1/phi}; ell_I = H_bar si el lado derecho es menor o igual que -psi_I H_bar^{1/phi}.",
+      "source_item": "Caso vinculante KKT: monotonia estricta y casos de esquina",
+      "source_kind": "claim",
+      "source_location": "Section 3.6, Equation eq:kkt_binding, anexo_matematico.tex:211",
+      "source_url": "https://github.com/johnbarraza/aiyagari-2firms-peru",
+      "source_status": "pinned statement-spec transcription; independent source audit pending",
+      "spec_lean_declarations": [
+        "paper_binding_labor_kkt_monotone_and_cornersSpec"
+      ],
+      "proof_lean_declarations": [
+        "paper_binding_labor_kkt_monotone_and_corners"
+      ],
+      "semantic_contract_template": {
+        "spec_declaration": "paper_binding_labor_kkt_monotone_and_cornersSpec",
+        "evidence_declaration": "paper_binding_labor_kkt_monotone_and_corners",
+        "evidence_mode": "proves",
+        "semantic_shape": "plain"
+      }
+    },
+    "paper_formal_firm_first_order_conditions": {
+      "statement": "Para Y_F = A_F K_F^{alpha_K} L_F^{1-alpha_K}, las condiciones de primer orden estaticas dan k = K_F/L_F = (alpha_K A_F/(r+delta))^{1/(1-alpha_K)} y w_F = (1-alpha_K) A_F k^{alpha_K}. Con retornos constantes a escala el producto por unidad de trabajo se agota entre pagos a capital y trabajo.",
+      "source_item": "Firma formal Cobb-Douglas CRS: CPO estaticas y agotamiento del producto",
+      "source_kind": "claim",
+      "source_location": "Section 4.1, Equation eq:formal_foc, anexo_matematico.tex:243",
+      "source_url": "https://github.com/johnbarraza/aiyagari-2firms-peru",
+      "source_status": "pinned statement-spec transcription; independent source audit pending",
+      "spec_lean_declarations": [
+        "paper_formal_firm_first_order_conditionsSpec"
+      ],
+      "proof_lean_declarations": [
+        "paper_formal_firm_first_order_conditions"
+      ],
+      "semantic_contract_template": {
+        "spec_declaration": "paper_formal_firm_first_order_conditionsSpec",
+        "evidence_declaration": "paper_formal_firm_first_order_conditions",
+        "evidence_mode": "proves",
+        "semantic_shape": "plain"
+      }
+    },
+    "paper_informal_firm_profit_exhaustion": {
+      "statement": "Para Y_I = A_I K_I^{alpha_I} L_I^{beta_I} con alpha_I + beta_I <= 1, las condiciones de primer orden dan w_I = p_I beta_I A_I K_I^{alpha_I} L_I^{beta_I-1} y el costo de uso del capital iguala su producto marginal en valor. Entonces Pi_I = p_I Y_I - w_I L_I - (r+delta) K_I = (1 - alpha_I - beta_I) p_I Y_I; en el escenario de retornos constantes alpha_I + beta_I = 1 se obtiene Pi_I = 0 (agotamiento de Euler), y la demanda estatica de capital informal es K_I = (p_I alpha_I A_I/(r+delta))^{1/(1-alpha_I)} L_I^{beta_I/(1-alpha_I)}.",
+      "source_item": "Firma informal: PMgL, demanda de capital y beneficio residual",
+      "source_kind": "claim",
+      "source_location": "Section 4.2, Equation eq:PiI, anexo_matematico.tex:268",
+      "source_url": "https://github.com/johnbarraza/aiyagari-2firms-peru",
+      "source_status": "pinned statement-spec transcription; independent source audit pending",
+      "spec_lean_declarations": [
+        "paper_informal_firm_profit_exhaustionSpec"
+      ],
+      "proof_lean_declarations": [
+        "paper_informal_firm_profit_exhaustion"
+      ],
+      "semantic_contract_template": {
+        "spec_declaration": "paper_informal_firm_profit_exhaustionSpec",
+        "evidence_declaration": "paper_informal_firm_profit_exhaustion",
+        "evidence_mode": "proves",
+        "semantic_shape": "plain"
+      }
+    },
+    "paper_walras_formal_goods_market": {
+      "statement": "En el equilibrio estacionario, agregando la restriccion presupuestaria de los hogares con drift agregado nulo, junto con T = tau w_F L_F, el agotamiento del producto formal Y_F = w_F L_F + (r+delta) K_F, el beneficio informal Pi_I = p_I Y_I - w_I L_I - (r+delta) K_I, el vaciamiento del bien informal C_I = Y_I y el vaciamiento de activos K = K_F + K_I, el mercado del bien formal vacia. El anexo enuncia esta condicion como C_F + delta K_F + DebtPremPayments = Y_F.",
+      "source_item": "Vaciamiento del mercado de bien formal (Ley de Walras)",
+      "source_kind": "claim",
+      "source_location": "Section 5.2, anexo_matematico.tex:302",
+      "source_url": "https://github.com/johnbarraza/aiyagari-2firms-peru",
+      "source_status": "pinned statement-spec transcription; independent source audit pending",
+      "spec_lean_declarations": [
+        "paper_walras_formal_goods_marketSpec"
+      ],
+      "proof_lean_declarations": [
+        "paper_walras_formal_goods_market"
+      ],
+      "semantic_contract_template": {
+        "spec_declaration": "paper_walras_formal_goods_marketSpec",
+        "evidence_declaration": "paper_walras_formal_goods_market",
+        "evidence_mode": "proves",
+        "semantic_shape": "plain"
+      }
+    }
+  }
+}

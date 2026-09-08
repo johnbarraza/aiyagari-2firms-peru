@@ -262,13 +262,39 @@ env_z_dt    = str2double(getenv('HA_IE_Z_DT'));     % _Env
 if isfinite(env_z_n) && env_z_n >= 2, Nz_ar = round(env_z_n); end
 if isfinite(env_z_rho) && env_z_rho > 0 && env_z_rho < 0.9999, rho_z_ar = env_z_rho; end
 if isfinite(env_z_sd) && env_z_sd > 0, sd_logz_ar = env_z_sd; end
-width_z_user_set = isfinite(env_z_width) && env_z_width > 0;
-if width_z_user_set, width_z_ar = env_z_width; end
+env_z_width_raw = lower(strtrim(getenv('HA_IE_Z_WIDTH')));
+width_z_auto = strcmp(env_z_width_raw, 'auto');
+width_z_user_set = width_z_auto || (isfinite(env_z_width) && env_z_width > 0);
+if ~width_z_auto && isfinite(env_z_width) && env_z_width > 0, width_z_ar = env_z_width; end
 if isfinite(env_z_mu), mu_logz_ar = env_z_mu; end
 if isfinite(env_z_dt) && env_z_dt > 0, dt_z_ar = env_z_dt; end
 if ~isfinite(width_z_ar), width_z_ar = sqrt(Nz_ar - 1); end
 
 eta_z_ar = -log(rho_z_ar) / dt_z_ar;
+
+% Modo automatico del ancho de grilla (solo ruta OU). Achdou et al. (2022)
+% especifican el OU como analogo en tiempo continuo de un AR(1) "with
+% comparable persistence AND standard deviation". La persistencia calza exacto
+% por construccion; la desviacion estandar no, porque las barreras reflectoras
+% truncan el soporte. Este modo resuelve por biseccion el ancho tal que la sd
+% de log z bajo la distribucion ergodica iguale sd_logz_ar.
+if width_z_auto
+    if ~any(strcmp(z_process_ar, {'ou','ct','continuous','continuous_time'}))
+        error('HA_IE_Z_WIDTH=auto solo aplica a la ruta OU.');
+    end
+    w_lo = 1.0; w_hi = 6.0;
+    for it_w = 1:80
+        w_md = 0.5*(w_lo + w_hi);
+        [xw, ~, piw] = ou_ar1_generator_grid(Nz_ar, rho_z_ar, sd_logz_ar, w_md, mu_logz_ar, dt_z_ar);
+        mw = sum(piw(:).*xw(:));
+        sw = sqrt(sum(piw(:).*(xw(:)-mw).^2));
+        if sw < sd_logz_ar, w_lo = w_md; else, w_hi = w_md; end
+    end
+    width_z_ar = 0.5*(w_lo + w_hi);
+    fprintf('width_z auto: %.4f para igualar sd(log z)=%.4f con Nz=%d\n', ...
+        width_z_ar, sd_logz_ar, Nz_ar);
+end
+
 switch z_process_ar
     case {'ou','ct','continuous','continuous_time'}
         [logz_nodes, Qz_ar, pi_z_ar, z_ou_diag] = ou_ar1_generator_grid( ...

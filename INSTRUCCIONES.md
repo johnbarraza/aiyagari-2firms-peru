@@ -112,6 +112,40 @@ Las salidas quedan en:
 outputs/grid_convergence/
 ```
 
+## 4bis. Ancho de la grilla de productividad
+
+Achdou et al. (2022) especifican el proceso de productividad como un
+Ornstein-Uhlenbeck, analogo en tiempo continuo de un AR(1), *"with comparable
+persistence and standard deviation"*. La persistencia calza de forma exacta por
+construccion, via `eta = -log(rho_z)/dt`. La desviacion estandar no: el apendice
+numerico de HACT impone barreras reflectoras en los bordes de la grilla, y sobre
+un soporte truncado la distribucion ergodica tiene menos dispersion que el
+objetivo.
+
+Con `width_z_ar = 2.5` y `Nz = 40`, la grilla entrega `sd(log z) = 0.5281`
+frente al objetivo `0.5440`, un 2.9 % por debajo. **El sesgo lo controla el
+ancho, no el numero de nodos**: a ancho fijo, subir `Nz` lo empeora, porque el
+limite lo fija el truncamiento y no la resolucion. El solver ahora avisa cuando
+el desvio supera el 2 %.
+
+Para que la desviacion estandar calce igual que la persistencia:
+
+```matlab
+setenv('HA_IE_Z_WIDTH','auto');
+```
+
+Resuelve por biseccion el ancho tal que la `sd(log z)` ergodica iguale el
+objetivo. Anchos que produce, todos con `100.00 %` del objetivo:
+
+| Nz | 7 | 14 | 20 | 30 | 40 | 60 | 80 |
+|---|---|---|---|---|---|---|---|
+| ancho | 2.169 | 2.457 | 2.594 | 2.734 | **2.827** | 2.951 | 3.037 |
+
+Cambiar el ancho mueve la dispersion efectiva de `z` y por lo tanto **exige
+recalibrar** `psi_F`, `psi_I`, `A_I` y `kappa_z1`, que estan ajustados a T4, T5 y
+Tkz bajo la dispersion actual. Por eso `auto` no es el default: es un ejercicio
+de robustez, no un parche silencioso.
+
 ## 5. Recompilar los documentos
 
 El documento final se genera desde su fuente Markdown con pandoc y xelatex. El

@@ -35,7 +35,8 @@ y Productividad AR(1) en Tiempo Continuo}
 \author{John Svante Barraza Ratachi \and Enzo Andrés Nevado Martínez\\
 Asesor: César Saturnino Salinas Depaz}
 \date{Versión 10 ARz DebtPrem — Junio 2026\\
-Código auditado: \texttt{aiyagari\_2firms\_v10\_R2\_precio\_endogeno\_ARz\_debtprem.m}}
+Código auditado: \texttt{aiyagari\_2firms\_v10\_R2\_precio\_endogeno\_ARz\_debtprem.m}\\[0.3em]
+\small Revisión de septiembre 2026: se corrigen los pesos del agregador CES, la forma funcional de la prima de deuda y de la barrera de acceso, el factor de precio en la demanda de capital informal, y la identidad de vaciamiento del bien formal. Correcciones derivadas de la verificación formal en Lean~4 del modelo; ver \texttt{docs/VERIFICACION\_NUMERICA.md}.}
 
 \begin{document}
 \maketitle
@@ -146,12 +147,12 @@ donde $\tilde{w}_I = w_I + \Pi_I/L_I$ (regla \texttt{hours}, default) o $\tilde{
 
 El modelo incluye un spread por riesgo de crédito que depende de la productividad:
 \begin{equation}\label{eq:debtprem}
-\chi(z) = \chi_0 \cdot \left(\frac{z_1}{z}\right)^{\eta_\chi}
+\chi(z) = \chi_0 \cdot \left(\frac{z_{\max} - z}{z_{\max} - z_{\min}}\right)^{\eta_\chi}
 \end{equation}
 
-con $\chi_0 = 0.02$, $\eta_\chi = 1.0$. La prima es mayor para agentes de baja productividad: $\chi(z_{\min}) > \chi(z_{\max})$. Solo se aplica cuando $a < 0$ (endeudamiento). El pago total por prima es $\chi(z) \cdot \max(-a, 0)$.
+con $\chi_0 = 0.02$, $\eta_\chi = 1.0$. El peso vale uno en $z_{\min}$ y cero en $z_{\max}$, de modo que la prima es estrictamente decreciente en la productividad, con $\chi(z_{\min}) = \chi_0$ y $\chi(z_{\max}) = 0$. Solo se aplica cuando $a < 0$ (endeudamiento). El pago total por prima es $\chi(z) \cdot \max(-a, 0)$.
 
-El parámetro $\texttt{debt\_prem\_rebate} = \texttt{false}$ implica que estos pagos no se redistribuyen (se pierden del sistema, representando costos de intermediación o incumplimiento implícito).
+El parámetro $\texttt{debt\_prem\_rebate} = \texttt{false}$ implica que estos pagos no se redistribuyen. Se interpretan como costos reales de intermediación —evaluación, monitoreo y cobranza del crédito a deudores de baja productividad—, en la línea del enfoque institucional que adopta la revisión literaria. Bajo esa lectura los recursos se consumen y no hay nada que devolver, por lo que el término aparece en la restricción de recursos agregada (Sección \ref{sec:mercados}). La lectura alternativa como compensación por incumplimiento exigiría devolver los pagos a los deudores que efectivamente incumplen, no repartirlos de forma uniforme, y no es la que este modelo implementa.
 
 \subsection{Barrera de Acceso Formal}\label{sec:kappa}
 
@@ -159,7 +160,11 @@ El parámetro $\texttt{debt\_prem\_rebate} = \texttt{false}$ implica que estos p
 \kappa_F(a,z) = \underbrace{\kappa_{\min} + \kappa_{\text{extra}} \cdot \sigma(\gamma_k(a-\bar{a}_k))}_{\text{componente riqueza (desactivado: =0)}} \;+\; \underbrace{\kappa_z(z)}_{\text{componente productividad}}
 \end{equation}
 
-En la especificación actual $\kappa_{\min} = \kappa_{\text{extra}} = 0$. Solo $\kappa_z(z)$ está activo: $\kappa_z(z_1) = \kappa_{z1}$ para el $z$ más bajo, $\kappa_z(z_j)=0$ para los demás. El parámetro $\kappa_{z1}$ se calibra al target de gap de formalidad por productividad (Tkz).
+En la especificación actual $\kappa_{\min} = \kappa_{\text{extra}} = 0$, de modo que solo $\kappa_z(z)$ está activo. No es un valor aislado en el nodo más bajo: interpola de forma suave y decreciente entre $\kappa_{z1}$ en $z_{\min}$ y $\kappa_{z2}$ en $z_{\max}$,
+\begin{equation}\label{eq:kappa_z}
+\kappa_z(z) = \kappa_{z2} + (\kappa_{z1} - \kappa_{z2}) \left(\frac{z_{\max} - z}{z_{\max} - z_{\min}}\right)^{\text{shape}},
+\end{equation}
+con $\kappa_{z2} = 0$ y $\text{shape} = 1$ (lineal) en la especificación de referencia; $\text{shape} > 1$ concentra la barrera en los nodos de menor productividad. El parámetro $\kappa_{z1}$ se calibra al target de gap de formalidad por productividad (Tkz).
 
 \subsection{Ecuación HJB}
 
@@ -179,7 +184,7 @@ donde $s(a,z)$ es el drift de riqueza (lado derecho de \ref{eq:budget}) y $Q_z(z
 Siguiendo a Restrepo-Echavarría (2025) \cite{restrepo2025}, el consumo agregado $C$ es un compuesto CES de bien formal $c_F$ (transable) e informal $c_I$ (no transable):
 
 \begin{equation}\label{eq:ces}
-C(c_F, c_I) = \left[ \omega_C^{1/\sigma_C} c_F^{\eta_C} + (1-\omega_C)^{1/\sigma_C} c_I^{\eta_C} \right]^{1/\eta_C}
+C(c_F, c_I) = \left[ \omega_C \, c_F^{\eta_C} + (1-\omega_C) \, c_I^{\eta_C} \right]^{1/\eta_C}
 \end{equation}
 
 con $\eta_C = 1 - 1/\sigma_C$, $\sigma_C = 5.0$ (elasticidad de sustitución), $\omega_C = 0.4$ (peso CES del bien formal). Esta especificación anida el caso de sustitutos perfectos cuando $\sigma_C \to \infty$ y el caso Cobb-Douglas cuando $\sigma_C \to 1$. El precio del bien formal es el numerario ($p_F = 1$); el precio del bien informal $p_I$ se determina en equilibrio.
@@ -262,7 +267,7 @@ Y_I = A_I K_I^{\alpha_I} L_I^{\beta_I}, \qquad \alpha_I \in [0, 0.222], \;\; \be
     \item \textbf{DRS Göbel original:} $\alpha_I = 0.118$, $\beta_I = 0.605$, $\alpha_I + \beta_I = 0.723$ (DRS, $\Pi_I > 0$).
 \end{enumerate}
 
-El trabajo efectivo informal es $L_I = \int \theta z^{\nu_I} \ell_I(a,z) g(a,z) da\,dz$. El capital informal $K_I$ se elige estáticamente: $K_I = \left(\frac{\alpha_I A_I}{r+\delta}\right)^{\frac{1}{1-\alpha_I}} L_I^{\frac{\beta_I}{1-\alpha_I}}$ cuando $\alpha_I > 0$. Las CPO determinan:
+El trabajo efectivo informal es $L_I = \int \theta z^{\nu_I} \ell_I(a,z) g(a,z) da\,dz$. El capital informal $K_I$ se elige estáticamente: $K_I = \left(\frac{p_I \, \alpha_I A_I}{r+\delta}\right)^{\frac{1}{1-\alpha_I}} L_I^{\frac{\beta_I}{1-\alpha_I}}$ cuando $\alpha_I > 0$. Las CPO determinan:
 \begin{align}
 w_I &= p_I \cdot \beta_I A_I K_I^{\alpha_I} L_I^{\beta_I-1} \quad \text{(PMgL)} \label{eq:wI}\\
 \Pi_I &= p_I Y_I - w_I L_I - (r+\delta)K_I = p_I \cdot (1 - \alpha_I - \beta_I) Y_I \quad \text{(beneficio)} \label{eq:PiI}
@@ -294,12 +299,12 @@ La distribución estacionaria $g(a,z)$ satisface:
 
 con $\iint g(a,z) \,da\,dz = 1$, $g \ge 0$. El segundo término es la versión discretizada del operador adjunto de la difusión en $z$.
 
-\subsection{Vaciamiento de Mercados}
+\subsection{Vaciamiento de Mercados}\label{sec:mercados}
 
 \begin{enumerate}[label=(\roman*)]
-    \item \textbf{Activos:} $S(r) \equiv \int a \, g(a,z) \,da\,dz = K_D(r) = k(r) \cdot L_F(r)$
+    \item \textbf{Activos:} $S(r) \equiv \int a \, g(a,z) \,da\,dz = K_D(r) = k(r) \cdot L_F(r) + K_I(r)$. La demanda de capital agregada incluye el capital informal, que se alquila al mismo costo de uso $r+\delta$; por eso el capital total que aparece en la condición de Walras es $K = K_F + K_I$
     \item \textbf{Bien informal:} $Y_I = \int c_I(a,z) g(a,z) \,da\,dz$ (determina $p_I$)
-    \item \textbf{Bien formal (Walras):} $C_F + \delta K_F + \text{DebtPremPayments} = Y_F$
+    \item \textbf{Bien formal (Walras):} $Y_F = C_F + \delta K + \text{KappaPayments} + \text{DebtPremPayments}$, con $K = K_F + K_I$, $\text{KappaPayments} = \int \kappa_F(a,z)\,\ell_F(a,z)\, g(a,z)\,da\,dz$ y $\text{DebtPremPayments} = \int \chi(z)\max(-a,0)\, g(a,z)\,da\,dz$. Los pagos de barrera de acceso y de prima de deuda salen del presupuesto del hogar y no se devuelven a ningún agente, de modo que son fuga de recursos y pertenecen a la identidad
     \item \textbf{Gobierno:} $T = \tau w_F L_F$
 \end{enumerate}
 

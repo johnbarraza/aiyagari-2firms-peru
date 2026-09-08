@@ -1,0 +1,108 @@
+\documentclass[tikz,border=10pt]{standalone}
+% Requiere docs/tikz/dag_preamble.tex de EconCSLib para compilar.
+\input{dag_preamble.tex}
+
+\begin{document}
+
+% Arrow direction rule: edges go from prerequisite to dependent.
+% Grid: columns spaced by 6.4cm, rows by 3.2cm.
+
+\begin{tikzpicture}[
+  x=1cm,
+  y=1cm,
+  every node/.append style={outer sep=4pt}
+]
+
+\dagPaperMetadata%
+  {Informalidad y Distribucion de Riqueza: Anexo Matematico}%
+  {J. S. Barraza Ratachi and E. A. Nevado Martinez}%
+  {Replication package aiyagari-2firms-peru}%
+  {2026}%
+  {https://github.com/johnbarraza/aiyagari-2firms-peru}
+
+\dagPaperLegendRightOfMetadata{
+\node[dag_result, dag_template_legend] (legRes) at (0,0) {formalized\\result};
+\node[dag_lemma, dag_template_legend] (legLem) at (4.2,0) {formalized\\lemma};
+\node[dag_model, dag_template_legend] (legDef) at (8.4,0) {formalized\\definition};
+\node[dag_caveat_legend] (legCav) at (12.6,0) {formalized\\with caveat};
+\node[dag_partial, dag_template_legend] (legPart) at (0,-2.6) {partially\\formalized};
+\node[dag_conditional, dag_template_legend] (legCond) at (4.2,-2.6) {conditional};
+\node[dag_scaffold, dag_template_legend] (legScaf) at (8.4,-2.6) {scaffold};
+\node[dag_unformalized, dag_template_legend] (legNot) at (12.6,-2.6) {not started /\\not formalized};
+}
+\daglegend{(legRes)(legLem)(legDef)(legCav)(legPart)(legCond)(legScaf)(legNot)}{Legend}
+
+\begin{dagPaperBody}
+
+% ---------------- Row 0: generic analytic helpers (not paper claims) --------
+\node[dag_lemma] (Bern) at (0,-1.6) {
+  \textbf{Bernoulli surplus bound} \\
+  Generic real-analysis helper
+};
+\node[dag_lemma] (RpowShift) at (6.4,-1.6) {
+  \textbf{Real-power shift identities} \\
+  Generic real-analysis helpers
+};
+
+% ---------------- Row 1: productivity process and wedges -------------------
+\node[dag_result] (Qz) at (12.8,-1.6) {
+  \textbf{eq:Qz\_construction} \\
+  OU generator rows sum to zero
+};
+\node[dag_result] (Debt) at (12.8,-4.8) {
+  \textbf{eq:debtprem} \\
+  Debt premium strictly decreasing in $z$
+};
+
+% ---------------- Row 2: household optimality -------------------------------
+\node[dag_result] (Ces) at (0,-4.8) {
+  \textbf{eq:ces\_foc} \\
+  CES demand ratio and deflator
+};
+\node[dag_result] (LabInt) at (6.4,-4.8) {
+  \textbf{eq:foc\_F / eq:foc\_I} \\
+  Interior labor supply is the global optimum
+};
+\node[dag_result] (LabKKT) at (6.4,-8.0) {
+  \textbf{eq:kkt\_binding} \\
+  Binding case: strict monotonicity and corners
+};
+
+% ---------------- Row 3: firms ----------------------------------------------
+\node[dag_result] (FirmF) at (0,-8.0) {
+  \textbf{eq:formal\_foc} \\
+  Formal firm: factor prices and product exhaustion
+};
+\node[dag_result] (FirmI) at (12.8,-8.0) {
+  \textbf{eq:wI / eq:PiI} \\
+  Informal firm: residual profit and capital demand
+};
+
+% ---------------- Row 4: aggregate accounting -------------------------------
+\node[dag_caveat] (Walras) at (6.4,-11.2) {
+  \textbf{Market clearing (iii)} \\
+  Formal-good identity, corrected
+};
+
+% ---------------- Row 5: out of scope ---------------------------------------
+\node[dag_unformalized] (Equil) at (6.4,-14.4) {
+  \textbf{eq:HJB / eq:KF / equilibrium} \\
+  Existence of the stationary equilibrium: not formalized
+};
+
+\draw[dag_arrow] (Bern.east) -- (RpowShift.west);
+\draw[dag_arrow] (RpowShift) -- (LabInt);
+\draw[dag_arrow] (RpowShift.south west) -- (Ces.north east);
+\draw[dag_arrow] (RpowShift.south) -- (LabKKT.north);
+\draw[dag_arrow] (RpowShift.south west) -- (FirmF.north east);
+\draw[dag_arrow] (RpowShift.south east) -- (FirmI.north west);
+
+\draw[dag_arrow] (Ces.south) -- (FirmF.north);
+\draw[dag_arrow] (FirmF.south east) -- (Walras.north west);
+\draw[dag_arrow] (FirmI.south west) -- (Walras.north east);
+\draw[dag_arrow] (LabKKT.south) -- (Walras.north);
+\draw[dag_dashed_arrow] (Qz.south) -- (Debt.north);
+\draw[dag_dashed_arrow] (Walras.south) -- (Equil.north);
+\end{dagPaperBody}
+\end{tikzpicture}
+\end{document}

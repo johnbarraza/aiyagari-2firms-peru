@@ -1,0 +1,290 @@
+{
+  "schema": 2,
+  "paper": "BN26InformalityWealthPeru",
+  "source_artifact_path": "papers/BN26InformalityWealthPeru/source-audited.tex",
+  "source_artifact_sha256": "2b7c3362e5845d109839829e8af95ec2453e20588b259efed69338a1ac7929ef",
+  "review_status": "reviewed",
+  "reviewed_proof_scopes": [
+    {
+      "id": "scope.households",
+      "source_locator": "Section 3, anexo_matematico.tex:127-232",
+      "scope": "Preferencias, restriccion presupuestaria, prima de deuda, barrera de acceso formal, HJB, reparto CES optimo y decision laboral KKT."
+    },
+    {
+      "id": "scope.firms",
+      "source_locator": "Section 4, anexo_matematico.tex:233-280",
+      "scope": "Firma formal Cobb-Douglas con retornos constantes y firma informal con retornos no crecientes: condiciones de primer orden estaticas, demanda de capital y beneficio residual."
+    },
+    {
+      "id": "scope.equilibrium",
+      "source_locator": "Section 5, anexo_matematico.tex:281-312",
+      "scope": "Ecuacion de Kolmogorov Forward, lista de condiciones de vaciamiento de mercados y definicion de equilibrio estacionario recursivo."
+    },
+    {
+      "id": "scope.productivity",
+      "source_locator": "Section 2, anexo_matematico.tex:71-126",
+      "scope": "Proceso de productividad Ornstein-Uhlenbeck y su discretizacion mediante el generador infinitesimal Q_z."
+    }
+  ],
+  "model_conventions": [
+    {
+      "id": "conv.stationary_zero_drift",
+      "source_locator": "Section 5.1, Equation eq:KF, anexo_matematico.tex:291",
+      "classification": "aggregation_convention",
+      "formal_meaning": "La agregacion de la restriccion presupuestaria individual bajo la distribucion estacionaria g tiene drift agregado nulo, es decir la integral del drift de riqueza contra g es cero.",
+      "why_needed": "El anexo enuncia la ecuacion de Kolmogorov Forward y la lista de vaciamiento por separado, sin escribir explicitamente el paso de agregacion que las conecta. La identidad de Walras necesita ese paso.",
+      "checked_scope": "Se toma como hipotesis explicita del enunciado formalizado de vaciamiento del bien formal; no se deriva de la ecuacion KF en Lean."
+    },
+    {
+      "id": "conv.hours_profit_rule",
+      "source_locator": "Section 3.1, Equation eq:budget, anexo_matematico.tex:137",
+      "classification": "distribution_rule_selection",
+      "formal_meaning": "Bajo la regla `hours` el ingreso informal por hora es w_I + Pi_I/L_I, de modo que el ingreso informal agregado de los hogares es exactamente w_I*L_I + Pi_I y no hay componente lump-sum adicional de beneficios.",
+      "why_needed": "El anexo ofrece dos reglas alternativas (`hours` y `lump`) y declara `hours` como la de referencia; la agregacion depende de cual se use.",
+      "checked_scope": "El enunciado formalizado de vaciamiento agrega el ingreso informal como w_I*L_I + Pi_I, correspondiente a la regla `hours`."
+    },
+    {
+      "id": "conv.no_consumption_tax",
+      "source_locator": "Section 6, anexo_matematico.tex:277",
+      "classification": "parameter_restriction",
+      "formal_meaning": "El impuesto al consumo del bien formal es nulo, de modo que el gasto del hogar es c_F + p_I*c_I y el gobierno solo recauda tau*w_F*L_F.",
+      "why_needed": "El anexo escribe el presupuesto del gobierno unicamente como T = tau*w_F*L_F, sin termino de impuesto al consumo.",
+      "checked_scope": "Coherente con la corrida de cierre del paquete de replicacion, donde la tasa de impuesto al consumo es cero."
+    }
+  ],
+  "checked_proof_steps": [
+    {
+      "id": "step.qz_rows",
+      "source_locator": "Section 2.2, Equation eq:Qz_construction, anexo_matematico.tex:97-107",
+      "source_step": "psi_i = -chi_i - zeta_i y absorcion de chi_1 y zeta_{N_z} en los bordes produce filas que suman cero.",
+      "checked_conclusion": "chi + psi + zeta = 0 para la fila interior y para ambas filas de borde tras la absorcion.",
+      "scope": "Fila generica del generador tridiagonal; no cubre la existencia de la distribucion ergodica pi_z."
+    },
+    {
+      "id": "step.ces_tangency",
+      "source_locator": "Section 3.5, Equation eq:ces_foc, anexo_matematico.tex:188",
+      "source_step": "El ratio de demanda xi y el deflactor K resumen la condicion de primer orden del reparto CES.",
+      "checked_conclusion": "Con xi = (omega_C*p_I/(1-omega_C))^{sigma_C} y c_F = xi*c_I se cumple la tangencia p_I*omega_C*c_F^{eta_C-1} = (1-omega_C)*c_I^{eta_C-1} y el agregado CES factoriza como K*c_I.",
+      "scope": "Solucion interior. Las soluciones de esquina que el codigo compara por utilidad directa no estan formalizadas."
+    },
+    {
+      "id": "step.labor_interior",
+      "source_locator": "Section 3.6, Equations eq:foc_F and eq:foc_I, anexo_matematico.tex:206-207",
+      "source_step": "La oferta laboral no restringida es (dV_a v * w / psi)^{phi}.",
+      "checked_conclusion": "Ese valor iguala beneficio y costo marginal, maximiza el excedente instantaneo sobre todo l no negativo, y es el unico punto estacionario interior.",
+      "scope": "Un sector a la vez, con el multiplicador de riqueza dV_a v tomado como dado."
+    },
+    {
+      "id": "step.labor_binding",
+      "source_locator": "Section 3.6, Equation eq:kkt_binding, anexo_matematico.tex:211-215",
+      "source_step": "El lado izquierdo es estrictamente creciente en l_F y los casos de esquina se activan en los umbrales indicados.",
+      "checked_conclusion": "Monotonia estricta en el intervalo cerrado, valores exactos en ambos extremos y las dos condiciones de esquina.",
+      "scope": "Se verifica la unicidad implicada por la monotonia; no se formaliza la convergencia del algoritmo de biseccion."
+    },
+    {
+      "id": "step.formal_firm",
+      "source_locator": "Section 4.1, Equation eq:formal_foc, anexo_matematico.tex:243",
+      "source_step": "Las condiciones de primer orden estaticas dan la razon capital-trabajo y el salario formal.",
+      "checked_conclusion": "La razon capital-trabajo cerrada es equivalente a la condicion de primer orden del capital, y el producto por unidad de trabajo se agota entre pagos a capital y trabajo.",
+      "scope": "Tecnologia Cobb-Douglas con retornos constantes y precio del bien formal normalizado a uno."
+    },
+    {
+      "id": "step.informal_firm",
+      "source_locator": "Section 4.2, Equations eq:wI and eq:PiI, anexo_matematico.tex:265-268",
+      "source_step": "Beneficio informal como residuo de ingresos menos pagos a factores.",
+      "checked_conclusion": "Pi_I = (1 - alpha_I - beta_I)*p_I*Y_I, con Pi_I = 0 bajo retornos constantes, y la demanda estatica de capital informal.",
+      "scope": "Solucion interior con capital informal estrictamente positivo; el caso alpha_I = 0 sin capital queda fuera de la rama de capital."
+    },
+    {
+      "id": "step.walras",
+      "source_locator": "Section 5.2, anexo_matematico.tex:297-303",
+      "source_step": "Lista de condiciones de vaciamiento, con el bien formal marcado como condicion de Walras.",
+      "checked_conclusion": "Las demas condiciones mas la agregacion presupuestaria implican Y_F = C_F + delta*K + pagos de barrera + pagos de prima de deuda.",
+      "scope": "Contabilidad agregada en el estado estacionario; no incluye impuesto al consumo ni devolucion de la prima de deuda."
+    }
+  ],
+  "model_convention_entry_schema": {
+    "required": [
+      "id",
+      "source_locator",
+      "classification",
+      "formal_meaning",
+      "why_needed",
+      "checked_scope"
+    ],
+    "optional": [
+      "unresolved_relation_to_literal_source"
+    ]
+  },
+  "checked_proof_step_entry_schema": {
+    "required": [
+      "id",
+      "source_locator",
+      "source_step",
+      "checked_conclusion",
+      "scope"
+    ]
+  },
+  "defects": [
+    {
+      "id": "def.ces_weights",
+      "source_locator": "Section 3.5, Equation eq:ces, anexo_matematico.tex:181",
+      "source_claim": "C(c_F,c_I) = [omega_C^{1/sigma_C} c_F^{eta_C} + (1-omega_C)^{1/sigma_C} c_I^{eta_C}]^{1/eta_C}.",
+      "defect_kind": "normalization_or_scaling",
+      "affected_source_locators": [
+        "Section 3.5, Equation eq:ces, anexo_matematico.tex:181",
+        "Section 3.5, Equation eq:ces_foc, anexo_matematico.tex:188"
+      ],
+      "statement_impact": "source_statement",
+      "repair_obligation": "Los pesos del agregador CES deben aparecer sin el exponente 1/sigma_C: C = [omega_C c_F^{eta_C} + (1-omega_C) c_I^{eta_C}]^{1/eta_C}. Con los pesos elevados a 1/sigma_C la condicion de tangencia da un ratio de demanda (omega_C/(1-omega_C)) p_I^{sigma_C}, que no coincide con el xi = (omega_C p_I/(1-omega_C))^{sigma_C} que el propio anexo escribe en eq:ces_foc.",
+      "acceptance_condition": "El agregador impreso y su condicion de primer orden deben producir el mismo ratio de demanda xi.",
+      "resolution": "corrected_source_statement",
+      "resolution_evidence": "La proposicion formalizada del reparto CES usa el agregador con pesos sin exponenciar y prueba exactamente el xi y el deflactor K que el anexo enuncia en eq:ces_foc.",
+      "status_impact": "formalized_note",
+      "status_impact_rationale": "El resultado sustantivo enunciado por el anexo (el ratio de demanda y el deflactor) queda intacto y probado; solo la linea que escribe el agregador tiene los pesos mal normalizados."
+    },
+    {
+      "id": "def.walras_missing_terms",
+      "source_locator": "Section 5.2, anexo_matematico.tex:302",
+      "source_claim": "Bien formal (Walras): C_F + delta K_F + DebtPremPayments = Y_F.",
+      "defect_kind": "logical_dependency",
+      "affected_source_locators": [
+        "Section 5.2, anexo_matematico.tex:297-303",
+        "Section 3.1, Equation eq:budget, anexo_matematico.tex:137",
+        "Section 3.4, Equation eq:kappa_full, anexo_matematico.tex:158"
+      ],
+      "statement_impact": "source_statement",
+      "repair_obligation": "La identidad correcta que se sigue de las demas condiciones del anexo es Y_F = C_F + delta*K + KappaPayments + DebtPremPayments, con K = K_F + K_I. Faltan los pagos de la barrera de acceso formal, que salen del presupuesto del hogar sin devolverse a nadie, y el capital total debe ser K y no solo K_F.",
+      "acceptance_condition": "La condicion impresa debe coincidir con la que se deriva de la agregacion presupuestaria mas el resto de condiciones de equilibrio.",
+      "resolution": "corrected_source_statement",
+      "resolution_evidence": "La proposicion formalizada deriva la identidad corregida y prueba ademas que la version impresa vale exactamente cuando KappaPayments + delta*K_I = 0. En la calibracion de cierre ambos terminos son estrictamente positivos.",
+      "status_impact": "formalized_with_caveat",
+      "status_impact_rationale": "Es un error en una identidad contable central del equilibrio, no un detalle de notacion, y el punto final corregido queda completamente probado."
+    },
+    {
+      "id": "def.informal_capital_price",
+      "source_locator": "Section 4.2, anexo_matematico.tex:265",
+      "source_claim": "K_I = (alpha_I A_I/(r+delta))^{1/(1-alpha_I)} L_I^{beta_I/(1-alpha_I)}.",
+      "defect_kind": "algebra_or_sign",
+      "affected_source_locators": [
+        "Section 4.2, anexo_matematico.tex:265",
+        "Section 4.2, Equation eq:wI, anexo_matematico.tex:267"
+      ],
+      "statement_impact": "source_statement",
+      "repair_obligation": "La condicion de primer orden del capital informal iguala el costo de uso al producto marginal en valor, que lleva el precio p_I. La demanda estatica correcta es K_I = (p_I alpha_I A_I/(r+delta))^{1/(1-alpha_I)} L_I^{beta_I/(1-alpha_I)}.",
+      "acceptance_condition": "La formula cerrada de K_I debe seguirse de la condicion de primer orden del capital que el mismo anexo usa para el beneficio residual.",
+      "resolution": "corrected_source_statement",
+      "resolution_evidence": "La proposicion formalizada de la firma informal deriva la formula con p_I a partir de la condicion de primer orden del capital.",
+      "status_impact": "formalized_note",
+      "status_impact_rationale": "Es la omision de un factor de precio en una formula intermedia; el beneficio residual y el agotamiento de Euler, que son los resultados advertidos, no cambian."
+    },
+    {
+      "id": "def.debt_premium_form",
+      "source_locator": "Section 3.2, Equation eq:debtprem, anexo_matematico.tex:148",
+      "source_claim": "chi(z) = chi_0 (z_1/z)^{eta_chi}.",
+      "defect_kind": "other",
+      "affected_source_locators": [
+        "Section 3.2, Equation eq:debtprem, anexo_matematico.tex:145-152"
+      ],
+      "statement_impact": "source_statement",
+      "repair_obligation": "La forma funcional que corresponde a la especificacion vigente es chi(z) = chi_0 ((z_max - z)/(z_max - z_min))^{eta_chi}, con peso uno en z_min y cero en z_max.",
+      "acceptance_condition": "La forma impresa debe coincidir con la especificacion vigente del modelo, que es tambien la del documento principal.",
+      "resolution": "corrected_source_statement",
+      "resolution_evidence": "La propiedad que el anexo advierte, chi(z_min) > chi(z_max), esta probada para la forma impresa; ambas formas son estrictamente decrecientes en z, de modo que la propiedad advertida se conserva bajo la correccion.",
+      "status_impact": "formalized_note",
+      "status_impact_rationale": "La conclusion cualitativa que el anexo enuncia sobre la prima es la misma bajo ambas formas; lo que hay que corregir es la expresion, no el resultado."
+    },
+    {
+      "id": "def.kappa_shape",
+      "source_locator": "Section 3.4, anexo_matematico.tex:160-162",
+      "source_claim": "Solo kappa_z(z) esta activo: kappa_z(z_1) = kappa_{z1} para el z mas bajo, kappa_z(z_j) = 0 para los demas.",
+      "defect_kind": "other",
+      "affected_source_locators": [
+        "Section 3.4, Equation eq:kappa_full, anexo_matematico.tex:156-162"
+      ],
+      "statement_impact": "source_statement",
+      "repair_obligation": "La especificacion vigente no concentra la barrera en un solo nodo: es kappa_z(z) = kappa_{z2} + (kappa_{z1} - kappa_{z2}) * ((z_max - z)/(z_max - z_min))^{shape}, decreciente y suave en z, con kappa_{z2} = 0 y shape = 1 en la corrida de cierre.",
+      "acceptance_condition": "La descripcion de la barrera debe coincidir con la especificacion vigente, que es tambien la del documento principal.",
+      "resolution": "corrected_source_statement",
+      "resolution_evidence": "No hay una afirmacion matematica del anexo que dependa de esta descripcion, de modo que no genera una fila formalizada; se registra como correccion de texto fuente.",
+      "status_impact": "formalized_note",
+      "status_impact_rationale": "La descripcion desactualizada no sostiene ninguna conclusion del anexo; corregirla no altera ningun resultado enunciado."
+    },
+    {
+      "id": "def.asset_clearing_informal_capital",
+      "source_locator": "Section 5.2, item (i), anexo_matematico.tex:301",
+      "source_claim": "Activos: S(r) = int a g(a,z) da dz = K_D(r) = k(r) * L_F(r).",
+      "defect_kind": "logical_dependency",
+      "affected_source_locators": [
+        "Section 5.2, anexo_matematico.tex:297-303",
+        "Section 4.2, anexo_matematico.tex:265"
+      ],
+      "statement_impact": "source_statement",
+      "repair_obligation": "La demanda agregada de capital incluye el capital informal, que se alquila al mismo costo de uso r+delta. La condicion correcta es S(r) = K_D(r) = k(r)*L_F(r) + K_I(r). Escrita sin K_I, la condicion de activos es incompatible con la condicion de Walral del bien formal, que requiere K = K_F + K_I.",
+      "acceptance_condition": "El capital total que vacia el mercado de activos debe coincidir con el capital total que aparece en la identidad de recursos del bien formal.",
+      "resolution": "corrected_source_statement",
+      "resolution_evidence": "La proposicion formalizada de vaciamiento del bien formal toma K = K_F + K_I como hipotesis explicita; la implementacion define la demanda agregada como k_ratio*L_F + K_I. En la corrida de cierre K_I = 0.419373, estrictamente positivo.",
+      "status_impact": "formalized_note",
+      "status_impact_rationale": "Es la misma omision de capital informal que el defecto de la identidad de Walras, expresada en la condicion de activos; no altera ningun resultado advertido, pero sin ella las dos condiciones de equilibrio impresas son mutuamente incompatibles."
+    }
+  ],
+  "defect_entry_schema": {
+    "required": [
+      "id",
+      "source_locator",
+      "source_claim",
+      "defect_kind",
+      "affected_source_locators",
+      "statement_impact",
+      "repair_obligation",
+      "acceptance_condition",
+      "resolution",
+      "resolution_evidence"
+    ],
+    "defect_kind_values": [
+      "algebra_or_sign",
+      "inequality_direction",
+      "quantifier_or_uniformity",
+      "domain_or_endpoint",
+      "index_or_integrality",
+      "event_or_measure",
+      "normalization_or_scaling",
+      "logical_dependency",
+      "other"
+    ],
+    "statement_impact_values": [
+      "proof_only",
+      "source_statement",
+      "uncertain"
+    ],
+    "status_impact_values": [
+      "formalized_note",
+      "formalized_with_caveat",
+      "partially_formalized"
+    ],
+    "resolution_values": [
+      "repaired_in_lean",
+      "open_proof_obligation",
+      "corrected_source_statement",
+      "resolved_in_current_source"
+    ]
+  },
+  "policy": [
+    "Review source proof text by exact source locator and mathematical claim; Lean declaration names are navigation only and are not evidence.",
+    "Give every defect a stable unique id using letters, digits, dot, underscore, or hyphen so source-map contracts can route its repair without depending on Lean names.",
+    "A source proof defect is not a paper/model assumption. Do not classify its repaired conclusion as validated_source_assumption.",
+    "Record every explicit formalization convention that resolves a source-model ambiguity in model_conventions, with the literal source relation and checked scope. A convention is not a literal source theorem without a source-side semantic bridge.",
+    "Record every source proof step independently checked by Lean in checked_proof_steps, including its exact source step, checked conclusion, and scope. A finite/event-level step does not silently establish an arbitrary-space, pointwise-conditioning, or arbitrary-partition claim.",
+    "For every defect, record the mathematical repair obligation and acceptance condition. Resolve it by a Lean derivation, leave it as an explicit open proof obligation, or record an explicit corrected source statement.",
+    "For every defect, separately record status_impact and status_impact_rationale. statement_impact says which source text changed; status_impact says whether the issue is a formalized note, a substantial source-paper caveat with a fully proved correction, or a partial-formalization boundary.",
+    "A proof-only defect may coexist with a source-faithful final theorem only after the replacement derivation is proved. A minor source-statement repair may also be formalized_note when the substantive advertised endpoint is unchanged. Only a substantial central source-paper error with a fully proved corrected endpoint justifies formalized_with_caveat."
+  ],
+  "upstream_correction": {
+    "status": "applied_not_reaudited",
+    "date": "2026-09-07",
+    "audited_source_sha256": "2b7c3362e5845d109839829e8af95ec2453e20588b259efed69338a1ac7929ef",
+    "corrected_source_sha256": "50f8847069a3a71a64966a69550f284834eb2c8ee25d8a700813cb0976942189",
+    "corrected_pdf_sha256": "65c3aa371cfc7bc7140626c48fb6e9fda07a816419052aa8bdf927fcda8832c6",
+    "note": "Las correcciones registradas en `defects` se aplicaron al anexo aguas arriba. El texto corregido no fue re-auditado; las filas de revision, este expediente y el reporte de validacion siguen describiendo la version auditada original."
+  }
+}

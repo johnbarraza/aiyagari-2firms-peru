@@ -818,7 +818,22 @@ elseif EQUILIBRIUM_MODE == 2
     mass_amin_by_z = da * g(1,:) ./ max(mass_z, 1e-12);
     mean_assets_by_z = da * sum(g .* aa, 1) ./ max(mass_z, 1e-12);
     mean_cons_by_z = da * sum(g .* c, 1) ./ max(mass_z, 1e-12);
-    walras_err  = abs(Y_F - C_F_agg - d*K_star - KappaCost);
+    % Restriccion de recursos del bien formal (ley de Walras). Agregando la
+    % restriccion presupuestaria del hogar con drift agregado nulo, junto con
+    % T = tau*w_F*L_F, el agotamiento del producto formal, el beneficio residual
+    % informal, C_I = Y_I y K = K_F + K_I, la identidad correcta es:
+    %     Y_F = C_F + delta*K + KappaCost + DebtPremPayments.
+    % Los pagos de barrera de acceso y de prima de deuda salen del presupuesto
+    % del hogar y no se devuelven a ningun agente cuando debt_prem_rebate=false,
+    % de modo que son fuga de recursos y pertenecen a la identidad. Con
+    % debt_prem_rebate=true la prima se recicla via T y su termino se cancela.
+    % Verificado formalmente: teorema walras_formal_goods_market del paquete
+    % Lean BN26InformalityWealthPeru (ver docs/VERIFICACION_NUMERICA.md).
+    if debt_prem_rebate
+        walras_err = abs(Y_F - C_F_agg - d*K_star - KappaCost);
+    else
+        walras_err = abs(Y_F - C_F_agg - d*K_star - KappaCost - DebtPremPayments);
+    end
     goods_I_err = C_I_agg - Y_I;
     labor_clear = da * sum(sum(g .* (ell_F + ell_I)));
     pmgl_check = abs(w_I_star - w_I_marg_check);

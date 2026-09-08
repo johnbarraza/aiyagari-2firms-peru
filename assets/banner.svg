@@ -38,7 +38,7 @@
     <rect x="0" y="0" width="286" height="42" rx="21" fill="#0f2a24" stroke="#2dd4bf" stroke-width="1.4"/>
     <path d="M18 21 l7 8 l13 -17" fill="none" stroke="#2dd4bf" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
     <text x="50" y="27" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#a7f3d0">
-      16 teoremas probados · sin sorry
+      16 teoremas probados, sin huecos
     </text>
   </g>
 

@@ -29,12 +29,10 @@ Asesor: César Saturnino Salinas Depaz · Investigación Económica II, ciclo 20
 > Este repositorio es el paquete de replicación: solver MATLAB, documento, anexo
 > matemático, y la verificación formal del modelo en Lean 4.
 
----
-
 ## La pregunta y el mecanismo único
 
-Perú combina informalidad laboral alta —71.1 % de la PEA ocupada en 2023 según
-INEI–ENAHO— con desigualdad de riqueza marcada. La pregunta es cuánto de esa
+Perú combina informalidad laboral alta, 71.1 % de la PEA ocupada en 2023 según
+INEI y ENAHO, con desigualdad de riqueza marcada. La pregunta es cuánto de esa
 desigualdad se explica por la decisión **endógena** de los hogares de repartir sus
 horas entre el sector formal y el informal. El objetivo es cuantificar el efecto
 de la informalidad sobre la distribución de riqueza, no explicar sus causas
@@ -101,7 +99,7 @@ proyecto está en [`lean/`](lean/).
 | Afirmaciones derivables inventariadas en el anexo | 8 |
 | Afirmaciones representadas en Lean | 8 / 8 |
 | Teoremas adicionales sobre la extensión | 8 |
-| Pruebas completas, sin `sorry` ni `admit` ni axiomas nuevos | 16 / 16 |
+| Pruebas completas, sin huecos ni axiomas nuevos | 16 / 16 |
 | Supuestos añadidos fuera del documento | 0 |
 | Errores de fórmula detectados en la fuente | 6 |
 | Revisiones humanas registradas | 0 / 8 pendientes |
@@ -204,7 +202,7 @@ hipótesis escritas en su enunciado**, y nada más. En particular:
 | Paso de validación | Resultado registrado |
 | --- | --- |
 | `lake build` del paquete completo | correcto, 8319 objetivos |
-| Barrido de `sorry`, `admit` y axiomas nuevos | limpio |
+| Barrido de huecos de prueba y axiomas nuevos | limpio |
 | Verificación con alcance de paper en EconCSLib, modo rápido | correcto |
 | Cruce numérico contra la corrida de cierre | errores entre `1e-15` y `1e-4`; ver `lean/docs/VERIFICACION_NUMERICA.md` |
 
@@ -252,8 +250,8 @@ formal de Céspedes, Aquije, Sánchez y Vera-Tudela (2014, BCRP), la informal de
 Göbel, Grimm y Lay (2013, BCRP), y la depreciación de Castillo y Rojas (BCRP).
 Los targets de informalidad y gasto salen de ENAHO e INEI.
 
-Cuatro parámetros se calibran internamente —`\psi_F`, `\psi_I`, `A_I`,
-`\kappa_{z1}`— contra tres targets: participación de horas informales, PBI
+Cuatro parámetros se calibran internamente (`\psi_F`, `\psi_I`, `A_I` y
+`\kappa_{z1}`) contra tres targets: participación de horas informales, PBI
 informal nominal, y gap de formalidad por productividad.
 
 ## Reproducir
@@ -323,5 +321,5 @@ cd lean && lake build && bash scripts/check.sh
 
 La formalización en Lean bajo [`lean/`](lean/) se distribuye con la licencia
 Apache-2.0 que acompaña al flujo de EconCSLib ([`lean/LICENSE`](lean/LICENSE)).
-El resto del repositorio —código MATLAB, documento y anexo— **no tiene licencia
+El resto del repositorio (código MATLAB, documento y anexo) **no tiene licencia
 declarada todavía**; hasta que se elija una, se reservan todos los derechos.

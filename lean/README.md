@@ -1,4 +1,4 @@
-# Informalidad y Distribución de Riqueza — verificación en Lean 4
+# Informalidad y Distribución de Riqueza: verificación en Lean 4
 
 Este directorio contiene la **formalización parcial en Lean 4** del anexo
 matemático de:
@@ -19,7 +19,7 @@ referencia [QX26AgenticDelegation](https://github.com/alexanderquispe/QX26Agenti
 | Afirmaciones derivables inventariadas en el anexo | 8 |
 | Proposiciones representadas en Lean | 8/8 |
 | Teoremas adicionales sobre la extensión | 8 |
-| Pruebas Lean completas (sin `sorry`) | 16/16 |
+| Pruebas Lean completas, sin huecos | 16/16 |
 | Supuestos añadidos fuera del documento | 0 |
 | Correcciones necesarias detectadas en la fuente | 5 |
 | Revisiones humanas registradas | 0/8 pendientes |
@@ -27,7 +27,7 @@ referencia [QX26AgenticDelegation](https://github.com/alexanderquispe/QX26Agenti
 
 Las ocho afirmaciones seleccionadas están completamente probadas. El estado es
 *formalización parcial* porque la existencia del equilibrio estacionario
-—solución de la HJB, distribución invariante, y punto fijo de precios— **no**
+(solución de la HJB, distribución invariante, y punto fijo de precios) **no**
 está formalizada, y porque las líneas de auditoría semántica asistidas por
 modelo del protocolo v11 no se ejecutaron.
 
@@ -104,22 +104,22 @@ no son filas de revisión fuente-a-Lean; son consecuencias probadas.
    vinculante la monotonía estricta del residuo KKT lo traslada a las horas
    formales. Es el mecanismo del target `Tkz`, convertido en teorema.
    *Condicional a `V_a`*: aísla el canal de productividad con la valoración
-   marginal de la riqueza fija — y por eso mismo el gradiente por **quintil de
+   marginal de la riqueza fija, y por eso mismo el gradiente por **quintil de
    riqueza** (`T6`) no se sigue de aquí, que es justo donde el modelo subestima.
 3. **Margen intensivo, sin salto de participación.** Como `κ` multiplica las horas
-   (`−κ_F·ℓ_F`) y no es un costo fijo, la política laboral es **continua** en `z`:
+   (`-κ_F·ℓ_F`) y no es un costo fijo, la política laboral es **continua** en `z`:
    no hay umbral donde las horas salten de cero a positivo, que es lo que produce
    un modelo con margen extensivo. Y se prueba el umbral exacto de exclusión:
-   `ℓ_F > 0 ⟺ κ(z) < (1−τ)w_F z`.
+   `ℓ_F > 0 ⟺ κ(z) < (1-τ)w_F z`.
 4. **El AR(1) de ENAHO sobrevive el paso a tiempo continuo.** La difusión
    `√(2η)σ` devuelve **exactamente** `σ²_logz` de varianza estacionaria; el mapeo
-   `η = −log(ρ_z)/dt` reproduce **exactamente** `ρ_z`; y `E[z] = exp(σ²/2) > 1`
+   `η = -log(ρ_z)/dt` reproduce **exactamente** `ρ_z`; y `E[z] = exp(σ²/2) > 1`
    siempre que `σ ≠ 0`, o sea la normalización ex-post no es opcional.
    *Convención declarada:* se usa como hecho clásico la varianza estacionaria
-   `s²/(2η)` y la autocorrelación `exp(−η·dt)` del OU; no se formaliza la teoría
+   `s²/(2η)` y la autocorrelación `exp(-η·dt)` del OU; no se formaliza la teoría
    de ecuaciones diferenciales estocásticas.
 5. **Homoteticidad CES.** El agregador es homogéneo de grado uno, y la composición
-   de la canasta `c_F/(p_I c_I) = (ω/(1−ω))^σ p_I^{σ−1}` es **idéntica para todos
+   de la canasta `c_F/(p_I c_I) = (ω/(1-ω))^σ p_I^{σ-1}` es **idéntica para todos
    los agentes**. Es el diagnóstico `TgFI_canasta` que imprime el solver, hasta
    ahora afirmado solo en un comentario del código.
 

@@ -1,6 +1,7 @@
 % Reproduccion de test_AI098_cierre con el ajuste de walras_err aplicado.
 % El entorno se reconstruye desde run_metadata.txt [env] MAS los parametros que
-% ese bloque NO registra y que solo estan dentro del results_*.mat: rho = 0.073.
+% ese bloque NO registraba: rho = 0.073 (recuperado del results_*.mat) y
+% gamma = 1 (inferido de la politica de consumo; no se guardaba en ningun lado).
 % Ubicar la raiz del paquete relativa a este script:
 %   <repo>/lean/scripts/matlab/reproducir_cierre.m  ->  <repo>
 this_file = mfilename('fullpath');
@@ -15,6 +16,7 @@ setenv('HA_IE_EQ_MODE',              '2');
 
 % --- no registrado en [env] del metadata; recuperado del results_*.mat ---
 setenv('HA_IE_RHO',                  '0.073');
+setenv('HA_IE_GA',                   '1');
 
 % --- registrado en [env] ---
 setenv('HA_IE_AMIN',                 '-1.0');

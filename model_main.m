@@ -108,8 +108,13 @@ HA_IE_TIMINGS = struct();
 % =========================================================================
 
 % Household
-ga     = 2;       % CRRA risk aversion coefficient γ
-rho    = 0.05;    % subjective discount rate ρ
+% Valores de la corrida de cierre test_AI098_cierre y del documento final:
+% utilidad logaritmica (gamma=1) y rho=0.073 calibrado con PWT 11.0 (K/Y Peru).
+% El documento reporta r*=0.066, que exige r*<rho; con rho=0.05 el equilibrio
+% seria otro. Antes estos defaults eran gamma=2 y rho=0.05, valores de la
+% especificacion previa, y la corrida final los sobreescribia por entorno.
+ga     = 1;       % CRRA risk aversion coefficient γ (log utility)
+rho    = 0.073;   % subjective discount rate ρ
 Frisch = 0.38;     % Frisch elasticity of labor supply φ
 
 env_ga = str2double(getenv('HA_IE_GA')); % _Env
@@ -1260,6 +1265,8 @@ if EQUILIBRIUM_MODE == 2
         'gasto_targets', fullfile(repo_root, 'data', 'enaho', 'output', 'enaho_model_consistent_gasto_targets_2015_2019.csv'));
     run_config.core = struct( ...
         'EQUILIBRIUM_MODE', EQUILIBRIUM_MODE, 'modo_rapido', MODO_RAPIDO, ...
+        'ga', ga, 'rho', rho, 'Frisch', Frisch, 'al', al, 'd', d, 'tau', tau, ...
+        'r_low', r_low, 'r_high', r_high, ...
         'I', I, 'amin', amin, 'amax', amax, 'maxit', maxit, 'crit', crit, ...
         'max_iter_T', max_iter_T, 'max_iter_wI', max_iter_wI, 'max_iter_pI', max_iter_pI, ...
         'tol_T', tol_T, 'tol_wI', tol_wI, 'tol_pI', tol_pI, ...
@@ -1467,8 +1474,10 @@ function [r_star, K_star, S_star, w_F_star, L_F_star, L_I_star, V, g, c, ell_F, 
                max_iter_wI, tol_pI, max_iter_pI, pI_grid_init, pI_expand_factor, ...
                max_pI_expand, L_I_floor_wI, damp_wI_log, damp_piI, damp_T)
 
+% El bracket debe contener el r* de la especificacion base: el documento
+% reporta r*=0.066, fuera del rango [-0.04, 0.0499] que se usaba antes.
 r_low  = -0.04;
-r_high =  0.0499;
+r_high =  0.20;
 env_r_lo = str2double(getenv('HA_IE_R_LO')); % _Env
 env_r_hi = str2double(getenv('HA_IE_R_HI')); % _Env
 if isfinite(env_r_lo) && isfinite(env_r_hi) && env_r_lo < env_r_hi
@@ -1554,6 +1563,22 @@ for iter = 1:max_bisect
     w_I_mid = wI_tmp;
     Pi_I_mid = Pi_tmp;
     p_I_mid = pI_tmp;
+end
+
+% Guardia de bracket: si la biseccion termina pegada a un extremo, el cero de
+% S(r)-KD(r) esta fuera del rango y lo que se reporta NO es un equilibrio.
+% Sin este chequeo el solver devolvia en silencio un punto de borde.
+bracket_span = 0.20 * max(r_high - r_low, eps);
+if abs(excess_mid) > tol_r
+    if abs(r - r_low) < bracket_span || abs(r - r_high) < bracket_span
+        error(['La biseccion de r termino en r=%.6f, pegada a un extremo del ' ...
+               'bracket [%.4f, %.4f], con exceso de capital %.3e. El equilibrio ' ...
+               'esta fuera del rango: ampliar con HA_IE_R_LO y HA_IE_R_HI.'], ...
+               r, r_low, r_high, excess_mid);
+    else
+        warning(['La biseccion de r no alcanzo la tolerancia: r=%.6f, exceso ' ...
+                 '%.3e frente a tol=%.1e.'], r, excess_mid, tol_r);
+    end
 end
 
 r_star = r;
@@ -2522,6 +2547,7 @@ keys = { ...
     'HA_IE_RUN_TAG', 'HA_IE_OUTPUT_DIR', 'HA_IE_FAST_DEBUG', ...
     'HA_IE_VERBOSE', 'HA_IE_PROFILE', 'HA_IE_EQ_MODE', ...
     'HA_IE_DEBUG_I', 'HA_IE_I', 'HA_IE_AMIN', 'HA_IE_AMAX', ...
+    'HA_IE_GA', 'HA_IE_RHO', 'HA_IE_FRISCH', 'HA_IE_AL', 'HA_IE_D', 'HA_IE_TAU', ...
     'HA_IE_R_LO', 'HA_IE_R_HI', 'HA_IE_TOL_R', 'HA_IE_MAX_BISECT_R', ...
     'HA_IE_MAX_ITER_T', 'HA_IE_MAX_ITER_WI', 'HA_IE_MAX_ITER_PI', ...
     'HA_IE_TOL_T', 'HA_IE_TOL_WI', 'HA_IE_TOL_PI', 'HA_IE_PI_GRID', ...

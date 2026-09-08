@@ -234,13 +234,21 @@ número de nodos, de modo que refinar `Nz` lo empeora. El análisis y tres opcio
 cuantificadas están en la sección 4 del
 [cruce numérico](lean/docs/VERIFICACION_NUMERICA.md).
 
-### La corrida de cierre no se reproduce con los valores por defecto
+### La corrida de cierre no se reproducía con los valores por defecto
 
-`model_main` con sus defaults **no** reproduce la corrida que reporta el
-documento: converge en silencio a otro equilibrio, sin mensaje de error. Faltan
-`HA_IE_RHO=0.073`, que no queda registrado en el metadata de la corrida, y un
-bracket de bisección ampliado, porque el `r*` reportado cae fuera del rango por
-defecto. El script de reproducción fija las variables necesarias.
+Hasta septiembre de 2026, `model_main` con sus defaults **no** reproducía la
+corrida que reporta el documento: convergía en silencio a otro equilibrio, sin
+mensaje de error. Tres causas, ninguna registrada en el metadata de la corrida.
+El script traía `gamma=2` y `rho=0.05` de la especificación previa, mientras la
+corrida final usaba `gamma=1` y `rho=0.073`. Y el bracket de bisección de `r`
+llegaba solo hasta `0.0499`, por debajo del `r*=0.066` reportado.
+
+Está corregido: los defaults son los del documento, el bracket contiene el
+equilibrio, el solver ahora **falla con un error explícito** si la bisección
+termina pegada a un extremo del bracket en vez de reportar ese punto como
+equilibrio, y el metadata registra `gamma`, `rho`, `Frisch`, `alpha_K`, `delta`,
+`tau` y el bracket. El valor de `gamma` no se guardaba en ningún archivo y hubo
+que inferirlo numéricamente de la política de consumo de la corrida.
 
 ## Calibración y datos
 
@@ -260,9 +268,11 @@ informal nominal, y gap de formalidad por productividad.
 run('lean/scripts/matlab/reproducir_cierre.m')
 ```
 
-El script localiza la raíz del paquete relativa a sí mismo, fija las 24 variables
-de entorno necesarias y llama a `model_main`. Tarda unos 33 minutos y necesita del
-orden de 10 GB de RAM libres. Los resultados quedan en
+El script localiza la raíz del paquete relativa a sí mismo, fija el entorno
+completo de la corrida de cierre y llama a `model_main`. Correr `model_main`
+directamente también usa ya la calibración del documento, pero en grilla de
+producción `I=500`; la corrida reportada usó la grilla rápida `I=200`. Tarda unos
+33 minutos y necesita del orden de 10 GB de RAM libres. Los resultados quedan en
 `outputs/stationary/<RUN_TAG>/`. Los ejercicios de robustez y las variables
 `HA_IE_*` están en [`INSTRUCCIONES.md`](INSTRUCCIONES.md).
 

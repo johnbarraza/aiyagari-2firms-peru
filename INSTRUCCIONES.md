@@ -11,14 +11,37 @@ cd('C:\Users\"user"\Documents\GitHub\HA-IE2025\Code\CONTINUOUS_TIME\Aiyagari_fir
 
 ## 2. Correr el modelo desde cero
 
-El script principal ya contiene los valores finales de la especificacion base
-del documento: `Nz=40`, regla de beneficios `hours`, grilla de riqueza
-`I=200` y parametros calibrados finales. No se necesita definir variables de
-entorno para replicar la corrida base.
+El script principal contiene los parametros calibrados finales del documento:
+`Nz=40`, regla de beneficios `hours`, utilidad logaritmica (`gamma=1`),
+`rho=0.073`, y un bracket de bisection de `r` que contiene el `r*=0.066`
+reportado.
 
 ```matlab
 model_main
 ```
+
+Eso corre la especificacion base en **grilla de produccion**, `I=500`. La
+corrida de cierre que reporta el documento uso la grilla rapida, `I=200`, de
+modo que para reproducir sus numeros exactos hay que activarla:
+
+```matlab
+setenv('HA_IE_FAST_DEBUG','true');
+model_main
+```
+
+o, mas simple, usar el script que fija todo el entorno de esa corrida:
+
+```matlab
+run('lean/scripts/matlab/reproducir_cierre.m')
+```
+
+> **Nota historica.** Hasta septiembre de 2026 los defaults del script eran
+> `gamma=2`, `rho=0.05` y un bracket `r` maximo de `0.0499`. Con esos valores
+> `model_main` **no** reproducia la corrida de cierre: convergia en silencio a
+> otro equilibrio, porque el `r*` reportado cae fuera de ese bracket y porque la
+> corrida final sobreescribia `gamma` y `rho` por variables de entorno que el
+> metadata no registraba. Los defaults ya se corrigieron y el solver ahora falla
+> con un error explicito si la bisection termina pegada a un extremo del bracket.
 
 Los resultados nuevos quedan en `outputs/stationary/<RUN_TAG>/`. Si no se fija
 un `RUN_TAG`, MATLAB crea una carpeta con timestamp para no sobreescribir la

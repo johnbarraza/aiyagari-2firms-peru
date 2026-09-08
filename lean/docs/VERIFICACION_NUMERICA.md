@@ -336,7 +336,143 @@ desigualdad suba y que `T6` mejore algo, y vale la pena verificar si es así.
 
 ---
 
-## 5. Reproducción
+---
+
+## 6. El proceso de productividad: definición, fuente y metodología
+
+Esta sección documenta la revisión de los dos parámetros del proceso de
+productividad contra su fuente primaria y contra la metodología de referencia.
+
+### 6.1 De dónde salen los valores
+
+La Tabla 1 de Hong (2022), cuya nota dice *"The time unit is a quarter"*,
+reporta para Perú:
+
+| Símbolo | Descripción | Valor |
+| --- | --- | ---: |
+| `ρ` | persistencia del componente AR(1) | 0.963 |
+| `σ_ps` | SD de los shocks al AR(1) (innovación) | 0.146 |
+| `σ_tr` | SD del componente i.i.d. transitorio | 0.443 |
+| `σ_P0` | SD del draw inicial `P₀` | 0.544 |
+
+El modelo usa `rho_z_ar = 0.861` y `sd_logz_ar = 0.544`. El comentario del código
+documenta el mapeo como `rho_z_ar = 0.963^4` y
+`sd_logz_ar = 0.146/sqrt(1-0.963^2)`. Evaluado:
+
+| Cantidad | Fórmula documentada | Valor usado | Desvío |
+| --- | ---: | ---: | ---: |
+| persistencia anual | 0.860013 | 0.861 | +0.11 % |
+| sd estacionaria | 0.541741 | 0.544 | +0.42 % |
+
+El `0.544` coincide dígito por dígito con el `σ_P0` de Hong, no con el resultado
+de la fórmula. Son cosas distintas: `σ_P0` es la **condición inicial** del
+componente persistente a los 25 años en un modelo de ciclo de vida no
+estacionario, mientras que este modelo es estacionario e infinito y su objetivo
+natural es la **sd estacionaria del AR(1)**, `0.541741`.
+
+Numéricamente da casi igual, 0.42 %. Lo que conviene es que el comentario y el
+valor digan lo mismo.
+
+Se verificó además que la sd estacionaria es invariante a la frecuencia: mapeada
+a anual da `0.541741`, idéntica a la trimestral, de modo que el mapeo
+`rho_anual = rho_trimestral^4` con la sd sin reescalar es correcto.
+
+### 6.2 La parametrización de la difusión es la estándar
+
+El modelo escribe la difusión del OU como `sqrt(2*eta)*sigma`. Esa es exactamente
+la parametrización de Yanagimoto (2026), *Marriage and Divorce in Continuous
+Time*, ecuación (6):
+
+```
+db_t = eta*(mu_m - b_t) dt + sigma_m*sqrt(2*eta) dB_t
+```
+
+y el paper explica por qué se usa así: *"Under this parametrization, the
+stationary distribution of b_t is N(mu_m, sigma_m^2), so mu_m and sigma_m have
+the same interpretation as in the discrete-time AR(1) specification."*
+
+Es decir, el factor `sqrt(2*eta)` existe precisamente para que `sigma` signifique
+la desviación estándar **estacionaria**. Eso confirma la definición del punto
+anterior. El mismo paper escribe su AR(1) como
+`b = (1-rho)*mu + rho*b_{-1} + sigma*sqrt(1-rho^2)*xi`, que es la relación
+inversa de `sd_estacionaria = sd_innovacion/sqrt(1-rho^2)`, y usa el mismo mapeo
+`eta = -log(rho)/dt`.
+
+Sobre las unidades: Hong estima el proceso sobre el componente no predecible del
+**logaritmo** del ingreso, de modo que sus sigmas están en logs. El modelo
+especifica el OU sobre `log z`, consistente. Esto lo aparta del código base de
+Moll, que hace el OU **en niveles**, pero apartarse es lo correcto dado el origen
+de los datos. El precio es que `z = exp(x)` es log-normal y `E[z] != 1`, lo que
+obliga a normalizar; el código lo hace.
+
+### 6.3 El mapeo ingenuo no garantiza los momentos: precedente publicado
+
+Yanagimoto (2026) es explícito sobre el límite del mapeo AR(1) a OU:
+
+> *"A naive approach is to set the parameters of the OU process to match the mean
+> and variance of the AR(1) process. However, this approach does not work well in
+> practice ... naively matching the OU parameters via the standard mapping
+> `eta = -log(rho)/dt` systematically overstates the divorce rate."*
+
+Y su respuesta fue **recalibrar el proceso en tiempo continuo**:
+
+| Parámetro | Mapeo ingenuo | Re-estimado en CT |
+| --- | ---: | ---: |
+| `mu_m` | 0.521 | 0.951 |
+| `sigma_m^2` | 0.68 | 0.83 |
+| `eta` | 0.11 | 0.113 |
+
+Subieron `sigma_m^2` un 22 %. Solo `eta` quedó igual.
+
+El mecanismo concreto que ellos corrigen, el *continuous monitoring problem*, es
+propio de modelos con umbral absorbente: en tiempo discreto la decisión se evalúa
+una vez por período y en continuo a cada instante, de modo que cruzar el umbral
+es más probable. Este modelo no tiene nada absorbente —las esquinas KKT no
+terminan nada— así que ese canal no aplica. La lección metodológica sí: el mapeo
+es un punto de partida, hay que verificar que el modelo en tiempo continuo
+reproduzca el momento objetivo, y ajustar si no.
+
+### 6.4 Qué pasa al corregir
+
+Efecto sobre la discretización, con `Nz = 40`:
+
+| Configuración | width | sd realizada | % objetivo | Gini(z) | soporte de z |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Actual, `sd=0.5440`, `w=2.50` | 2.5000 | 0.528123 | 97.08 % | 0.290953 | [0.223, 3.393] |
+| Solo corregir la sd a 0.5417 | 2.5000 | 0.525930 | 97.08 % | 0.289814 | [0.225, 3.377] |
+| **Corregido, `sd=0.5417`, `w=auto`** | **2.8268** | **0.541741** | **100.00 %** | **0.297946** | [0.187, 3.996] |
+
+Referencia analítica: el Gini exacto de una log-normal con `sd = 0.5417` es
+`0.298331`; la configuración corregida queda a 0.13 % de ese valor.
+
+Conclusión operativa: **corregir solo la sd no sirve**. El desvío sigue en
+97.08 % y la sd realizada incluso baja. El ancho de grilla es lo que controla el
+sesgo. Las dos correcciones juntas dan el objetivo exacto y recuperan cola
+superior, con `z` hasta 3.996 en vez de 3.393.
+
+### 6.5 Límite de alcance, no de definición
+
+El modelo excluye deliberadamente el componente transitorio `σ_tr = 0.443`, y el
+código lo documenta: *"The transitory shock sd=0.443 is not part of the
+persistent productivity state."* Es una decisión defendible, porque `z` es el
+estado persistente. Cuantificada:
+
+| Componente | SD |
+| --- | ---: |
+| persistente | 0.5417 |
+| transitorio | 0.4430 |
+| **total residual** | **0.6998** |
+
+El modelo captura el **59.9 % de la varianza** y el **77.4 % de la desviación
+estándar** de la dispersión residual del ingreso laboral que Hong estima.
+
+No es un error, pero es material para las conclusiones sobre desigualdad, y va en
+la misma dirección que los otros dos canales identificados: el truncamiento de
+grilla, y el gradiente por quintil de riqueza que el modelo subestima. De los
+tres, este es con diferencia el mayor. Conviene declararlo en el documento y no
+solo en un comentario del código.
+
+## 7. Reproducción
 
 ```matlab
 run('scripts/matlab/verificacion_numerica.m')     % secciones 1 y 2

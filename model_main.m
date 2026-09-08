@@ -108,8 +108,15 @@ HA_IE_TIMINGS = struct();
 % =========================================================================
 
 % Household
-ga     = 2;       % CRRA risk aversion coefficient γ
-rho    = 0.05;    % subjective discount rate ρ
+% Valores de la corrida de cierre test_AI098_cierre y del documento final.
+% gamma=1 (utilidad logaritmica), siguiendo a Achdou et al. (2022).
+% rho=0.073 se fija por consistencia interna: en un modelo de mercados
+% incompletos el equilibrio exige r* < rho, y el documento reporta r*=0.066.
+% Con rho=0.05 el equilibrio seria otro. No proviene de una fuente externa.
+% Antes estos defaults eran gamma=2 y rho=0.05, de la especificacion previa,
+% y la corrida final los sobreescribia por variables de entorno.
+ga     = 1;       % CRRA risk aversion coefficient γ (log utility)
+rho    = 0.073;   % subjective discount rate ρ
 Frisch = 0.38;     % Frisch elasticity of labor supply φ
 
 env_ga = str2double(getenv('HA_IE_GA')); % _Env
@@ -255,12 +262,39 @@ env_z_dt    = str2double(getenv('HA_IE_Z_DT'));     % _Env
 if isfinite(env_z_n) && env_z_n >= 2, Nz_ar = round(env_z_n); end
 if isfinite(env_z_rho) && env_z_rho > 0 && env_z_rho < 0.9999, rho_z_ar = env_z_rho; end
 if isfinite(env_z_sd) && env_z_sd > 0, sd_logz_ar = env_z_sd; end
-if isfinite(env_z_width) && env_z_width > 0, width_z_ar = env_z_width; end
+env_z_width_raw = lower(strtrim(getenv('HA_IE_Z_WIDTH')));
+width_z_auto = strcmp(env_z_width_raw, 'auto');
+width_z_user_set = width_z_auto || (isfinite(env_z_width) && env_z_width > 0);
+if ~width_z_auto && isfinite(env_z_width) && env_z_width > 0, width_z_ar = env_z_width; end
 if isfinite(env_z_mu), mu_logz_ar = env_z_mu; end
 if isfinite(env_z_dt) && env_z_dt > 0, dt_z_ar = env_z_dt; end
 if ~isfinite(width_z_ar), width_z_ar = sqrt(Nz_ar - 1); end
 
 eta_z_ar = -log(rho_z_ar) / dt_z_ar;
+
+% Modo automatico del ancho de grilla (solo ruta OU). Achdou et al. (2022)
+% especifican el OU como analogo en tiempo continuo de un AR(1) "with
+% comparable persistence AND standard deviation". La persistencia calza exacto
+% por construccion; la desviacion estandar no, porque las barreras reflectoras
+% truncan el soporte. Este modo resuelve por biseccion el ancho tal que la sd
+% de log z bajo la distribucion ergodica iguale sd_logz_ar.
+if width_z_auto
+    if ~any(strcmp(z_process_ar, {'ou','ct','continuous','continuous_time'}))
+        error('HA_IE_Z_WIDTH=auto solo aplica a la ruta OU.');
+    end
+    w_lo = 1.0; w_hi = 6.0;
+    for it_w = 1:80
+        w_md = 0.5*(w_lo + w_hi);
+        [xw, ~, piw] = ou_ar1_generator_grid(Nz_ar, rho_z_ar, sd_logz_ar, w_md, mu_logz_ar, dt_z_ar);
+        mw = sum(piw(:).*xw(:));
+        sw = sqrt(sum(piw(:).*(xw(:)-mw).^2));
+        if sw < sd_logz_ar, w_lo = w_md; else, w_hi = w_md; end
+    end
+    width_z_ar = 0.5*(w_lo + w_hi);
+    fprintf('width_z auto: %.4f para igualar sd(log z)=%.4f con Nz=%d\n', ...
+        width_z_ar, sd_logz_ar, Nz_ar);
+end
+
 switch z_process_ar
     case {'ou','ct','continuous','continuous_time'}
         [logz_nodes, Qz_ar, pi_z_ar, z_ou_diag] = ou_ar1_generator_grid( ...
@@ -269,6 +303,16 @@ switch z_process_ar
         qz_scale_ar = eta_z_ar;
         z_process_ar = 'ou';
     case {'rouwenhorst','dt','discrete'}
+        % Rouwenhorst iguala la varianza incondicional EXACTAMENTE solo con su
+        % ancho canonico sqrt(N-1) (Kopecky & Suen 2010). Con el ancho de la
+        % ruta OU (2.5) la cadena colapsa: con Nz=40 entrega el 40% de la
+        % desviacion estandar objetivo, y con Nz=60 el 33%. Por eso aqui se usa
+        % el ancho canonico salvo que se pida uno explicito por entorno.
+        if ~width_z_user_set
+            width_z_ar = sqrt(Nz_ar - 1);
+            fprintf(['Rouwenhorst: se usa el ancho canonico sqrt(Nz-1)=%.3f. ' ...
+                     'Fijar HA_IE_Z_WIDTH para forzar otro.\n'], width_z_ar);
+        end
         [logz_nodes, Pz_annual] = rouwenhorst_ar1_grid(Nz_ar, rho_z_ar, sd_logz_ar, width_z_ar, mu_logz_ar);
         pi_z_ar = stationary_dist_markov(Pz_annual);
         % Annual Rouwenhorst P has first-order persistence rho_z_ar. The HJB uses a
@@ -282,6 +326,17 @@ switch z_process_ar
         z_process_ar = 'rouwenhorst';
     otherwise
         error('HA_IE_Z_PROCESS debe ser ou o rouwenhorst.');
+end
+
+% Chequeo de dispersion: la grilla truncada con barreras reflectoras no
+% reproduce exactamente la sd objetivo. Avisar si el desvio es material, porque
+% subestimar la dispersion de z sesga hacia abajo los momentos de desigualdad.
+sd_logz_realizada = sqrt(sum(pi_z_ar(:) .* (logz_nodes(:) - sum(pi_z_ar(:).*logz_nodes(:))).^2));
+sd_logz_gap = sd_logz_realizada/sd_logz_ar - 1;
+if abs(sd_logz_gap) > 0.02
+    warning(['La grilla de z entrega sd(log z)=%.4f frente al objetivo %.4f ' ...
+             '(%+.1f%%). El sesgo lo controla width_z_ar, no Nz: aumentar Nz ' ...
+             'no lo corrige.'], sd_logz_realizada, sd_logz_ar, 100*sd_logz_gap);
 end
 
 z_raw = exp(logz_nodes);
@@ -1260,6 +1315,11 @@ if EQUILIBRIUM_MODE == 2
         'gasto_targets', fullfile(repo_root, 'data', 'enaho', 'output', 'enaho_model_consistent_gasto_targets_2015_2019.csv'));
     run_config.core = struct( ...
         'EQUILIBRIUM_MODE', EQUILIBRIUM_MODE, 'modo_rapido', MODO_RAPIDO, ...
+        'ga', ga, 'rho', rho, 'Frisch', Frisch, 'al', al, 'd', d, 'tau', tau, ...
+        'r_low', ha_ge_field(ge_history,'r_low'), ...
+        'r_high', ha_ge_field(ge_history,'r_high'), ...
+        'r_low_final', ha_ge_field(ge_history,'r_low_fin'), ...
+        'r_high_final', ha_ge_field(ge_history,'r_high_fin'), ...
         'I', I, 'amin', amin, 'amax', amax, 'maxit', maxit, 'crit', crit, ...
         'max_iter_T', max_iter_T, 'max_iter_wI', max_iter_wI, 'max_iter_pI', max_iter_pI, ...
         'tol_T', tol_T, 'tol_wI', tol_wI, 'tol_pI', tol_pI, ...
@@ -1467,14 +1527,24 @@ function [r_star, K_star, S_star, w_F_star, L_F_star, L_I_star, V, g, c, ell_F, 
                max_iter_wI, tol_pI, max_iter_pI, pI_grid_init, pI_expand_factor, ...
                max_pI_expand, L_I_floor_wI, damp_wI_log, damp_piI, damp_T)
 
+% El bracket debe contener el r* de la especificacion base: el documento
+% reporta r*=0.066, fuera del rango [-0.04, 0.0499] que se usaba antes. Con
+% ese rango la corrida no daba un resultado erroneo en silencio: el chequeo de
+% signos sobre excess_low y excess_high de mas abajo aborta con 'invalid
+% bracket in r'. Pero impedia reproducir la corrida de cierre sin intervenir.
 r_low  = -0.04;
-r_high =  0.0499;
+r_high =  0.20;
 env_r_lo = str2double(getenv('HA_IE_R_LO')); % _Env
 env_r_hi = str2double(getenv('HA_IE_R_HI')); % _Env
 if isfinite(env_r_lo) && isfinite(env_r_hi) && env_r_lo < env_r_hi
     r_low  = env_r_lo;
     r_high = env_r_hi;
 end
+% Bracket tal como quedo configurado, antes de que la biseccion lo estreche.
+% Es el que importa para reproducir la corrida.
+r_low_cfg  = r_low;
+r_high_cfg = r_high;
+
 tol_r = 1e-5;
 max_bisect = 60;
 env_tol_r = str2double(getenv('HA_IE_TOL_R'));
@@ -1556,6 +1626,19 @@ for iter = 1:max_bisect
     p_I_mid = pI_tmp;
 end
 
+% Aviso de no convergencia. El caso de "el equilibrio esta fuera del bracket"
+% ya lo cubre el chequeo de signos sobre excess_low y excess_high de mas
+% arriba, que aborta antes de iterar. Aqui solo queda el caso de que la
+% biseccion agote max_bisect sin alcanzar tol_r, que no es un error pero no
+% debe pasar inadvertido: los momentos se calculan igual sobre un r que no
+% vacia del todo el mercado de activos.
+if abs(excess_mid) > tol_r
+    warning(['La biseccion de r agoto las iteraciones sin alcanzar la ' ...
+             'tolerancia: r=%.6f, exceso de capital %.3e frente a tol=%.1e. ' ...
+             'Subir HA_IE_MAX_BISECT_R o revisar el bracket.'], ...
+             r, excess_mid, tol_r);
+end
+
 r_star = r;
 K_star = KD_mid;
 S_star = S_mid;
@@ -1570,7 +1653,23 @@ Y_I_out = YI_tmp;
 C_I_agg_out = CI_tmp;
 C_F_agg_out = CF_tmp;
 v0_out = v0_tmp;
+% El bracket efectivo viaja al script en ge_history para que el metadata lo
+% pueda registrar: r_low y r_high son locales a esta funcion.
+ge_history.r_low       = r_low_cfg;    % bracket configurado
+ge_history.r_high      = r_high_cfg;
+ge_history.r_low_fin   = r_low;        % bracket al terminar la biseccion
+ge_history.r_high_fin  = r_high;
 ge_history = sort_ge_history_v10(ge_history);
+end
+
+
+function v = ha_ge_field(ge_history, name)
+% Lee un escalar de ge_history; NaN si la corrida no lo produjo (p.ej. modo 1).
+if isstruct(ge_history) && isfield(ge_history, name) && isscalar(ge_history.(name))
+    v = ge_history.(name);
+else
+    v = NaN;
+end
 end
 
 
@@ -1607,6 +1706,8 @@ end
 
 
 function ge_history = sort_ge_history_v10(ge_history)
+% Solo ordena los campos vectoriales; los escalares (bracket) quedan intactos
+% porque el bucle de abajo exige numel(vals) == numel(order).
 [r_sorted, order] = sort(ge_history.r_grid(:));
 fields = fieldnames(ge_history);
 for jf = 1:numel(fields)
@@ -2522,6 +2623,7 @@ keys = { ...
     'HA_IE_RUN_TAG', 'HA_IE_OUTPUT_DIR', 'HA_IE_FAST_DEBUG', ...
     'HA_IE_VERBOSE', 'HA_IE_PROFILE', 'HA_IE_EQ_MODE', ...
     'HA_IE_DEBUG_I', 'HA_IE_I', 'HA_IE_AMIN', 'HA_IE_AMAX', ...
+    'HA_IE_GA', 'HA_IE_RHO', 'HA_IE_FRISCH', 'HA_IE_AL', 'HA_IE_D', 'HA_IE_TAU', ...
     'HA_IE_R_LO', 'HA_IE_R_HI', 'HA_IE_TOL_R', 'HA_IE_MAX_BISECT_R', ...
     'HA_IE_MAX_ITER_T', 'HA_IE_MAX_ITER_WI', 'HA_IE_MAX_ITER_PI', ...
     'HA_IE_TOL_T', 'HA_IE_TOL_WI', 'HA_IE_TOL_PI', 'HA_IE_PI_GRID', ...

@@ -123,7 +123,7 @@ A pesar de su heterogeneidad ex post, los hogares son **ex ante idénticos**: co
 
 Los hogares son heterogéneos en sus dotaciones de activos $a$ y en su productividad laboral idiosincrática $z$. Específicamente, $a \in [a_{\min}, a_{\max}]$ representa la riqueza neta del hogar (activos financieros menos deuda), y $z \in \mathbb{R}_{+}$ es la productividad laboral idiosincrática del hogar, que evoluciona según un proceso de difusión Ornstein-Uhlenbeck (OU) en tiempo continuo — equivalente a un AR(1) anualizado con persistencia $\rho_z = 0.861$ y desviación estándar $\sigma_{\log z} = 0.544$ (Hong, 2022). En cada instante, el hogar elige: consumo de bienes formales $c_F \geq 0$ e informales $c_I \geq 0$ (siendo $p_I$ el precio relativo del bien informal); y horas de trabajo en el sector formal $\ell_F \geq 0$ e informal $\ell_I \geq 0$. La informalidad no se interpreta como una característica fija, sino como el resultado endógeno de la asignación óptima de trabajo.
 
-Sin embargo, el acceso al sector formal no es inmediato ni gratuito. El modelo incorpora un costo de entrada al empleo formal que representa como proxy barreras asociadas a requisitos educativos, procesos de selección, costos de formalización y fricciones de contratación. Dicho costo depende negativamente de la productividad individual, de manera que los hogares más productivos enfrentan menores barreras. Formalmente:
+Sin embargo, el acceso al sector formal no es inmediato ni gratuito. El modelo incorpora una cuña sobre el salario formal que representa como proxy barreras asociadas a requisitos educativos, procesos de selección, costos de formalización y fricciones de contratación. No es un costo fijo de participación sino un descuento proporcional a las horas formales trabajadas, de modo que el modelo opera únicamente en el margen intensivo. Dicha cuña depende negativamente de la productividad individual, de manera que los hogares más productivos enfrentan menores barreras. Formalmente:
 
 $$
 \kappa(z) = \kappa_{z1} \left(\frac{z_{\max} - z}{z_{\max} - z_{\min}}\right)^{\text{shape}}
@@ -134,7 +134,7 @@ donde $\kappa_{z1}$ representa el costo máximo (agentes de baja productividad) 
 El ingreso de los hogares proviene de cinco fuentes: (i) rendimiento de activos, (ii) ingresos laborales formales, (iii) ingreso laboral informal, (iv) participación en beneficios del sector informal y (v) transferencias del gobierno. La restricción presupuestaria intertemporal es:
 
 $$
-\dot{a} = (1-\tau) w_F z \ell_F + \left(w_I + \frac{\Pi_I}{L_I}\right) \theta z^{\nu_I} \ell_I + r(z) a + T - c_F - p_I c_I
+\dot{a} = \left[(1-\tau) w_F z - \kappa(z)\right] \ell_F + \left(w_I + \frac{\Pi_I}{L_I}\right) \theta z^{\nu_I} \ell_I + r(z) a + T - c_F - p_I c_I
 $$
 
 donde $r(z) = r - \text{spread}(z) \cdot \mathbf{1}[a < 0]$ incorpora la prima de deuda:
@@ -182,10 +182,10 @@ La firma cumple sus obligaciones tributarias con tasa $\tau$ sobre la nómina fo
 La firma informal opera con tecnología que utiliza trabajo y capital informales:
 
 $$
-Y_I = p_I \cdot A_I K_I^{\alpha_I} L_I^{\beta_I}
+Y_I = A_I K_I^{\alpha_I} L_I^{\beta_I}
 $$
 
-con $\alpha_I + \beta_I \leq 1$ (rendimientos decrecientes o constantes a escala). Los beneficios $\Pi_I = (1 - \beta_I) p_I Y_I / (\alpha_I + \beta_I)$ se distribuyen a los hogares de manera proporcional a sus horas informales. El precio relativo $p_I$ se determina endógenamente para vaciar el mercado de bienes informales: $C_I = Y_I$.
+con $\alpha_I + \beta_I \leq 1$ (rendimientos decrecientes o constantes a escala). Los beneficios son el residuo tras pagar ambos factores a su producto marginal en valor, $\Pi_I = p_I Y_I - w_I L_I - (r+\delta) K_I = (1 - \alpha_I - \beta_I) \, p_I Y_I$, y se distribuyen a los hogares de manera proporcional a sus horas informales. El precio relativo $p_I$ se determina endógenamente para vaciar el mercado de bienes informales: $C_I = Y_I$.
 
 ### 3.3 Gobierno
 
@@ -212,7 +212,7 @@ La Tabla 1 presenta los parámetros obtenidos directamente de la literatura o fi
 | Parámetro | Símbolo | Valor | Fuente |
 | :--- | :--- | :--- | :--- |
 | Coef. aversión al riesgo | $\gamma$ | 1 | Achdou et al. (2022) |
-| Tasa de descuento subjetiva | $\rho$ | 0.073 | PWT 11.0, K/Y Perú |
+| Tasa de descuento subjetiva | $\rho$ | 0.073 | Consistencia con $r^*$ (ver nota) |
 | Elasticidad de Frisch | $\phi$ | 0.38 | Céspedes & Rendón (2012, BCRP) |
 | Tasa de depreciación | $\delta$ | 0.10 | Castillo & Rojas (BCRP REE-28) |
 | Participación capital formal | $\alpha_K$ | 0.573 | Céspedes et al. (2014, BCRP) |

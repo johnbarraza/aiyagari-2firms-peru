@@ -169,6 +169,15 @@ precisamente en los parámetros que fijan `r*`.
 `r*` reportado es **0.066040**, fuera del bracket. `FAST_DEBUG` no lo modifica. La
 corrida usó `HA_IE_R_HI=0.20`, que sí quedó registrado en `[env]`.
 
+**Corrección posterior sobre la causa 2.** Al probar el arreglo se verificó que
+esta causa **no** produce un resultado erróneo en silencio: el solver ya hacía un
+chequeo de signos sobre `excess_low` y `excess_high` que aborta con `invalid
+bracket in r` cuando el equilibrio cae fuera. Impedía reproducir la corrida, pero
+avisaba. La causa silenciosa es la 1, y ahora sabemos que son dos parámetros y no
+uno. El guardia adicional que se había agregado aquí resultó incorrecto —se
+disparaba en cualquier corrida no convergida, porque la bisección siempre deja
+`r` sobre uno de los extremos— y se reemplazó por un aviso de no convergencia.
+
 **Evidencia.** Una primera corrida lanzada solo con `HA_IE_FAST_DEBUG=true`, tal
 como indica `INSTRUCCIONES.md`, convergía a `r ≈ 0.0419`, `K ≈ 8.25`,
 `p_I ≈ 0.954` — contra `r* = 0.0660`, `K* = 5.138`, `p_I* = 0.928` del baseline.
@@ -182,7 +191,38 @@ calibración distinta sin ningún aviso. Para un paquete de replicación esto es
 grave que cualquiera de las erratas de fórmula del anexo, porque esas no cambiaban
 ningún número y esta sí.
 
-**Arreglo sugerido (no aplicado, requiere tu decisión).**
+**Actualización 2026-09-07: los cuatro arreglos están aplicados.**
+
+Además, al aplicarlos apareció una tercera causa que no había detectado: el
+script traía `gamma = 2` mientras la corrida usó **`gamma = 1`** (utilidad
+logarítmica). El documento final lo dice explícitamente: *"Se corrigió la
+especificación previa gamma = 2, rho = 0.05 por utilidad logarítmica (gamma = 1)
+y rho = 0.073"*. El valor de `gamma` **no se guarda en ningún archivo** de la
+corrida, así que hubo que inferirlo numéricamente de la política de consumo:
+mediana 0.988, cuartiles 0.983 a 1.000, incompatible con 2.
+
+Eso significa que los tres intentos de Corrida A de esa noche corrían con
+`gamma = 2` y no habrían reproducido el baseline aunque hubieran terminado.
+
+Lo aplicado:
+
+1. `model_main.m`: defaults `ga = 1` y `rho = 0.073`, con comentario que cita la
+   justificación real de `rho`: consistencia interna con `r* < rho` y el
+   `r* = 0.066` que reporta el documento, no una fuente externa.
+2. `model_main.m`: bracket por defecto ampliado a `r_high = 0.20`.
+3. `model_main.m`: guardia de bracket. Si la bisección termina a menos de un 20 %
+   del ancho del bracket de cualquiera de sus extremos sin cerrar la tolerancia,
+   ahora lanza un **error explícito** en vez de reportar ese punto como
+   equilibrio. Si termina en el interior sin alcanzar tolerancia, emite una
+   advertencia. Probado en los tres casos.
+4. `model_main.m`: el metadata registra ahora `ga`, `rho`, `Frisch`, `al`, `d`,
+   `tau`, `r_low` y `r_high` en `[core]`, y `HA_IE_GA`, `HA_IE_RHO`,
+   `HA_IE_FRISCH`, `HA_IE_AL`, `HA_IE_D`, `HA_IE_TAU` en `[env]`.
+5. `INSTRUCCIONES.md` y `README.md`: corregidas las dos afirmaciones falsas, con
+   una nota histórica de qué pasaba antes.
+6. `reproducir_cierre.m`: fijaba `HA_IE_RHO` pero **no** `HA_IE_GA`. Corregido.
+
+**Arreglo original sugerido, ya superado por lo anterior.**
 
 1. Poner `rho = 0.073` como default en `model_main.m`, o bien dejar `0.05` y
    documentar explícitamente el `setenv` requerido. Lo primero es preferible: el

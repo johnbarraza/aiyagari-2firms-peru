@@ -198,7 +198,8 @@ Eso significa que los tres intentos de Corrida A de esa noche corrían con
 Lo aplicado:
 
 1. `model_main.m`: defaults `ga = 1` y `rho = 0.073`, con comentario que cita la
-   fuente de calibración (PWT 11.0, K/Y Perú) y la razón de `r* < rho`.
+   justificación real de `rho`: consistencia interna con `r* < rho` y el
+   `r* = 0.066` que reporta el documento, no una fuente externa.
 2. `model_main.m`: bracket por defecto ampliado a `r_high = 0.20`.
 3. `model_main.m`: guardia de bracket. Si la bisección termina a menos de un 20 %
    del ancho del bracket de cualquiera de sus extremos sin cerrar la tolerancia,

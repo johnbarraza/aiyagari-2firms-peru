@@ -212,7 +212,7 @@ La Tabla 1 presenta los parámetros obtenidos directamente de la literatura o fi
 | Parámetro | Símbolo | Valor | Fuente |
 | :--- | :--- | :--- | :--- |
 | Coef. aversión al riesgo | $\gamma$ | 1 | Achdou et al. (2022) |
-| Tasa de descuento subjetiva | $\rho$ | 0.073 | PWT 11.0, K/Y Perú |
+| Tasa de descuento subjetiva | $\rho$ | 0.073 | Consistencia con $r^*$ (ver nota) |
 | Elasticidad de Frisch | $\phi$ | 0.38 | Céspedes & Rendón (2012, BCRP) |
 | Tasa de depreciación | $\delta$ | 0.10 | Castillo & Rojas (BCRP REE-28) |
 | Participación capital formal | $\alpha_K$ | 0.573 | Céspedes et al. (2014, BCRP) |

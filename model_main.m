@@ -108,11 +108,13 @@ HA_IE_TIMINGS = struct();
 % =========================================================================
 
 % Household
-% Valores de la corrida de cierre test_AI098_cierre y del documento final:
-% utilidad logaritmica (gamma=1) y rho=0.073 calibrado con PWT 11.0 (K/Y Peru).
-% El documento reporta r*=0.066, que exige r*<rho; con rho=0.05 el equilibrio
-% seria otro. Antes estos defaults eran gamma=2 y rho=0.05, valores de la
-% especificacion previa, y la corrida final los sobreescribia por entorno.
+% Valores de la corrida de cierre test_AI098_cierre y del documento final.
+% gamma=1 (utilidad logaritmica), siguiendo a Achdou et al. (2022).
+% rho=0.073 se fija por consistencia interna: en un modelo de mercados
+% incompletos el equilibrio exige r* < rho, y el documento reporta r*=0.066.
+% Con rho=0.05 el equilibrio seria otro. No proviene de una fuente externa.
+% Antes estos defaults eran gamma=2 y rho=0.05, de la especificacion previa,
+% y la corrida final los sobreescribia por variables de entorno.
 ga     = 1;       % CRRA risk aversion coefficient γ (log utility)
 rho    = 0.073;   % subjective discount rate ρ
 Frisch = 0.38;     % Frisch elasticity of labor supply φ

@@ -112,6 +112,27 @@ Las salidas quedan en:
 outputs/grid_convergence/
 ```
 
+## 5. Recompilar los documentos
+
+El documento final se genera desde su fuente Markdown con pandoc y xelatex. El
+`--resource-path` es necesario porque el documento mezcla rutas relativas a la
+raiz (la portada) con rutas relativas a `docs/` (las figuras):
+
+```powershell
+pandoc docs/INFORMALIDAD_RIQUEZA_HA_PERU.md `
+  -o docs/INFORMALIDAD_RIQUEZA_HA_PERU.pdf `
+  --pdf-engine=xelatex `
+  --resource-path=".;docs;docs/images"
+```
+
+El anexo matematico es LaTeX autocontenido, dos pasadas por el indice:
+
+```powershell
+cd docs/anexo_matematico
+pdflatex -interaction=nonstopmode anexo_matematico.tex
+pdflatex -interaction=nonstopmode anexo_matematico.tex
+```
+
 ## 5. Inputs y corrida guardada
 
 No hay `.mat` externo requerido en `inputs/`. La corrida final ya esta en:

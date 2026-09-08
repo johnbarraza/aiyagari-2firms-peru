@@ -315,11 +315,17 @@ vacio y `status.json` no lista nombres de supuestos.
   registros, envoltorios ni certificados intermedios.
 
 ## 16. DAG Audit
-- Rendered artifact: no generado. El renderizador de LaTeX no esta instalado en
-  este entorno; la fuente del diagrama esta presente.
-- Topology: las ocho filas son independientes entre si. Las unicas aristas van de
-  los tres lemas auxiliares genericos a las filas que los usan.
-- Layout: no verificado.
+- Rendered artifact: `docs/DependencyDAG.pdf`, generado con pdflatex, una pagina.
+  El preambulo TikZ vive junto al diagrama en `docs/dag_preamble.tex`.
+- Topology: verificada contra las dependencias reales de las pruebas. La cota de
+  Bernoulli alimenta la CPO laboral interior; las identidades de potencias reales
+  alimentan las dos filas de firmas; las conclusiones de ambas firmas son
+  hipotesis de la identidad de vaciamiento; y esa identidad apunta, con arista
+  discontinua, al bloque de existencia del equilibrio que no esta formalizado.
+  Las cuatro filas restantes no tienen aristas porque se prueban directamente
+  desde Mathlib, sin lemas auxiliares propios ni conclusiones de otras filas.
+- Layout: inspeccionado sobre el PDF renderizado; sin solapamientos de cajas,
+  aristas ni etiquetas.
 
 ## 17. Validation Checks
 - `lake build BN26InformalityWealthPeru`: exitoso, 8319 objetivos, incluyendo

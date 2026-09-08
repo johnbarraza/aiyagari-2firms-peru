@@ -1,11 +1,11 @@
 \documentclass[tikz,border=10pt]{standalone}
-% Requiere docs/tikz/dag_preamble.tex de EconCSLib para compilar.
 \input{dag_preamble.tex}
 
 \begin{document}
 
-% Arrow direction rule: edges go from prerequisite to dependent.
-% Grid: columns spaced by 6.4cm, rows by 3.2cm.
+% Las aristas reflejan dependencias reales: o bien el consumidor invoca al lema
+% auxiliar en su prueba, o bien la conclusion del nodo origen es una hipotesis
+% del nodo destino. Los nodos sin aristas son afirmaciones independientes.
 
 \begin{tikzpicture}[
   x=1cm,
@@ -34,75 +34,68 @@
 
 \begin{dagPaperBody}
 
-% ---------------- Row 0: generic analytic helpers (not paper claims) --------
-\node[dag_lemma] (Bern) at (0,-1.6) {
-  \textbf{Bernoulli surplus bound} \\
-  Generic real-analysis helper
-};
-\node[dag_lemma] (RpowShift) at (6.4,-1.6) {
+% ---------- Cadena conectada: helper de potencias -> firmas -> Walras ----------
+\node[dag_lemma] (RpowShift) at (3.2,-1.6) {
   \textbf{Real-power shift identities} \\
-  Generic real-analysis helpers
+  Generic helper, used by both firm proofs
 };
-
-% ---------------- Row 1: productivity process and wedges -------------------
-\node[dag_result] (Qz) at (12.8,-1.6) {
-  \textbf{eq:Qz\_construction} \\
-  OU generator rows sum to zero
-};
-\node[dag_result] (Debt) at (12.8,-4.8) {
-  \textbf{eq:debtprem} \\
-  Debt premium strictly decreasing in $z$
-};
-
-% ---------------- Row 2: household optimality -------------------------------
-\node[dag_result] (Ces) at (0,-4.8) {
-  \textbf{eq:ces\_foc} \\
-  CES demand ratio and deflator
-};
-\node[dag_result] (LabInt) at (6.4,-4.8) {
-  \textbf{eq:foc\_F / eq:foc\_I} \\
-  Interior labor supply is the global optimum
-};
-\node[dag_result] (LabKKT) at (6.4,-8.0) {
-  \textbf{eq:kkt\_binding} \\
-  Binding case: strict monotonicity and corners
-};
-
-% ---------------- Row 3: firms ----------------------------------------------
-\node[dag_result] (FirmF) at (0,-8.0) {
+\node[dag_result] (FirmF) at (0,-5.2) {
   \textbf{eq:formal\_foc} \\
   Formal firm: factor prices and product exhaustion
 };
-\node[dag_result] (FirmI) at (12.8,-8.0) {
+\node[dag_result] (FirmI) at (6.4,-5.2) {
   \textbf{eq:wI / eq:PiI} \\
   Informal firm: residual profit and capital demand
 };
-
-% ---------------- Row 4: aggregate accounting -------------------------------
-\node[dag_caveat] (Walras) at (6.4,-11.2) {
+\node[dag_caveat] (Walras) at (3.2,-8.8) {
   \textbf{Market clearing (iii)} \\
   Formal-good identity, corrected
 };
-
-% ---------------- Row 5: out of scope ---------------------------------------
-\node[dag_unformalized] (Equil) at (6.4,-14.4) {
+\node[dag_unformalized] (Equil) at (3.2,-12.4) {
   \textbf{eq:HJB / eq:KF / equilibrium} \\
   Existence of the stationary equilibrium: not formalized
 };
 
-\draw[dag_arrow] (Bern.east) -- (RpowShift.west);
-\draw[dag_arrow] (RpowShift) -- (LabInt);
-\draw[dag_arrow] (RpowShift.south west) -- (Ces.north east);
-\draw[dag_arrow] (RpowShift.south) -- (LabKKT.north);
+% ---------- Par helper -> consumidor: cota de Bernoulli -> CPO laboral ----------
+\node[dag_lemma] (Bern) at (13.5,-1.6) {
+  \textbf{Bernoulli surplus bound} \\
+  Generic helper, used by the labor proof
+};
+\node[dag_result] (LabInt) at (13.5,-5.2) {
+  \textbf{eq:foc\_F / eq:foc\_I} \\
+  Interior labor supply is the global optimum
+};
+
+% ---------- Afirmaciones independientes ----------
+\node[dag_result] (Ces) at (13.5,-8.8) {
+  \textbf{eq:ces\_foc} \\
+  CES demand ratio and deflator
+};
+\node[dag_result] (LabKKT) at (19.9,-8.8) {
+  \textbf{eq:kkt\_binding} \\
+  Binding case: strict monotonicity and corners
+};
+\node[dag_result] (Qz) at (13.5,-12.4) {
+  \textbf{eq:Qz\_construction} \\
+  OU generator rows sum to zero
+};
+\node[dag_result] (Debt) at (19.9,-12.4) {
+  \textbf{eq:debtprem} \\
+  Debt premium strictly decreasing in $z$
+};
+
+\node[dag_template_note] (Nota) at (16.7,-15.8) {
+  Los cuatro nodos de abajo a la derecha no tienen aristas porque son
+  afirmaciones independientes: cada una se prueba directamente desde Mathlib,
+  sin usar los lemas auxiliares ni las conclusiones de las demas filas.
+};
+
 \draw[dag_arrow] (RpowShift.south west) -- (FirmF.north east);
 \draw[dag_arrow] (RpowShift.south east) -- (FirmI.north west);
-
-\draw[dag_arrow] (Ces.south) -- (FirmF.north);
 \draw[dag_arrow] (FirmF.south east) -- (Walras.north west);
 \draw[dag_arrow] (FirmI.south west) -- (Walras.north east);
-\draw[dag_arrow] (LabKKT.south) -- (Walras.north);
-\draw[dag_dashed_arrow] (Qz.south) -- (Debt.north);
 \draw[dag_dashed_arrow] (Walras.south) -- (Equil.north);
+\draw[dag_arrow] (Bern.south) -- (LabInt.north);
 \end{dagPaperBody}
 \end{tikzpicture}
 \end{document}

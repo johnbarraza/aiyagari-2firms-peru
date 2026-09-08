@@ -262,7 +262,8 @@ env_z_dt    = str2double(getenv('HA_IE_Z_DT'));     % _Env
 if isfinite(env_z_n) && env_z_n >= 2, Nz_ar = round(env_z_n); end
 if isfinite(env_z_rho) && env_z_rho > 0 && env_z_rho < 0.9999, rho_z_ar = env_z_rho; end
 if isfinite(env_z_sd) && env_z_sd > 0, sd_logz_ar = env_z_sd; end
-if isfinite(env_z_width) && env_z_width > 0, width_z_ar = env_z_width; end
+width_z_user_set = isfinite(env_z_width) && env_z_width > 0;
+if width_z_user_set, width_z_ar = env_z_width; end
 if isfinite(env_z_mu), mu_logz_ar = env_z_mu; end
 if isfinite(env_z_dt) && env_z_dt > 0, dt_z_ar = env_z_dt; end
 if ~isfinite(width_z_ar), width_z_ar = sqrt(Nz_ar - 1); end
@@ -276,6 +277,16 @@ switch z_process_ar
         qz_scale_ar = eta_z_ar;
         z_process_ar = 'ou';
     case {'rouwenhorst','dt','discrete'}
+        % Rouwenhorst iguala la varianza incondicional EXACTAMENTE solo con su
+        % ancho canonico sqrt(N-1) (Kopecky & Suen 2010). Con el ancho de la
+        % ruta OU (2.5) la cadena colapsa: con Nz=40 entrega el 40% de la
+        % desviacion estandar objetivo, y con Nz=60 el 33%. Por eso aqui se usa
+        % el ancho canonico salvo que se pida uno explicito por entorno.
+        if ~width_z_user_set
+            width_z_ar = sqrt(Nz_ar - 1);
+            fprintf(['Rouwenhorst: se usa el ancho canonico sqrt(Nz-1)=%.3f. ' ...
+                     'Fijar HA_IE_Z_WIDTH para forzar otro.\n'], width_z_ar);
+        end
         [logz_nodes, Pz_annual] = rouwenhorst_ar1_grid(Nz_ar, rho_z_ar, sd_logz_ar, width_z_ar, mu_logz_ar);
         pi_z_ar = stationary_dist_markov(Pz_annual);
         % Annual Rouwenhorst P has first-order persistence rho_z_ar. The HJB uses a
@@ -289,6 +300,17 @@ switch z_process_ar
         z_process_ar = 'rouwenhorst';
     otherwise
         error('HA_IE_Z_PROCESS debe ser ou o rouwenhorst.');
+end
+
+% Chequeo de dispersion: la grilla truncada con barreras reflectoras no
+% reproduce exactamente la sd objetivo. Avisar si el desvio es material, porque
+% subestimar la dispersion de z sesga hacia abajo los momentos de desigualdad.
+sd_logz_realizada = sqrt(sum(pi_z_ar(:) .* (logz_nodes(:) - sum(pi_z_ar(:).*logz_nodes(:))).^2));
+sd_logz_gap = sd_logz_realizada/sd_logz_ar - 1;
+if abs(sd_logz_gap) > 0.02
+    warning(['La grilla de z entrega sd(log z)=%.4f frente al objetivo %.4f ' ...
+             '(%+.1f%%). El sesgo lo controla width_z_ar, no Nz: aumentar Nz ' ...
+             'no lo corrige.'], sd_logz_realizada, sd_logz_ar, 100*sd_logz_gap);
 end
 
 z_raw = exp(logz_nodes);

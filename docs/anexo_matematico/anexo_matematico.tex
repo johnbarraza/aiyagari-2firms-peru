@@ -124,6 +124,29 @@ A_{\text{switch}} = Q_z \otimes \mathbf{I}_I
 
 donde $\otimes$ es el producto de Kronecker. $A_{\text{switch}}$ es sparse con $O(N_z \cdot I)$ elementos no nulos. Esta construcción sigue exactamente el HACT Apéndice Sección 5, donde $A_{\text{switch}}$ captura el generador del proceso de difusión en la dimensión $z$.
 
+\subsection{Comparación con un proceso de dos estados}
+
+El proceso OU preserva una distribución continua de productividad en la discretización, mientras que una cadena de Poisson con dos estados resume la heterogeneidad en tipos alto y bajo. La Tabla~\ref{tab:ou-poisson} presenta la comparación en este anexo porque describe una decisión numérica y no un resultado económico.
+
+\begin{table}[htbp]
+\centering
+\caption{Proceso OU y proceso de Poisson con dos estados}
+\label{tab:ou-poisson}
+\small
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+Dimensión & Proceso OU del benchmark & Proceso de Poisson con dos estados \\
+\midrule
+Soporte de $z$ & Continuo, discretizado con $N_z=40$ & Discreto, con estados alto y bajo \\
+Calibración & $\rho_z$ y $\sigma_{\log z}$ a partir del mapeo de Hong (2023) & Tasas de transición fijadas para dos tipos \\
+Persistencia & Dinámica AR(1) suave & Cadena de Markov con dos estados \\
+Costo computacional & Matriz de tamaño $I\times N_z$ & Matriz de tamaño $I\times2$ \\
+Representación & Heterogeneidad continua aproximada & Heterogeneidad resumida en dos tipos \\
+Referencias & Achdou et al. (2022) & Aiyagari (1994) y Huggett (1993) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 % ===================================================================
 \section{Hogares}
 % ===================================================================
@@ -253,7 +276,7 @@ w_F = (1-\alpha_K) A_F k^{\alpha_K}
 
 con $\delta = 0.10$ (Castillo \& Rojas, BCRP REE-28 \cite{castillo2024}). La demanda de capital es $K_D = k \cdot L_F$ donde $L_F = \int z \ell_F(a,z) g(a,z) da\,dz$.
 
-\subsection{Firma Informal (CRS o DRS, con/sin capital)}
+\subsection{Firma Informal con Rendimientos Decrecientes}
 
 La tecnología informal final usa $\alpha_I=0.22$ y $\beta_I=0.619$. Estos valores son una calibración interna informada por los rangos de Göbel, Grimm \& Lay (2013) \cite{gobel2013}, quienes estiman funciones de producción para microempresas urbanas peruanas:
 
@@ -261,7 +284,7 @@ La tecnología informal final usa $\alpha_I=0.22$ y $\beta_I=0.619$. Estos valor
 Y_I = A_I K_I^{\alpha_I} L_I^{\beta_I}, \qquad \alpha_I=0.22, \quad \beta_I=0.619, \quad A_I=0.98.
 \end{equation}
 
-Göbel et al. reportan como referencia una especificación DRS original $(0.118,0.605)$ y una normalización CRS $(0.163,0.837)$. El benchmark no coincide exactamente con ninguna: usa $(0.22,0.619)$ y conserva DRS, pues $\alpha_I+\beta_I=0.839<1$.
+Göbel et al. reportan como referencia una especificación DRS original $(0.118,0.605)$ y una normalización CRS $(0.163,0.837)$. El benchmark usa $(0.22,0.619)$ y conserva rendimientos estrictamente decrecientes, pues $\alpha_I+\beta_I=0.839<1$.
 
 El trabajo efectivo informal es $L_I = \int z^{\nu_I} \ell_I(a,z) g(a,z) da\,dz$. El capital informal $K_I$ se elige estáticamente: $K_I = \left(\frac{p_I \, \alpha_I A_I}{r+\delta}\right)^{\frac{1}{1-\alpha_I}} L_I^{\frac{\beta_I}{1-\alpha_I}}$ cuando $\alpha_I > 0$. Las CPO determinan:
 \begin{align}
@@ -269,7 +292,7 @@ w_I &= p_I \cdot \beta_I A_I K_I^{\alpha_I} L_I^{\beta_I-1} \quad \text{(PMgL)} 
 \Pi_I &= p_I Y_I - w_I L_I - (r+\delta)K_I = p_I \cdot (1 - \alpha_I - \beta_I) Y_I \quad \text{(beneficio)} \label{eq:PiI}
 \end{align}
 
-Con la regla \texttt{hours}, el ingreso por hora informal es $\tilde{w}_I = w_I + \Pi_I/L_I$. En el escenario CRS ($\alpha_I+\beta_I=1$), $\Pi_I = 0$ y $\tilde{w}_I = w_I$ (no hay beneficios que distribuir).
+Con la regla \texttt{hours}, el ingreso por hora informal es $\tilde{w}_I = w_I + \Pi_I/L_I$. Como $\alpha_I+\beta_I<1$, los beneficios son positivos en el benchmark y se distribuyen proporcionalmente a las horas informales.
 
 % ===================================================================
 \section{Gobierno}

@@ -206,7 +206,7 @@ $$
 Y_I = A_I K_I^{\alpha_I} L_I^{\beta_I}
 $$
 
-con $\alpha_I + \beta_I \leq 1$ (rendimientos decrecientes o constantes a escala). Los beneficios son el residuo tras pagar ambos factores a su producto marginal en valor, $\Pi_I = p_I Y_I - w_I L_I - (r+\delta) K_I = (1 - \alpha_I - \beta_I) \, p_I Y_I$, y se distribuyen a los hogares de manera proporcional a sus horas informales. El precio relativo $p_I$ se determina endógenamente para vaciar el mercado de bienes informales: $C_I = Y_I$.
+con $\alpha_I=0.22$ y $\beta_I=0.619$. Por tanto, $\alpha_I+\beta_I=0.839<1$ y la firma informal presenta rendimientos estrictamente decrecientes a escala. Los beneficios son el residuo tras pagar ambos factores a su producto marginal en valor, $\Pi_I = p_I Y_I - w_I L_I - (r+\delta) K_I = (1 - \alpha_I - \beta_I) \, p_I Y_I$, y se distribuyen a los hogares de manera proporcional a sus horas informales. El precio relativo $p_I$ se determina endógenamente para vaciar el mercado de bienes informales: $C_I = Y_I$.
 
 ### 3.3 Gobierno
 
@@ -250,15 +250,6 @@ La Tabla 1 presenta los parámetros obtenidos de la literatura, fijados como sup
 [^rho-r]: En modelos de Aiyagari con mercados incompletos, $r^*<\rho$ en estado estacionario. El modelo arroja $r^*=0.066$, consistente con $\rho=0.073$. Un valor $\rho=0.05$ daría $r^*<0.05$, lo que no corresponde a los resultados obtenidos.
 
 [^ou]: El modelo utiliza una difusión Ornstein–Uhlenbeck en tiempo continuo con $N_z=40$ estados. Hong (2023) estima una persistencia trimestral de 0.963 para el componente permanente del ingreso, cuya anualización es $0.963^4\simeq0.861$. El valor 0.544 reportado por Hong corresponde a $\sigma_{P0}$, la dispersión inicial del componente permanente. Su uso como dispersión estacionaria de $\log z$ es, por tanto, un mapeo del presente modelo.
-
-| Dimensión | Proceso OU (este modelo) | Proceso Poisson 2 estados |
-|---|---|---|
-| Soporte de $z$ | Continuo ($N_z = 40$) | Discreto (alto/bajo) |
-| Calibración | $\rho_z$, $\sigma_{\log z}$ de panel ENAHO (Hong 2023) | Parámetros ad hoc |
-| Persistencia | AR(1) suave | Markov 2 estados |
-| Costo computacional | Alto: matriz $I \times N_z$ densa | Bajo: matriz $I \times 2$ dispersa |
-| Realismo | Distribución continua de productividad | Polariza en dos tipos |
-| Literatura | Achdou et al. (2022) | Aiyagari (1994), Huggett (1993) |
 
 ### Parámetros Calibrados Internamente
 
@@ -445,7 +436,7 @@ El equilibrio general se alcanza a $r^*=6.6\%$, con precio relativo informal $p_
 
 Una pregunta central es qué parte de la asociación entre informalidad y baja riqueza se impone por construcción y qué parte resulta de resolver el equilibrio. El benchmark estacionario no demuestra una trampa de pobreza en sentido dinámico ni identifica un efecto causal; para ello se necesitan transiciones y contrafactuales.
 
-### 6.1.1 Lo que el modelo impone por supuesto
+### 6.1.1 Supuestos del modelo
 
 El modelo impone tres elementos exógenos que crean las condiciones para el mecanismo. La barrera de acceso $\kappa(z) = \kappa_{z1} \left(\frac{z_{\max}-z}{z_{\max}-z_{\min}}\right)$ es decreciente en $z$ por construcción. El parámetro $\kappa_{z1}=0.40$ se calibra para replicar $T_{kz}=38.6\%$, mientras que la forma funcional representa costos de formalización, requisitos educativos y fricciones de selección. La prima de deuda también disminuye con $z$ y representa un mayor riesgo percibido entre agentes de baja productividad. Las diferencias tecnológicas calibradas favorecen una remuneración formal mayor en el benchmark. Su magnitud se determina en equilibrio, condicionada por esos parámetros.
 

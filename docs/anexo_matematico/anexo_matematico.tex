@@ -13,8 +13,11 @@
 \usepackage{url}
 \usepackage{enumitem}
 \usepackage{xcolor}
+\usepackage{caption}
 
 \geometry{margin=2.5cm}
+\hypersetup{hidelinks}
+\renewcommand{\contentsname}{Contenido}
 
 \newtheorem{assumption}{Supuesto}
 \newtheorem{proposition}{Proposición}
@@ -35,9 +38,7 @@ Modelo de Agentes Heterogéneos con Oferta Laboral Endógena\\
 y Productividad AR(1) en Tiempo Continuo}
 \author{John Svante Barraza Ratachi \and Enzo Andrés Nevado Martínez\\
 Asesor: César Saturnino Salinas Depaz}
-\date{Versión 10 ARz DebtPrem — Junio 2026\\
-Código auditado: \texttt{aiyagari\_2firms\_v10\_R2\_precio\_endogeno\_ARz\_debtprem.m}\\[0.3em]
-\small Revisión de septiembre 2026: se corrigen los pesos del agregador CES, la forma funcional de la prima de deuda y de la barrera de acceso, el factor de precio en la demanda de capital informal, y la identidad de vaciamiento del bien formal. Correcciones derivadas de la verificación formal en Lean~4 del modelo; ver \texttt{docs/VERIFICACION\_NUMERICA.md}.}
+\date{Junio 2026, revisado en septiembre 2026}
 
 \begin{document}
 \maketitle
@@ -48,25 +49,11 @@ Código auditado: \texttt{aiyagari\_2firms\_v10\_R2\_precio\_endogeno\_ARz\_debt
 \section{Introducción}
 % ===================================================================
 
-Este anexo presenta la derivación formal completa del modelo implementado en \texttt{aiyagari\_2firms\_v10\_R2\_precio\_endogeno\_ARz\_debtprem.m}. El documento describe el modelo tal como está codificado y sirve para verificar consistencia entre teoría e implementación.
+Este anexo presenta la derivación formal del modelo, sus condiciones de equilibrio y el método numérico utilizado para obtener la distribución estacionaria. Su propósito es hacer explícita la relación entre los supuestos económicos, las condiciones de optimalidad y las ecuaciones de cierre.
 
-\textbf{Fundamentos teóricos (4 pilares):}
-\begin{enumerate}[label=(\arabic*)]
-    \item \textbf{Agentes heterogéneos en tiempo continuo (HACT):} Achdou, Han, Lasry, Lions \& Moll (2022) \cite{achdou2022} + Apéndice Numérico \cite{hact_appendix}: HJB, KF, diferencias finitas, upwind implícito, propiedad de adjunto.
-    \item \textbf{2 sectores y 2 bienes:} Restrepo-Echavarría (2014) \cite{restrepo2014} estudia una economía formal/informal con consumo de ambos bienes y motiva la estructura dual. La especificación cuantitativa del presente modelo es propia y no debe atribuirse como una reproducción exacta de ese artículo.
-    \item \textbf{2 firmas, 2 bienes en equilibrio general:} Horvath (2000, \emph{Journal of Monetary Economics}) \cite{horvath2000}: modelo RBC con firmas heterogéneas multisectoriales y bienes diferenciados. Aunque Horvath usa agente representativo, la estructura de equilibrio general con dos sectores productivos interdependientes (input-output implícito vía consumo final diferenciado) es la referencia canónica.
-    \item \textbf{Oferta laboral endógena en HA:} Moll (2018) \cite{moll_labor}: extensión de Huggett con $\ell(a)$ endógena, \texttt{fzero} para condición de borde zero-drift. Castañeda, Díaz-Giménez \& Ríos-Rull (1998) \cite{castaneda1998}: oferta laboral separable en modelo HA con heterogeneous earnings.
-\end{enumerate}
+\textbf{Fundamentos teóricos.} La formulación de agentes heterogéneos en tiempo continuo, la HJB, la ecuación KF y el esquema de diferencias finitas siguen a Achdou, Han, Lasry, Lions \& Moll (2022) \cite{achdou2022} y su apéndice numérico \cite{hact_appendix}. Restrepo-Echavarría (2014) \cite{restrepo2014} motiva la estructura formal e informal con consumo de ambos bienes, aunque la especificación cuantitativa utilizada aquí es propia. Horvath (2000) \cite{horvath2000} aporta la referencia para el equilibrio multisectorial con bienes diferenciados. La oferta laboral endógena se relaciona con Moll (2018) \cite{moll_labor} y con Castañeda, Díaz-Giménez \& Ríos-Rull (1998) \cite{castaneda1998}.
 
-\textbf{Características del modelo:}
-\begin{enumerate}[label=(\roman*)]
-    \item Productividad $z_t \sim$ AR(1) log-normal, discretizado con $N_z=40$ y generador OU continuo $Q_z$ (Moll HACT Sección 5).
-    \item Hogar: oferta laboral dual $\ell_F, \ell_I \ge 0$, restricción KKT $\ell_F + \ell_I \le \bar{H}=1$, consumo CES $(c_F, c_I; \sigma_C, \omega_C)$.
-    \item Firma formal: $Y_F = A_F K_F^\alpha L_F^{1-\alpha}$ (CD, $\alpha=0.573$). Firma informal: $Y_I=A_IK_I^{\alpha_I}L_I^{\beta_I}$ (DRS, $\alpha_I=0.22$, $\beta_I=0.619$, $A_I=0.98$).
-    \item Beneficios informales $\Pi_I=(1-\alpha_I-\beta_I)p_IY_I$ distribuidos proporcionalmente a horas informales (regla \texttt{hours}).
-    \item Prima de deuda $\chi(z) = \chi_0 (z_1/z)^{\eta_\chi}$ para $a<0$, con $\chi_0=0.02$, $\eta_\chi=1$.
-    \item Equilibrio general: $r$ vacía $S(r) = K_D(r)$, $p_I$ vacía $Y_I = C_I$, $T = \tau w_F L_F$.
-\end{enumerate}
+\textbf{Estructura del modelo.} La productividad sigue un AR(1) lognormal representado mediante un proceso OU y discretizado con $N_z=40$. Los hogares eligen consumo formal e informal, ahorro y horas en ambos sectores, sujetos a $\ell_F+\ell_I\leq\bar H$. La firma formal tiene rendimientos constantes y la informal presenta rendimientos decrecientes. Los beneficios informales se distribuyen proporcionalmente a las horas del sector. El equilibrio determina $r$, $p_I$ y $T$ mediante el vaciamiento de los mercados de activos y bienes y el presupuesto público.
 
 % ===================================================================
 \section{Proceso de Productividad}
@@ -80,21 +67,15 @@ La productividad (latente) sigue un proceso AR(1) en logaritmos, equivalente a u
 d \log z_t = \eta (\mu_{\log z} - \log z_t) dt + \sqrt{2\eta}\,\sigma_{\log z}\, dW_t
 \end{equation}
 
-donde:
-\begin{itemize}
-    \item $\eta = -\log(\rho_z)/dt$: velocidad de reversión a la media (mapeo de AR(1) anual a CT).
-    \item $\rho_z$: persistencia anual del AR(1) de productividad (Hong 2022, ENAHO Perú: $\rho_z = 0.860$).
-    \item $\sigma_{\log z}$: dispersión estacionaria de $\log z$ usada en el modelo ($\sigma_{\log z} = 0.544$); es un mapeo interno y no el parámetro inicial $\sigma_{P0}$ de Hong.
-    \item $\mu_{\log z} = 0$: media de $\log z$ (se normaliza $\E[z]=1$ ex-post).
-\end{itemize}
+donde $\eta=-\log(\rho_z)/dt$ es la velocidad de reversión a la media, $\rho_z=0.860$ es la persistencia anual basada en Hong (2022) y $\sigma_{\log z}=0.544$ es la dispersión estacionaria utilizada en el modelo. Este último valor constituye un mapeo del parámetro estimado por Hong y no una estimación directa de la dispersión estacionaria. Se fija $\mu_{\log z}=0$.
 
 La distribución estacionaria de $z$ es aproximadamente log-normal con $\E[\log z]=0$, $\text{Var}[\log z] = \sigma_{\log z}^2$.
 
 \subsection{Discretización}
 
-El proceso se discretiza en $N_z = 7$ nodos usando uno de dos métodos:
+El proceso se discretiza en $N_z=40$ nodos. El procedimiento de referencia construye un generador OU continuo:
 
-\textbf{Método 1 --- Generador OU continuo (default):} Siguiendo a Moll, HACT Apéndice Sección 5 \cite{hact_appendix}, se construye el generador infinitesimal $Q_z$ (matriz $N_z \times N_z$) con upwind en el drift y diferencias centrales en la difusión:
+Siguiendo el Apéndice de HACT, Sección 5 \cite{hact_appendix}, se construye el generador infinitesimal $Q_z$, una matriz $N_z\times N_z$, con esquema upwind en el drift y diferencias centrales en la difusión:
 
 \begin{equation}\label{eq:Qz_construction}
 \begin{aligned}
@@ -106,11 +87,9 @@ El proceso se discretiza en $N_z = 7$ nodos usando uno de dos métodos:
 \end{aligned}
 \end{equation}
 
-En los bordes ($i=1$, $i=N_z$), $\chi_1$ y $\zeta_{N_z}$ se absorben en $\psi_1$ y $\psi_{N_z}$ respectivamente (barreras reflectoras). Esto produce una matriz tridiagonal sparse $Q_z$ con filas que suman cero, análoga a la matriz $\mathbf{A}$ de la dimensión de riqueza.
+En los bordes ($i=1$, $i=N_z$), $\chi_1$ y $\zeta_{N_z}$ se absorben en $\psi_1$ y $\psi_{N_z}$ respectivamente. Las barreras reflectoras producen una matriz tridiagonal dispersa $Q_z$ con filas que suman cero.
 
-\textbf{Método 2 --- Rouwenhorst (alternativo):} Se discretiza con el método de Rouwenhorst (Kopecky \& Suen 2010) obteniendo matriz anual $P_z$, luego se escala a tiempo continuo: $Q_z = q_{\text{scale}}(P_z - I)$ con $q_{\text{scale}} = -\log(\rho_z)/(1-\rho_z)$.
-
-En ambos casos, los nodos son $x_i = \mu_{\log z} \pm \text{width}\cdot\sigma_{\log z}$ en grilla equiespaciada, y $z_i = \exp(x_i)$ normalizados para $\E[z]=1$.
+Los nodos $x_i$ forman una grilla equiespaciada alrededor de $\mu_{\log z}$, y $z_i=\exp(x_i)$. La distribución ergódica se reescala para que $\E[z]=1$.
 
 La distribución ergódica $\pi_z$ satisface $\pi_z Q_z = 0$.
 
@@ -122,7 +101,7 @@ El espacio de estados es $(a_i, z_j)$ con $I \times N_z$ puntos. La matriz de tr
 A_{\text{switch}} = Q_z \otimes \mathbf{I}_I
 \end{equation}
 
-donde $\otimes$ es el producto de Kronecker. $A_{\text{switch}}$ es sparse con $O(N_z \cdot I)$ elementos no nulos. Esta construcción sigue exactamente el HACT Apéndice Sección 5, donde $A_{\text{switch}}$ captura el generador del proceso de difusión en la dimensión $z$.
+donde $\otimes$ es el producto de Kronecker. $A_{\text{switch}}$ es dispersa y tiene $O(N_zI)$ elementos no nulos. Esta construcción sigue la Sección 5 del Apéndice de HACT.
 
 \subsection{Comparación con un proceso de dos estados}
 
@@ -162,10 +141,10 @@ con $\rho=0.073$, utilidad logarítmica ($\gamma=1$), $\phi=0.38$, $\psi_F=55$ y
 
 La restricción presupuestaria es:
 \begin{equation}\label{eq:budget}
-\dot{a} = (1-\tau) w_F z \ell_F - \kappa_F(a,z)\ell_F + \tilde{w}_I z^{\nu_I} \ell_I + r a - \underbrace{\chi(z) \cdot \max(-a, 0)}_{\text{prima de deuda}} + T + \Pi_I^{\text{lump}} - (c_F + p_I c_I)
+\dot{a} = (1-\tau) w_F z \ell_F - \kappa_F(a,z)\ell_F + \tilde{w}_I z^{\nu_I} \ell_I + r a - \underbrace{\chi(z) \cdot \max(-a, 0)}_{\text{prima de deuda}} + T - (c_F + p_I c_I)
 \end{equation}
 
-donde $\tilde{w}_I = w_I + \Pi_I/L_I$ bajo la regla \texttt{hours} usada en el benchmark y, en ese caso, $\Pi_I^{\text{lump}}=0$ para evitar doble conteo. Bajo la regla alternativa \texttt{lump}, $\tilde w_I=w_I$ y el beneficio se transfiere como suma alzada. $\kappa_F(a,z)$ es la barrera formal y $\chi(z)$ la prima de deuda.
+donde $\tilde{w}_I = w_I + \Pi_I/L_I$ incorpora el reparto de beneficios en proporción a las horas informales. Esta definición evita contar los beneficios por una segunda vía. Además, $\kappa_F(a,z)$ es la barrera formal y $\chi(z)$ la prima de deuda.
 
 \subsection{Prima de Deuda}\label{sec:debtprem}
 
@@ -176,29 +155,28 @@ El modelo incluye un spread por riesgo de crédito que depende de la productivid
 
 con $\chi_0 = 0.02$, $\eta_\chi = 1.0$. El peso vale uno en $z_{\min}$ y cero en $z_{\max}$, de modo que la prima es estrictamente decreciente en la productividad, con $\chi(z_{\min}) = \chi_0$ y $\chi(z_{\max}) = 0$. Solo se aplica cuando $a < 0$ (endeudamiento). El pago total por prima es $\chi(z) \cdot \max(-a, 0)$.
 
-El parámetro $\texttt{debt\_prem\_rebate} = \texttt{false}$ implica que estos pagos no se redistribuyen. Se interpretan como costos reales de intermediación —evaluación, monitoreo y cobranza del crédito a deudores de baja productividad—, en la línea del enfoque institucional que adopta la revisión literaria. Bajo esa lectura los recursos se consumen y no hay nada que devolver, por lo que el término aparece en la restricción de recursos agregada (Sección \ref{sec:mercados}). La lectura alternativa como compensación por incumplimiento exigiría devolver los pagos a los deudores que efectivamente incumplen, no repartirlos de forma uniforme, y no es la que este modelo implementa.
+Estos pagos no se redistribuyen. Se interpretan como costos reales de evaluación, monitoreo y cobranza del crédito a deudores de baja productividad. Por ello aparecen como una absorción de recursos en la identidad agregada de la Sección \ref{sec:mercados}. Una interpretación alternativa como compensación por incumplimiento requeriría modelar el evento de impago y sus transferencias, mecanismo que queda fuera de esta especificación.
 
 \subsection{Barrera de Acceso Formal}\label{sec:kappa}
 
-\begin{equation}\label{eq:kappa_full}
-\kappa_F(a,z) = \underbrace{\kappa_{\min} + \kappa_{\text{extra}} \cdot \sigma(\gamma_k(a-\bar{a}_k))}_{\text{componente riqueza (desactivado: =0)}} \;+\; \underbrace{\kappa_z(z)}_{\text{componente productividad}}
-\end{equation}
-
-En la especificación actual $\kappa_{\min} = \kappa_{\text{extra}} = 0$, de modo que solo $\kappa_z(z)$ está activo. No es un valor aislado en el nodo más bajo: interpola de forma suave y decreciente entre $\kappa_{z1}$ en $z_{\min}$ y $\kappa_{z2}$ en $z_{\max}$,
+La barrera formal depende de la productividad y disminuye linealmente entre los extremos de la grilla:
 \begin{equation}\label{eq:kappa_z}
-\kappa_z(z) = \kappa_{z2} + (\kappa_{z1} - \kappa_{z2}) \left(\frac{z_{\max} - z}{z_{\max} - z_{\min}}\right)^{\text{shape}},
+\kappa_F(z)=\kappa_{z1}\left(\frac{z_{\max}-z}{z_{\max}-z_{\min}}\right).
 \end{equation}
-con $\kappa_{z2} = 0$ y $\text{shape} = 1$ (lineal) en la especificación de referencia; $\text{shape} > 1$ concentra la barrera en los nodos de menor productividad. El parámetro $\kappa_{z1}$ se calibra al target de gap de formalidad por productividad (Tkz).
+El parámetro $\kappa_{z1}$ se calibra con la diferencia de formalidad entre grupos de productividad.
 
 \subsection{Ecuación HJB}
 
 La función valor $v(a,z)$ satisface:
 
 \begin{equation}\label{eq:HJB}
-\rho v(a,z) = \max_{\ell_F,\ell_I,c_F,c_I} \Big\{
-u(C) - \psi_F\frac{\ell_F^{1+1/\phi}}{1+1/\phi} - \psi_I\frac{\ell_I^{1+1/\phi}}{1+1/\phi}
-+ \dVa v(a,z) \cdot s(a,z)
-\Big\} + \sum_{z'} Q_z(z,z') [v(a,z') - v(a,z)]
+\begin{aligned}
+\rho v(a,z)={}&\max_{\ell_F,\ell_I,c_F,c_I}\Bigg\{
+u(C)-\psi_F\frac{\ell_F^{1+1/\phi}}{1+1/\phi}
+-\psi_I\frac{\ell_I^{1+1/\phi}}{1+1/\phi}
++\dVa v(a,z)s(a,z)\Bigg\}\\
+&+\sum_{z'}Q_z(z,z')\big[v(a,z')-v(a,z)\big].
+\end{aligned}
 \end{equation}
 
 donde $s(a,z)$ es el drift de riqueza (lado derecho de \ref{eq:budget}) y $Q_z(z,z')$ son los elementos fuera de la diagonal del generador OU. Esta es la forma estándar de Moll para difusión (HACT Apéndice Ec.~28), donde el término $\sum_{z'} Q_z(z,z') [v(a,z') - v(a,z)]$ es la versión discretizada del operador diferencial $\mu(z)\partial_z v + \frac{\sigma^2(z)}{2}\partial_{zz}v$.
@@ -220,7 +198,7 @@ K = \left[ \omega_C \xi^{\eta_C} + (1-\omega_C) \right]^{1/\eta_C}, \quad
 C = \left(\frac{\omega_C \xi^{\eta_C-1} K^{1-\eta_C}}{\dVa v}\right)^{1/\gamma}
 \end{equation}
 
-y $c_I = C/K$, $c_F = \xi c_I$. El código verifica explícitamente soluciones de esquina (especialización en $c_F$ solo o $c_I$ solo) comparando utilidad directa.
+y $c_I = C/K$, $c_F = \xi c_I$. Las soluciones de esquina, con consumo exclusivo de uno de los bienes, se evalúan mediante comparación directa de utilidad.
 
 \subsection{Decisión Laboral (KKT)}\label{sec:kkt}
 
@@ -241,7 +219,7 @@ w_I^{\text{eff}}(z) = \tilde{w}_I z^{\nu_I}
 \psi_F \ell_F^{1/\phi} - \psi_I (\bar{H} - \ell_F)^{1/\phi} = \dVa v \cdot \big[w_F^{\text{net}} - w_I^{\text{eff}}\big]
 \end{equation}
 
-El lado izquierdo es estrictamente creciente en $\ell_F$; se resuelve por bisección en $[0, \bar{H}]$ (60 iteraciones). Casos de esquina: $\ell_F = \bar{H}$ si $\text{RHS} \ge \psi_F \bar{H}^{1/\phi}$; $\ell_I = \bar{H}$ si $\text{RHS} \le -\psi_I \bar{H}^{1/\phi}$. El benchmark usa $\bar H=1$, $\psi_F=55$ y $\psi_I=34$.
+El lado izquierdo es estrictamente creciente en $\ell_F$, por lo que la solución es única y puede obtenerse por bisección en $[0, \bar{H}]$. La esquina $\ell_F=\bar H$ ocurre cuando $\dVa v(w_F^{\mathrm{net}}-w_I^{\mathrm{eff}})\geq\psi_F\bar H^{1/\phi}$, mientras que $\ell_I=\bar H$ ocurre cuando esa diferencia es menor o igual que $-\psi_I\bar H^{1/\phi}$. El benchmark usa $\bar H=1$, $\psi_F=55$ y $\psi_I=34$.
 
 \subsection{Condiciones de Borde (Zero-Drift)}
 
@@ -250,7 +228,7 @@ Siguiendo a Moll \cite{moll_labor}, en los bordes se resuelve $\dot{a}=0$:
 \text{En } a \in \{\abar, a_{\max}\}: \quad s(a,z) = 0 \;\Longrightarrow\; \dVa v(a,z) = u'(C_{\text{zd}}(a,z))
 \end{equation}
 
-donde $C_{\text{zd}}$ es el consumo CES evaluado en $\dot{a}=0$. Dado $\dVa v$, se computan $\ell_F, \ell_I$ vía KKT y el consumo vía CES, y se itera (\texttt{fzero} vectorizado) hasta $\dot{a}=0$. Esto se hace \textbf{una vez por tipo $z$ antes del bucle HJB}, no dentro de cada iteración.
+donde $C_{\text{zd}}$ es el consumo CES evaluado en $\dot{a}=0$. Para cada nivel de productividad se resuelve conjuntamente la asignación laboral, el consumo y la condición de ahorro nulo antes de iniciar la iteración de la HJB.
 
 Esto garantiza que las filas de la matriz de transición $\mathbf{A}$ sumen cero (propiedad de generador de Poisson válido).
 
@@ -292,7 +270,7 @@ w_I &= p_I \cdot \beta_I A_I K_I^{\alpha_I} L_I^{\beta_I-1} \quad \text{(PMgL)} 
 \Pi_I &= p_I Y_I - w_I L_I - (r+\delta)K_I = p_I \cdot (1 - \alpha_I - \beta_I) Y_I \quad \text{(beneficio)} \label{eq:PiI}
 \end{align}
 
-Con la regla \texttt{hours}, el ingreso por hora informal es $\tilde{w}_I = w_I + \Pi_I/L_I$. Como $\alpha_I+\beta_I<1$, los beneficios son positivos en el benchmark y se distribuyen proporcionalmente a las horas informales.
+El ingreso por hora informal es $\tilde{w}_I = w_I + \Pi_I/L_I$. Como $\alpha_I+\beta_I<1$, los beneficios son positivos en el benchmark y se distribuyen proporcionalmente a las horas informales.
 
 % ===================================================================
 \section{Gobierno}
@@ -302,7 +280,7 @@ Con la regla \texttt{hours}, el ingreso por hora informal es $\tilde{w}_I = w_I 
 T = \tau w_F L_F, \qquad \tau = 0.18
 \end{equation}
 
-Transferencia lump-sum balanceada. $T$ se determina por punto fijo (bucle interno, damped).
+La transferencia de suma alzada satisface el presupuesto balanceado y se determina mediante un punto fijo amortiguado.
 
 % ===================================================================
 \section{Equilibrio Estacionario}
@@ -320,12 +298,23 @@ con $\iint g(a,z) \,da\,dz = 1$, $g \ge 0$. El segundo término es la versión d
 
 \subsection{Vaciamiento de Mercados}\label{sec:mercados}
 
-\begin{enumerate}[label=(\roman*)]
-    \item \textbf{Activos:} $S(r) \equiv \int a \, g(a,z) \,da\,dz = K_D(r) = k(r) \cdot L_F(r) + K_I(r)$. La demanda de capital agregada incluye el capital informal, que se alquila al mismo costo de uso $r+\delta$; por eso el capital total que aparece en la condición de Walras es $K = K_F + K_I$
-    \item \textbf{Bien informal:} $Y_I = \int c_I(a,z) g(a,z) \,da\,dz$ (determina $p_I$)
-    \item \textbf{Bien formal (Walras):} $Y_F = C_F + \delta K + \text{KappaPayments} + \text{DebtPremPayments}$, con $K = K_F + K_I$, $\text{KappaPayments} = \int \kappa_F(a,z)\,\ell_F(a,z)\, g(a,z)\,da\,dz$ y $\text{DebtPremPayments} = \int \chi(z)\max(-a,0)\, g(a,z)\,da\,dz$. Los pagos de barrera de acceso y de prima de deuda salen del presupuesto del hogar y no se devuelven a ningún agente, de modo que son fuga de recursos y pertenecen a la identidad
-    \item \textbf{Gobierno:} $T = \tau w_F L_F$
-\end{enumerate}
+\textbf{Mercado de activos.} La oferta agregada satisface $S(r)=\int a\,g(a,z)\,da\,dz=K_D(r)=k(r)L_F(r)+K_I(r)$. El capital informal se alquila al mismo costo de uso $r+\delta$, de modo que el capital total es $K=K_F+K_I$.
+
+\textbf{Mercado del bien informal.} El precio relativo $p_I$ se ajusta hasta que
+\begin{equation}
+Y_I=\int c_I(a,z)g(a,z)\,da\,dz.
+\end{equation}
+
+\textbf{Mercado del bien formal.} La identidad de recursos es
+\begin{equation}
+Y_F=C_F+\delta K+\mathcal{K}+\mathcal{D},
+\end{equation}
+donde
+\begin{align}
+\mathcal K&=\int\kappa_F(a,z)\ell_F(a,z)g(a,z)\,da\,dz,\\
+\mathcal D&=\int\chi(z)\max(-a,0)g(a,z)\,da\,dz.
+\end{align}
+El primer término representa los pagos de la barrera y el segundo los costos de intermediación asociados a la deuda. Ambos absorben recursos porque no se redistribuyen. El presupuesto público satisface $T=\tau w_FL_F$.
 
 \subsection{Definición de Equilibrio}
 
@@ -337,17 +326,13 @@ Un equilibrio estacionario recursivo es $\{v, \ell_F, \ell_I, c_F, c_I, s, g, r,
 
 \subsection{Grillas y Discretización}
 
-\begin{itemize}
-    \item Riqueza: $I=500$ puntos (200 en debug), $a \in [a_{\min}, a_{\max}] = [-0.10, 20]$, $\Delta a = (a_{\max}-a_{\min})/(I-1)$.
-    \item Productividad: $N_z=40$ nodos con generador $Q_z$ precalculado (Sección 2).
-    \item Espacio de estados: $N_s = N_z$ (7 tipos); $q$ está desactivado (\texttt{USE\_Q=0}).
-\end{itemize}
+La riqueza se representa con $I=500$ puntos sobre $a\in[-0.10,20]$ y paso $\Delta a=(a_{\max}-a_{\min})/(I-1)$. La productividad utiliza $N_z=40$ nodos y el generador $Q_z$ descrito en la Sección 2. El espacio conjunto contiene $I\times N_z$ estados.
 
 \subsection{Esquema Upwind Implícito en $a$}
 
 Solo se aplica upwind en la dimensión de riqueza. En la dimensión $z$, las transiciones ya están capturadas por $A_{\text{switch}} = Q_z \otimes I$.
 
-Para cada punto $(i,j)$, se computan ahorros forward ($s_{i,j,F}$) y backward ($s_{i,j,B}$) usando $\dVa v$ forward y backward respectivamente. La regla upwind (HACT Apéndice Ec.~11):
+Para cada punto $(i,j)$ se calculan los drifts asociados con las derivadas progresiva y regresiva. La regla upwind de la Ecuación 11 del Apéndice de HACT es
 
 \begin{equation}\label{eq:upwind}
 (\dVa v)_{i,j} =
@@ -358,7 +343,7 @@ v_{i,j,B}' & \text{si } s_{i,j,B} < 0 \\
 \end{cases}
 \end{equation}
 
-donde $\bar{v}_{i,j}'$ es la derivada zero-drift precalculada. En los bordes: $s_{1,j,B}=0$ (zero-drift en $a_{\min}$), $s_{I,j,F}=0$ (zero-drift en $a_{\max}$).
+donde $\bar{v}_{i,j}'$ es la derivada compatible con ahorro nulo. En los bordes se imponen $s_{1,j,B}=0$ y $s_{I,j,F}=0$.
 
 \subsection{Construcción de la Matriz $\mathbf{A}$}
 
@@ -372,17 +357,17 @@ Y_{i,j} &= -X_{i,j} - Z_{i,j} \le 0 \quad \text{(salida desde } a_i)
 \end{aligned}
 \end{equation}
 
-Para cada $j$, se construye la matriz tridiagonal $A_j$ vía \texttt{spdiags}:
-\begin{equation}
-A_j = \text{spdiags}(Y_{:,j}, 0) + \text{spdiags}(X_{2:I,j}, -1) + \text{spdiags}(Z_{1:I-1,j}, 1)
-\end{equation}
+Para cada $j$, $A_j$ es una matriz tridiagonal con $Y_{i,j}$ en la diagonal principal, $X_{i,j}$ en la subdiagonal y $Z_{i,j}$ en la superdiagonal.
 
 La matriz completa es:
 \begin{equation}\label{eq:A_full}
 \mathbf{A} = \underbrace{\begin{bmatrix} A_1 & 0 & \cdots & 0 \\ 0 & A_2 & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & A_{N_z} \end{bmatrix}}_{\mathbf{A}_{\text{drift}} \text{ (diagonal por bloques)}} + \underbrace{Q_z \otimes \mathbf{I}_I}_{\mathbf{A}_{\text{switch}}}
 \end{equation}
 
-Por construcción, $\mathbf{A}$ tiene filas que suman cero (generador de Poisson válido). El código verifica $\max_i |\sum_k A_{ik}| < 10^{-8}$.
+Por construcción, $\mathbf{A}$ tiene filas que suman cero. La condición numérica exigida es
+\begin{equation}
+\max_i\left|\sum_k A_{ik}\right|<10^{-8}.
+\end{equation}
 
 \subsection{Iteración Implícita HJB}
 
@@ -394,7 +379,7 @@ Por construcción, $\mathbf{A}$ tiene filas que suman cero (generador de Poisson
 \mathbf{B}^n v^{n+1} = b^n, \qquad \mathbf{B}^n = \left(\frac{1}{\Delta} + \rho\right)\mathbf{I} - \mathbf{A}^n, \quad b^n = u^n + \frac{1}{\Delta}v^n
 \end{equation}
 
-con $\Delta = 1000$ (step size). Se resuelve $v^{n+1} = \mathbf{B}^n \backslash b^n$ (MATLAB \texttt{mldivide} sparse). Iteración hasta $\max|v^{n+1} - v^n| < 10^{-6}$.
+con paso implícito $\Delta=1000$. En cada iteración se resuelve el sistema lineal disperso y se exige $\max|v^{n+1}-v^n|<10^{-6}$.
 
 \subsection{Ecuación KF}
 
@@ -406,93 +391,35 @@ La matriz $\mathbf{A}^{\mathsf{T}}$ es singular por construcción. Se fija $g_{1
 
 \subsection{Bucles de Equilibrio}
 
-\begin{enumerate}[label=(\roman*)]
-    \item \textbf{Bucle $r$:} Bisección en $r \in [r_{\min}, r_{\max}]$ hasta $|S(r) - K_D(r)| < \text{tol}$.
-    \item \textbf{Bucle $p_I$:} Bisección en $p_I$ hasta $|C_I(p_I) - Y_I(p_I)| < 10^{-5}$.
-    \item \textbf{Bucle $w_I$:} Punto fijo amortiguado: $w_I^{(k+1)} = (1-\text{damp}) w_I^{(k)} + \text{damp} \cdot p_I \beta_I A_I (L_I^{(k)})^{\beta_I-1}$.
-    \item \textbf{Bucle $T$:} Punto fijo amortiguado: $T^{(k+1)} = (1-\text{damp}) T^{(k)} + \text{damp} \cdot \tau w_F L_F^{(k)}$.
-    \item \textbf{Núcleo HJB+KF:} Dados $(r, p_I, w_I, T, \Pi_I)$, resolver HJB (implícito) $\to$ KF ($\mathbf{A}^{\mathsf{T}}g=0$) $\to$ agregados.
-\end{enumerate}
+El equilibrio se obtiene mediante bisección en $r$ hasta cerrar el mercado de activos y bisección en $p_I$ hasta cerrar el mercado del bien informal. El salario informal y la transferencia se actualizan mediante puntos fijos amortiguados. Para cada vector de precios se resuelve primero la HJB implícita, luego la ecuación KF y finalmente se recalculan los agregados. Este orden refleja que $T$ depende de $L_F$, $w_I$ de $L_I$, $p_I$ de $C_I$ y $Y_I$, y $r$ de $S$ y $K_D$.
 
 % ===================================================================
-\section{Verificación contra Teoría de Moll}
+\section{Relación con el Método HACT}
 % ===================================================================
 
 \subsection{Estructura HJB}
 
-\begin{itemize}
-    \item {\color{green!60!black}$\checkmark$} La ecuación HJB (\ref{eq:HJB}) sigue la forma general de Moll: $\rho v = \max\{u + \dVa v \cdot s\} + \text{términos de transición } z$. Con $Q_z$ discretizado, el término $\sum_{z'} Q_z(z,z')[v(z')-v(z)]$ es la versión discreta del operador de difusión $\mu(z)\partial_z v + \frac{\sigma^2}{2}\partial_{zz}v$ (HACT Sección 5, Ec.~28).
-
-    \item {\color{green!60!black}$\checkmark$} El generador $Q_z$ se construye con upwind en drift + central en difusión (Ec.~\ref{eq:Qz_construction}), exactamente como en HACT Sección 5.1. Barreras reflectoras en $z_{\min}, z_{\max}$.
-
-    \item {\color{green!60!black}$\checkmark$} CPOs consumo estáticas: $u'(C) = \dVa v \cdot K$ (propiedad \textit{tomorrow is today}).
-
-    \item {\color{green!60!black}$\checkmark$} Restricción $a \ge \abar$ en condiciones de borde, no en FOCs (HACT Ec.~7).
-\end{itemize}
+La ecuación HJB (\ref{eq:HJB}) sigue la forma general $\rho v=\max\{u+\dVa v\,s\}$ más los términos de transición de productividad. Con $Q_z$ discretizado, $\sum_{z'}Q_z(z,z')[v(z')-v(z)]$ aproxima el operador $\mu(z)\partial_zv+\sigma^2(z)\partial_{zz}v/2$ de la Sección 5 de HACT. El generador combina upwind para el drift y diferencias centrales para la difusión, con barreras reflectoras en $z_{\min}$ y $z_{\max}$. La restricción $a\geq\abar$ se impone mediante las condiciones de borde.
 
 \subsection{Upwind y Matriz $\mathbf{A}$}
 
-\begin{itemize}
-    \item {\color{green!60!black}$\checkmark$} Upwind en $a$: forward si $s_F>0$, backward si $s_B<0$, zero-drift en caso intermedio. Coincide con HACT Ec.~(11).
-
-    \item {\color{green!60!black}$\checkmark$} Construcción de $\mathbf{A}_{\text{drift}}$ vía X/Y/Z y \texttt{spdiags} (HACT Ec.~14, Figura 1).
-
-    \item {\color{green!60!black}$\checkmark$} $\mathbf{A} = \mathbf{A}_{\text{drift}} + Q_z \otimes I$ es sparse, filas suman cero (verificado con assert).
-
-    \item {\color{green!60!black}$\checkmark$} Iteración implícita $\mathbf{B}^n = (\rho + 1/\Delta)I - \mathbf{A}^n$, $v^{n+1} = \mathbf{B}^n \backslash b^n$ (HACT Ec.~16).
-\end{itemize}
+La selección progresiva cuando el drift es positivo, regresiva cuando es negativo y de ahorro nulo en el caso intermedio coincide con la Ecuación 11 de HACT. La matriz $\mathbf A=\mathbf A_{\mathrm{drift}}+Q_z\otimes I$ es dispersa y sus filas suman cero. La actualización implícita definida en (\ref{eq:HJB_implicit}) corresponde a la Ecuación 16 de HACT.
 
 \subsection{KF y Adjunto}
 
-\begin{itemize}
-    \item {\color{green!60!black}$\checkmark$} $\mathbf{A}^{\mathsf{T}} \mathbf{g} = 0$ (HACT Ec.~20). La KF se obtiene ``gratis'' del HJB.
-
-    \item {\color{green!60!black}$\checkmark$} Sistema singular resuelto fijando $g_{1,1}=1$ y renormalizando $\sum g \Delta a = 1$ (HACT Sección 2).
-\end{itemize}
+$\mathbf A^{\mathsf T}\mathbf g=0$ utiliza el adjunto del mismo generador empleado en la HJB, como en la Ecuación 20 de HACT. La singularidad del sistema se resuelve mediante una normalización y la distribución resultante se reescala para que su masa total sea uno.
 
 \subsection{Extensiones Respecto a Moll}
 
-\begin{itemize}
-    \item \textbf{Oferta laboral 2 sectores + KKT:} Moll \cite{moll_labor} resuelve 1 sector con $\ell^{1/\phi}c^\gamma = wz$. El código extiende a 2 sectores con restricción $\ell_F+\ell_I \le \bar{H}$ y bisección (Sección \ref{sec:kkt}). Consistente con CPO separable.
-
-    \item \textbf{Consumo CES + $p_I$ endógeno:} No está en Moll. Derivación correcta (Sección \ref{sec:ces}). Chequeos de esquina implementados.
-
-    \item \textbf{Prima de deuda $\chi(z)$:} No está en Moll. Modifica el drift: $r a \to r a - \chi(z)\max(-a,0)$. Afecta las decisiones de ahorro/endeudamiento de forma diferenciada por $z$.
-
-    \item \textbf{Sector informal DRS:} No está en Moll. Regla \texttt{hours} cierra $p_I Y_I = \int \tilde{w}_I z^{\nu_I} \ell_I dG$. Externalidad de dilución tratada como equilibrio (correcto para equilibrio competitivo).
-
-    \item \textbf{Proceso $z$ AR(1) en logs discretizado con $N_z=40$:} El generador $Q_z$ de la Ec.~(\ref{eq:Qz_construction}) sigue el método de Moll (HACT Sección 5.1). La persistencia trimestral de Hong (2023) se anualiza; la dispersión estacionaria es un mapeo interno del paquete.
-\end{itemize}
-
-\subsection{Auditoría de Consistencia del Código}
-
-\begin{enumerate}[label=(\alph*)]
-    \item \textbf{Derivadas upwind:} Las líneas 1845--1848 computan \texttt{dVf} y \texttt{dVb} correctamente. Las líneas 1850--1851 aseguran positividad (\texttt{max(dV, 1e-10)}).
-
-    \item \textbf{Drifts:} Líneas 1860--1863 computan \texttt{ssf} y \texttt{ssb} con todos los componentes de la restricción presupuestaria, incluyendo prima de deuda y CES expenditure.
-
-    \item \textbf{Upwind switch:} Líneas 1868--1870 implementan \texttt{If}, \texttt{Ib}, \texttt{I0} correctamente: \texttt{If = ssf>0}, \texttt{Ib = ssb<0 \& \textasciitilde If}, \texttt{I0 = \textasciitilde (If|Ib)}. Notar que \texttt{Ib} excluye puntos ya asignados a \texttt{If}, evitando ambig\"uedad cuando ambos son factibles.
-
-    \item \textbf{Matriz A:} Líneas 1888--1903 construyen $\mathbf{A}_{\text{drift}}$ por bloques con \texttt{spdiags} y suman $\mathbf{A}_{\text{switch}}$. Corrección de filas (línea 1903) garantiza $\sum_k A_{ik}=0$ a precisión de máquina.
-
-    \item \textbf{HJB solve:} Línea 1910: \texttt{V\_stacked = B\textbackslash b} — resolve sistema lineal sparse.
-
-    \item \textbf{KFE:} Función \texttt{solve\_kfe\_stationary\_v10} (línea 1928) implementa $\mathbf{A}^{\mathsf{T}}g=0$ con fallback \texttt{lsqminnorm} para casos mal condicionados.
-
-    \item \textbf{Zero-drift boundaries:} Líneas 1790--1826 precomputan \texttt{dV\_min} y \texttt{dVf\_upper} para cada $j$ antes del bucle HJB, usando \texttt{solve\_dV\_zero\_drift\_v10}.
-
-    \item \textbf{Bucles anidados:} El orden es: $r$ (bisección) $\supset$ $p_I$ (bisección) $\supset$ $w_I$ (punto fijo) $\supset$ $T$ (punto fijo) $\supset$ HJB+KF. Este orden respeta la estructura de dependencia: $T$ depende de $L_F$ (agregado post-KF), $w_I$ depende de $L_I$, $p_I$ depende de $C_I$ y $Y_I$, $r$ depende de $S$ y $K_D$.
-
-    \item \textbf{Prima de deuda en zero-drift:} Los parámetros \texttt{params\_lo} y \texttt{params\_up} (líneas 1802, 1808) incluyen \texttt{debt\_spread\_z(j)} como argumento 17, usado en \texttt{solve\_dV\_zero\_drift\_v10}.
-\end{enumerate}
+El modelo amplía el entorno básico de Moll en cuatro dimensiones. Introduce oferta laboral en dos sectores con una restricción conjunta de tiempo, consumo CES de dos bienes con precio relativo endógeno, una prima de deuda heterogénea y una tecnología informal con rendimientos decrecientes. El proceso de productividad mantiene el generador OU del método HACT, pero utiliza persistencia y dispersión informadas por la evidencia para Perú.
 
 % ===================================================================
+\clearpage
 \section{Tablas de Parámetros y Targets}
 % ===================================================================
 
-\begin{table}[h]
-\centering
-\caption{Parámetros del modelo (ARz DebtPrem)}
+\begin{center}
+\captionof{table}{Parámetros del modelo}
 \small
 \begin{tabularx}{\textwidth}{lllX}
 \toprule
@@ -516,21 +443,20 @@ Labor share informal & $\beta_I$ & 0.619 & Calibración interna; DRS \\
 \addlinespace
 Impuesto & $\tau$ & 0.18 & Galindo et al.\ (2024) \\
 \addlinespace
-\multirow{2}{2.5em}{Proceso $z$}
-  & $N_z$ & 40 & Nodos discretización \\
-  & $\rho_z$ & 0.861 & Anualización de Hong (2023) \\
-  & $\sigma_{\log z}$ & 0.544 & Mapeo interno; no estimación directa \\
-Método & OU/Rouwenhorst & \texttt{ou} (default) & Moll HACT Sección 5 \\
+Proceso $z$ & $N_z$ & 40 & Nodos de discretización \\
+Persistencia & $\rho_z$ & 0.861 & Anualización de Hong (2023) \\
+Dispersión & $\sigma_{\log z}$ & 0.544 & Mapeo interno; no estimación directa \\
+Método & OU & Generador continuo & Moll HACT Sección 5 \\
 \addlinespace
 Prima deuda & $\chi_0$ & 0.02 & Calibrado \\
-Rebate & --- & false & No se redistribuye \\
+Redistribución de la prima & --- & No & Costo real de intermediación \\
 \bottomrule
 \end{tabularx}
-\end{table}
+\end{center}
 
-\begin{table}[h]
-\centering
-\caption{Targets de calibración}
+\begin{center}
+\captionof{table}{Targets de calibración}
+\small
 \begin{tabular}{llccc}
 \toprule
 Target & Descripción & Modelo & Dato & Fuente \\
@@ -542,7 +468,9 @@ Tgasto$^{*}$ & Gasto formal-dom. / informal-dom. & 1.465 & 1.913 & ENAHO 2015--2
 \bottomrule
 \end{tabular}
 \par\smallskip\footnotesize $^{*}$Chequeo externo no vinculante; T4, T5 y Tkz son targets de calibración.
-\end{table}
+\end{center}
+
+\clearpage
 
 % ===================================================================
 \begin{thebibliography}{12}
@@ -565,7 +493,6 @@ Moll, B. (2015--2026).
 \bibitem{moll_labor}
 Moll, B. (2018).
 \emph{Consumption-Saving Problem with Endogenous Labor Supply (Huggett Economy)}.
-\url{http://www.princeton.edu/~moll/HACTproject/labor_supply.m}
 
 \bibitem{galindo2024}
 Galindo, H., Ledesma, A., Yépez, L. \& Salinas, C. (2024).

@@ -7,6 +7,7 @@
 \usepackage{bm}
 \usepackage{geometry}
 \usepackage{booktabs}
+\usepackage{tabularx}
 \usepackage{multirow}
 \usepackage{hyperref}
 \usepackage{url}
@@ -52,17 +53,17 @@ Este anexo presenta la derivación formal completa del modelo implementado en \t
 \textbf{Fundamentos teóricos (4 pilares):}
 \begin{enumerate}[label=(\arabic*)]
     \item \textbf{Agentes heterogéneos en tiempo continuo (HACT):} Achdou, Han, Lasry, Lions \& Moll (2022) \cite{achdou2022} + Apéndice Numérico \cite{hact_appendix}: HJB, KF, diferencias finitas, upwind implícito, propiedad de adjunto.
-    \item \textbf{2 sectores, 2 bienes con consumo CES:} Restrepo-Echavarría (2025, \emph{Econometrica} R\&R) \cite{restrepo2025}: economía dual formal/informal, consumo CES entre bien transable ($c_F$) y no transable ($c_I$), oferta laboral endógena en ambos sectores, firma formal Cobb-Douglas + firma informal con tecnología distinta. La especificación de preferencias y la estructura productiva dual de este modelo se basan directamente en Restrepo-Echavarría (Secciones 3--4).
+    \item \textbf{2 sectores y 2 bienes:} Restrepo-Echavarría (2014) \cite{restrepo2014} estudia una economía formal/informal con consumo de ambos bienes y motiva la estructura dual. La especificación cuantitativa del presente modelo es propia y no debe atribuirse como una reproducción exacta de ese artículo.
     \item \textbf{2 firmas, 2 bienes en equilibrio general:} Horvath (2000, \emph{Journal of Monetary Economics}) \cite{horvath2000}: modelo RBC con firmas heterogéneas multisectoriales y bienes diferenciados. Aunque Horvath usa agente representativo, la estructura de equilibrio general con dos sectores productivos interdependientes (input-output implícito vía consumo final diferenciado) es la referencia canónica.
     \item \textbf{Oferta laboral endógena en HA:} Moll (2018) \cite{moll_labor}: extensión de Huggett con $\ell(a)$ endógena, \texttt{fzero} para condición de borde zero-drift. Castañeda, Díaz-Giménez \& Ríos-Rull (1998) \cite{castaneda1998}: oferta laboral separable en modelo HA con heterogeneous earnings.
 \end{enumerate}
 
 \textbf{Características del modelo:}
 \begin{enumerate}[label=(\roman*)]
-    \item Productividad $z_t \sim$ AR(1) log-normal, discretizado $N_z=7$ con generador OU continuo $Q_z$ (Moll HACT Sección 5).
+    \item Productividad $z_t \sim$ AR(1) log-normal, discretizado con $N_z=40$ y generador OU continuo $Q_z$ (Moll HACT Sección 5).
     \item Hogar: oferta laboral dual $\ell_F, \ell_I \ge 0$, restricción KKT $\ell_F + \ell_I \le \bar{H}=1$, consumo CES $(c_F, c_I; \sigma_C, \omega_C)$.
-    \item Firma formal: $Y_F = A_F K_F^\alpha L_F^{1-\alpha}$ (CD, $\alpha=0.636$, $A_F=1$). Firma informal: $Y_I = A_I L_I^{\beta_I}$ (DRS, $\beta_I=0.6$, $A_I=0.099$).
-    \item Beneficios informales $\Pi_I = (1-\beta_I)p_I Y_I$ distribuidos proporcionalmente a horas informales (regla \texttt{hours}).
+    \item Firma formal: $Y_F = A_F K_F^\alpha L_F^{1-\alpha}$ (CD, $\alpha=0.573$, $A_F=1$). Firma informal: $Y_I=A_IK_I^{\alpha_I}L_I^{\beta_I}$ (DRS, $\alpha_I=0.22$, $\beta_I=0.619$, $A_I=0.98$).
+    \item Beneficios informales $\Pi_I=(1-\alpha_I-\beta_I)p_IY_I$ distribuidos proporcionalmente a horas informales (regla \texttt{hours}).
     \item Prima de deuda $\chi(z) = \chi_0 (z_1/z)^{\eta_\chi}$ para $a<0$, con $\chi_0=0.02$, $\eta_\chi=1$.
     \item Equilibrio general: $r$ vacía $S(r) = K_D(r)$, $p_I$ vacía $Y_I = C_I$, $T = \tau w_F L_F$.
 \end{enumerate}
@@ -83,7 +84,7 @@ donde:
 \begin{itemize}
     \item $\eta = -\log(\rho_z)/dt$: velocidad de reversión a la media (mapeo de AR(1) anual a CT).
     \item $\rho_z$: persistencia anual del AR(1) de productividad (Hong 2022, ENAHO Perú: $\rho_z = 0.860$).
-    \item $\sigma_{\log z}$: desviación estándar estacionaria de $\log z$ ($\sigma_{\log z} = 0.542$).
+    \item $\sigma_{\log z}$: dispersión estacionaria de $\log z$ usada en el modelo ($\sigma_{\log z} = 0.544$); es un mapeo interno y no el parámetro inicial $\sigma_{P0}$ de Hong.
     \item $\mu_{\log z} = 0$: media de $\log z$ (se normaliza $\E[z]=1$ ex-post).
 \end{itemize}
 
@@ -131,17 +132,17 @@ donde $\otimes$ es el producto de Kronecker. $A_{\text{switch}}$ es sparse con $
 
 El hogar maximiza:
 \begin{equation}\label{eq:obj}
-\E_0 \int_0^\infty e^{-\rho t} \left[ \frac{C^{1-\gamma}}{1-\gamma} - \psi_F\frac{\ell_F^{1+1/\phi}}{1+1/\phi} - \psi_I\frac{\ell_I^{1+1/\phi}}{1+1/\phi} \right] dt
+\E_0 \int_0^\infty e^{-\rho t} \left[ \log C - \psi_F\frac{\ell_F^{1+1/\phi}}{1+1/\phi} - \psi_I\frac{\ell_I^{1+1/\phi}}{1+1/\phi} \right] dt
 \end{equation}
 
-con $\rho=0.05$, $\gamma=2$, $\phi=0.38$ (Frisch común en ARz), $\psi_F=80$, $\psi_I=100$.
+con $\rho=0.073$, utilidad logarítmica ($\gamma=1$), $\phi=0.38$, $\psi_F=55$ y $\psi_I=34$.
 
 La restricción presupuestaria es:
 \begin{equation}\label{eq:budget}
 \dot{a} = (1-\tau) w_F z \ell_F - \kappa_F(a,z)\ell_F + \tilde{w}_I \theta z^{\nu_I} \ell_I + r a - \underbrace{\chi(z) \cdot \max(-a, 0)}_{\text{prima de deuda}} + T + \Pi_I^{\text{lump}} - (c_F + p_I c_I)
 \end{equation}
 
-donde $\tilde{w}_I = w_I + \Pi_I/L_I$ (regla \texttt{hours}, default) o $\tilde{w}_I = w_I$ (regla \texttt{lump}). $\kappa_F(a,z)$ es la barrera de acceso formal (Sección \ref{sec:kappa}), y $\chi(z)$ es la prima de deuda (Sección \ref{sec:debtprem}).
+donde $\tilde{w}_I = w_I + \Pi_I/L_I$ bajo la regla \texttt{hours} usada en el benchmark y, en ese caso, $\Pi_I^{\text{lump}}=0$ para evitar doble conteo. Bajo la regla alternativa \texttt{lump}, $\tilde w_I=w_I$ y el beneficio se transfiere como suma alzada. $\kappa_F(a,z)$ es la barrera formal y $\chi(z)$ la prima de deuda.
 
 \subsection{Prima de Deuda}\label{sec:debtprem}
 
@@ -181,13 +182,13 @@ donde $s(a,z)$ es el drift de riqueza (lado derecho de \ref{eq:budget}) y $Q_z(z
 
 \subsection{Consumo CES Óptimo}\label{sec:ces}
 
-Siguiendo a Restrepo-Echavarría (2025) \cite{restrepo2025}, el consumo agregado $C$ es un compuesto CES de bien formal $c_F$ (transable) e informal $c_I$ (no transable):
+Motivado por la estructura dual de Restrepo-Echavarría (2014) \cite{restrepo2014}, el consumo agregado $C$ se especifica como un compuesto CES de bien formal $c_F$ (transable) e informal $c_I$ (no transable):
 
 \begin{equation}\label{eq:ces}
 C(c_F, c_I) = \left[ \omega_C \, c_F^{\eta_C} + (1-\omega_C) \, c_I^{\eta_C} \right]^{1/\eta_C}
 \end{equation}
 
-con $\eta_C = 1 - 1/\sigma_C$, $\sigma_C = 5.0$ (elasticidad de sustitución), $\omega_C = 0.4$ (peso CES del bien formal). Esta especificación anida el caso de sustitutos perfectos cuando $\sigma_C \to \infty$ y el caso Cobb-Douglas cuando $\sigma_C \to 1$. El precio del bien formal es el numerario ($p_F = 1$); el precio del bien informal $p_I$ se determina en equilibrio.
+con $\eta_C = 1 - 1/\sigma_C$, $\sigma_C = 5.0$ y $\omega_C = 0.56$. El precio del bien formal es el numerario ($p_F = 1$); el precio informal $p_I$ se determina en equilibrio.
 
 De la CPO consumo-ahorro: $u'(C) = \dVa v \cdot K$, donde $K$ es el deflactor CES:
 \begin{equation}\label{eq:ces_foc}
@@ -217,7 +218,7 @@ w_I^{\text{eff}}(z) = \tilde{w}_I \theta z^{\nu_I}
 \psi_F \ell_F^{1/\phi} - \psi_I (\bar{H} - \ell_F)^{1/\phi} = \dVa v \cdot \big[w_F^{\text{net}} - w_I^{\text{eff}}\big]
 \end{equation}
 
-El lado izquierdo es estrictamente creciente en $\ell_F$; se resuelve por bisección en $[0, \bar{H}]$ (60 iteraciones). Casos de esquina: $\ell_F = \bar{H}$ si $\text{RHS} \ge \psi_F \bar{H}^{1/\phi}$; $\ell_I = \bar{H}$ si $\text{RHS} \le -\psi_I \bar{H}^{1/\phi}$. Con $\bar{H}=1$ y $\psi_F=80, \psi_I=100$, la restricción es vinculante para la mayoría de los agentes.
+El lado izquierdo es estrictamente creciente en $\ell_F$; se resuelve por bisección en $[0, \bar{H}]$ (60 iteraciones). Casos de esquina: $\ell_F = \bar{H}$ si $\text{RHS} \ge \psi_F \bar{H}^{1/\phi}$; $\ell_I = \bar{H}$ si $\text{RHS} \le -\psi_I \bar{H}^{1/\phi}$. El benchmark usa $\bar H=1$, $\psi_F=55$ y $\psi_I=34$.
 
 \subsection{Condiciones de Borde (Zero-Drift)}
 
@@ -234,14 +235,14 @@ Esto garantiza que las filas de la matriz de transición $\mathbf{A}$ sumen cero
 \section{Firmas}
 % ===================================================================
 
-La estructura productiva dual sigue a Restrepo-Echavarría (2025) \cite{restrepo2025} (Secciones 3--4) y Horvath (2000) \cite{horvath2000}. La firma formal es análoga al sector transable de Restrepo-Echavarría; la firma informal opera con retornos decrecientes (DRS), capturando la menor productividad relativa y los rendimientos decrecientes del sector no transable/informal documentados en la literatura de heterogeneidad estructural (CEPAL/PREALC).
+La estructura productiva dual está motivada por Restrepo-Echavarría (2014) \cite{restrepo2014} y Horvath (2000) \cite{horvath2000}. La firma informal opera con retornos decrecientes; sus exponentes finales son una calibración del paquete, informada pero no tomada literalmente de Göbel et al. (2013).
 
 \subsection{Firma Formal (Cobb-Douglas CRS)}
 
-La tecnología formal sigue a Céspedes, Aquije, Sánchez \& Vera-Tudela (2014, BCRP REE-28) \cite{cespedes2014}, quienes estiman una Cobb-Douglas a nivel de firmas formales peruanas con datos SUNAT 2002--2011 (estimador Arellano-Bond restringido):
+La participación formal usa la estimación de efectos fijos restringida de Céspedes, Aquije, Sánchez \& Vera-Tudela (2014) \cite{cespedes2014}:
 
 \begin{equation}\label{eq:formal}
-Y_F = A_F K_F^{\alpha} L_F^{1-\alpha}, \qquad \alpha_K = 0.636, \; \alpha_L = 0.364, \; A_F = 1
+Y_F = A_F K_F^{\alpha} L_F^{1-\alpha}, \qquad \alpha_K = 0.573, \; \alpha_L = 0.427, \; A_F = 1
 \end{equation}
 
 CPO estáticas:
@@ -254,18 +255,13 @@ con $\delta = 0.10$ (Castillo \& Rojas, BCRP REE-28 \cite{castillo2024}). La dem
 
 \subsection{Firma Informal (CRS o DRS, con/sin capital)}
 
-La tecnología informal se calibra con Göbel, Grimm \& Lay (2013, BCRP WP 2013-001) \cite{gobel2013}, quienes estiman funciones de producción para microempresas urbanas peruanas usando ENAHO 2002--2006:
+La tecnología informal final usa $\alpha_I=0.22$ y $\beta_I=0.619$. Estos valores son una calibración interna informada por los rangos de Göbel, Grimm \& Lay (2013) \cite{gobel2013}, quienes estiman funciones de producción para microempresas urbanas peruanas:
 
 \begin{equation}\label{eq:informal}
-Y_I = A_I K_I^{\alpha_I} L_I^{\beta_I}, \qquad \alpha_I \in [0, 0.222], \;\; \beta_I \in [0.605, 0.837]
+Y_I = A_I K_I^{\alpha_I} L_I^{\beta_I}, \qquad \alpha_I=0.22, \quad \beta_I=0.619, \quad A_I=0.98.
 \end{equation}
 
-\textbf{Tres escenarios:}
-\begin{enumerate}[label=(\Alph*)]
-    \item \textbf{Legacy DRS sin capital:} $\alpha_I = 0$, $\beta_I = 0.696$ (DRS labor-only, $\Pi_I > 0$).
-    \item \textbf{CRS Göbel normalizado:} $\alpha_I = 0.163$, $\beta_I = 0.837$, $\alpha_I + \beta_I = 1$ (CRS, $\Pi_I = 0$, Euler exhaustion).
-    \item \textbf{DRS Göbel original:} $\alpha_I = 0.118$, $\beta_I = 0.605$, $\alpha_I + \beta_I = 0.723$ (DRS, $\Pi_I > 0$).
-\end{enumerate}
+Göbel et al. reportan como referencia una especificación DRS original $(0.118,0.605)$ y una normalización CRS $(0.163,0.837)$. El benchmark no coincide exactamente con ninguna: usa $(0.22,0.619)$ y conserva DRS, pues $\alpha_I+\beta_I=0.839<1$.
 
 El trabajo efectivo informal es $L_I = \int \theta z^{\nu_I} \ell_I(a,z) g(a,z) da\,dz$. El capital informal $K_I$ se elige estáticamente: $K_I = \left(\frac{p_I \, \alpha_I A_I}{r+\delta}\right)^{\frac{1}{1-\alpha_I}} L_I^{\frac{\beta_I}{1-\alpha_I}}$ cuando $\alpha_I > 0$. Las CPO determinan:
 \begin{align}
@@ -320,7 +316,7 @@ Un equilibrio estacionario recursivo es $\{v, \ell_F, \ell_I, c_F, c_I, s, g, r,
 
 \begin{itemize}
     \item Riqueza: $I=500$ puntos (200 en debug), $a \in [a_{\min}, a_{\max}] = [-0.10, 20]$, $\Delta a = (a_{\max}-a_{\min})/(I-1)$.
-    \item Productividad: $N_z=7$ nodos con generador $Q_z$ precalculado (Sección 2).
+    \item Productividad: $N_z=40$ nodos con generador $Q_z$ precalculado (Sección 2).
     \item Espacio de estados: $N_s = N_z$ (7 tipos); $q$ está desactivado (\texttt{USE\_Q=0}).
 \end{itemize}
 
@@ -442,7 +438,7 @@ La matriz $\mathbf{A}^{\mathsf{T}}$ es singular por construcción. Se fija $g_{1
 
     \item \textbf{Sector informal DRS:} No está en Moll. Regla \texttt{hours} cierra $p_I Y_I = \int \tilde{w}_I \theta z^{\nu_I} \ell_I dG$. Externalidad de dilución tratada como equilibrio (correcto para equilibrio competitivo).
 
-    \item \textbf{Proceso $z$ AR(1) en logs discretizado con $N_z=7$:} El generador $Q_z$ de la Ec.~(\ref{eq:Qz_construction}) es exactamente el método de Moll (HACT Sección 5.1) para procesos de difusión. La novedad es aplicarlo a un AR(1) en log-niveles con datos de ENAHO Perú (Hong 2022), en lugar de un proceso de difusión genérico.
+    \item \textbf{Proceso $z$ AR(1) en logs discretizado con $N_z=40$:} El generador $Q_z$ de la Ec.~(\ref{eq:Qz_construction}) sigue el método de Moll (HACT Sección 5.1). La persistencia trimestral de Hong (2023) se anualiza; la dispersión estacionaria es un mapeo interno del paquete.
 \end{itemize}
 
 \subsection{Auditoría de Consistencia del Código}
@@ -474,42 +470,43 @@ La matriz $\mathbf{A}^{\mathsf{T}}$ es singular por construcción. Se fija $g_{1
 \begin{table}[h]
 \centering
 \caption{Parámetros del modelo (ARz DebtPrem)}
-\begin{tabular}{llll}
+\small
+\begin{tabularx}{\textwidth}{lllX}
 \toprule
 Parámetro & Símbolo & Valor & Fuente/Nota \\
 \midrule
-CRRA & $\gamma$ & 2.00 & Estándar HA \\
-Descuento & $\rho$ & 0.05 & Estándar HA \\
+CRRA & $\gamma$ & 1.00 & Utilidad logarítmica \\
+Descuento & $\rho$ & 0.073 & Consistencia con $r^*=0.066$ \\
 Frisch & $\phi$ & 0.38 & Céspedes \& Rendón (2012), EPEN Lima \\
-Utilidad trabajo F & $\psi_F$ & 80.0 & Calibrado (T4) \\
-Utilidad trabajo I & $\psi_I$ & 100.0 & Calibrado (T4) \\
+Utilidad trabajo F & $\psi_F$ & 55.0 & Calibración conjunta (T4) \\
+Utilidad trabajo I & $\psi_I$ & 34.0 & Calibración conjunta (T4) \\
 CES elasticidad & $\sigma_C$ & 5.0 & Calibrado \\
-CES peso formal & $\omega_C$ & 0.4 & Calibrado \\
+CES peso formal & $\omega_C$ & 0.56 & Calibrado \\
 Atenuación informal & $\theta$ & 1.0 & Normalización \\
-Exponente $z$ informal & $\nu_I$ & 1.0 & Normalización \\
+Exponente $z$ informal & $\nu_I$ & 0.6 & Calibrado \\
 \addlinespace
 PTF formal & $A_F$ & 1.0 & Normalización \\
-Capital share formal & $\alpha_K$ & 0.636 & Céspedes et al.\ (2014, BCRP REE-28) \\
-Labor share formal & $\alpha_L$ & 0.364 & Céspedes et al.\ (2014, BCRP REE-28) \\
+Capital share formal & $\alpha_K$ & 0.573 & Céspedes et al.\ (2014), efectos fijos restringidos \\
+Labor share formal & $\alpha_L$ & 0.427 & Céspedes et al.\ (2014), CRS \\
 Depreciación & $\delta$ & 0.10 & Castillo \& Rojas (BCRP REE-28) \\
-PTF informal & $A_I$ & 0.305 & Calibrado (T5) \\
-Capital share informal & $\alpha_I$ & 0, 0.163, 0.118 & Göbel et al.\ (2013, BCRP WP 2013-001) \\
-Labor share informal & $\beta_I$ & 0.696, 0.837, 0.605 & Göbel et al.\ (2013), 3 escenarios \\
+PTF informal & $A_I$ & 0.98 & Calibrado (T5) \\
+Capital share informal & $\alpha_I$ & 0.22 & Calibración interna informada por Göbel et al.\ (2013) \\
+Labor share informal & $\beta_I$ & 0.619 & Calibración interna; DRS \\
 \addlinespace
 Impuesto & $\tau$ & 0.18 & Galindo et al.\ (2024) \\
 Dotación tiempo & $\bar{H}$ & 1.0 & Normalización \\
 \addlinespace
 \multirow{2}{2.5em}{Proceso $z$}
-  & $N_z$ & 7 & Nodos discretización \\
-  & $\rho_z$ & 0.860 & Hong (2022) ENAHO Perú \\
-  & $\sigma_{\log z}$ & 0.542 & Hong (2022) ENAHO Perú \\
+  & $N_z$ & 40 & Nodos discretización \\
+  & $\rho_z$ & 0.861 & Anualización de Hong (2023) \\
+  & $\sigma_{\log z}$ & 0.544 & Mapeo interno; no estimación directa \\
 Método & OU/Rouwenhorst & \texttt{ou} (default) & Moll HACT Sección 5 \\
 \addlinespace
 Prima deuda & $\chi_0$ & 0.02 & Calibrado \\
 Prima elasticidad & $\eta_\chi$ & 1.0 & Normalización \\
 Rebate & --- & false & No se redistribuye \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \begin{table}[h]
@@ -519,12 +516,13 @@ Rebate & --- & false & No se redistribuye \\
 \toprule
 Target & Descripción & Modelo & Dato & Fuente \\
 \midrule
-T4 & Horas inf. / horas totales & 0.560 & 0.557 & INEI Cuenta Satélite 2024 \\
-T5 & PBI inf. nominal / PBI total & 0.184 & 0.190 & INEI Cuenta Satélite 2024 \\
-Tkz & Gap formalidad $z_{\max} - z_{\min}$ & 0.364 & 0.386 & EPEN 2024 \\
-Tgasto & Gasto formal-dom. / informal-dom. & 1.153 & 1.913 & ENAHO 2015--2019 \\
+T4 & Horas inf. / horas totales & 0.517 & 0.509 & ENAHO 2015--2019 \\
+T5 & PBI inf. nominal / PBI total & 0.188 & 0.190 & INEI Cuenta Satélite 2024 \\
+Tkz & Gap formalidad $z_{\max} - z_{\min}$ & 0.378 & 0.386 & EPEN 2025 \\
+Tgasto$^{*}$ & Gasto formal-dom. / informal-dom. & 1.465 & 1.913 & ENAHO 2015--2019 \\
 \bottomrule
 \end{tabular}
+\par\smallskip\footnotesize $^{*}$Chequeo externo no vinculante; T4, T5 y Tkz son targets de calibración.
 \end{table}
 
 % ===================================================================
@@ -551,11 +549,11 @@ Moll, B. (2018).
 \url{http://www.princeton.edu/~moll/HACTproject/labor_supply.m}
 
 \bibitem{galindo2024}
-Galindo, H., Granda, D., Rodríguez, E. \& Villacorta, L. (2024).
-\emph{Informalidad y distribución de la riqueza en Perú}. BCRP DT-005-2024.
+Galindo, H., Ledesma, A., Yépez, L. \& Salinas, C. (2024).
+\emph{Informality and Wealth Distribution: A Heterogeneous Agent Model}. BCRP DT 2024-005.
 
-\bibitem{restrepo2025}
-Restrepo-Echavarría, P. (2025). Informal Labor Markets in General Equilibrium. \emph{Econometrica}, Revise \& Resubmit.
+\bibitem{restrepo2014}
+Restrepo-Echavarría, P. (2014). Macroeconomic Volatility: The Role of the Informal Economy. \emph{European Economic Review}, 70, 454--469.
 
 \bibitem{horvath2000}
 Horvath, M. (2000). Sectoral Shocks and Aggregate Fluctuations. \emph{Journal of Monetary Economics}, 45(1), 69--106.
@@ -570,7 +568,7 @@ BCRP, Documento de Trabajo 2012-017.
 Céspedes, N., Aquije, M.E., Sánchez, A.\ \& Vera-Tudela, R.\ (2014).
 \emph{Productividad sectorial en el Perú: un análisis a nivel de firmas}.
 BCRP, Revista Estudios Económicos 28, 9--26.
-\newblock $\alpha_K = 0.636$ (capital), $\alpha_L = 0.364$ (trabajo), CRS. Estimador Arellano-Bond restringido, firmas formales SUNAT 2002--2011.
+\newblock El benchmark usa la estimación de efectos fijos restringida: $\alpha_K=0.573$ y $\alpha_L=0.427$.
 
 \bibitem{gobel2013}
 Göbel, K., Grimm, M.\ \& Lay, J.\ (2013).
@@ -579,16 +577,16 @@ BCRP, Working Paper 2013-001.
 \newblock Microempresas urbanas ENAHO 2002--2006. Original: $\alpha_K=0.118$, $\alpha_L=0.605$ (DRS, suma=0.723). CRS normalizado: $\alpha_K=0.163$, $\alpha_L=0.837$.
 
 \bibitem{castillo2024}
-Castillo, P.\ \& Rojas, D.\ (2024).
-\emph{Términos de intercambio y productividad total de factores}.
-BCRP, Revista de Estudios Económicos 28 (REE-28).
+Castillo, P.\ \& Rojas, Y.\ (2014).
+\emph{Términos de intercambio y productividad total de factores: evidencia empírica de los mercados emergentes de América Latina}.
+BCRP, Revista Estudios Económicos 28, 27--46.
 \newblock Depreciación $\delta = 10\%$ para Perú.
 
 \bibitem{castaneda1998}
 Castañeda, A., Díaz-Giménez, J.\ \& Ríos-Rull, J.-V. (1998). Exploring the Income Distribution Business Cycle Dynamics. \emph{Journal of Monetary Economics}, 42(1), 93--130.
 
 \bibitem{hong2022}
-Hong, S. (2022). Income Dynamics in Peru: 2004--2016. Mimeo.
+Hong, S. (2023). MPCs in an Emerging Economy: Evidence from Peru. \emph{Journal of International Economics}, 140, 103712. DOI: 10.1016/j.jinteco.2022.103712.
 
 \bibitem{kopecky2010}
 Kopecky, K.\ \& Suen, R.\ (2010). Finite State Markov-Chain Approximations to Highly Persistent Processes. \emph{Review of Economic Dynamics}, 13(3), 701--714.

@@ -254,34 +254,37 @@ teorema de sorting es **condicional a la utilidad marginal de la riqueza**, o se
 aísla el canal de productividad. El gradiente por riqueza no se sigue de él.
 
 Hay además una contribución de segundo orden en la misma dirección: la grilla de
-productividad entrega $\operatorname{sd}(\log z)=0.5281$ frente al objetivo
+productividad entrega $\mathrm{sd}(\log z)=0.5281$ frente al objetivo
 calibrado de $0.5440$, un $2.9\%$ menos. El sesgo lo controla el ancho de la
 grilla y **no** el número de nodos, de modo que refinar $N_z$ lo empeora. El
 análisis y tres opciones cuantificadas están en la sección 4 del
 [cruce numérico](lean/docs/VERIFICACION_NUMERICA.md).
 
-### La corrida de cierre no se reproducía con los valores por defecto
+### La reproducción de la corrida de cierre está corregida
 
-Hasta septiembre de 2026, `model_main` con sus defaults **no** reproducía la
-corrida que reporta el documento, por dos motivos de distinta gravedad.
+Una versión anterior de `model_main` no reproducía con sus valores por defecto
+la corrida reportada en el documento. El problema quedó identificado y corregido.
 
-El grave es **silencioso**: el script traía $\gamma=2$ y $\rho=0.05$ de la
+El problema principal era silencioso: el script traía $\gamma=2$ y $\rho=0.05$ de la
 especificación previa, mientras la corrida final usaba $\gamma=1$ y $\rho=0.073$.
 Con esos defaults el modelo converge a un equilibrio distinto sin emitir ningún
 aviso. Ninguno de los dos quedaba registrado en el metadata, y `gamma` no se
 guardaba en ningún archivo: hubo que inferirlo numéricamente de la política de
 consumo de la corrida.
 
-El otro es **ruidoso**: el intervalo de bisección de $r$ llegaba solo hasta
+El segundo problema era visible: el intervalo de bisección de $r$ llegaba solo hasta
 $0.0499$, por debajo del $r^*=0.066$ reportado. Con la calibración correcta eso
 no produce un resultado erróneo, porque el chequeo de signos que el solver ya
 hacía sobre los extremos aborta con `invalid bracket in r`. Impedía reproducir
 la corrida, pero avisaba.
 
-Está corregido: los valores por defecto son los del documento, el intervalo contiene el
-equilibrio, el solver avisa si la bisección agota iteraciones sin alcanzar
-tolerancia, y los metadatos registran $\gamma$, $\rho$, la elasticidad de Frisch,
+La versión actual usa los valores del documento, el intervalo contiene el
+equilibrio y el solver avisa si la bisección agota iteraciones sin alcanzar
+tolerancia. Los metadatos registran $\gamma$, $\rho$, la elasticidad de Frisch,
 $\alpha_K$, $\delta$, $\tau$ y el intervalo configurado junto al resultado final.
+Para evitar depender de valores implícitos, la reproducción recomendada sigue
+siendo el script de la sección siguiente, que fija explícitamente todo el entorno
+de la corrida de cierre.
 
 ## Calibración y datos
 

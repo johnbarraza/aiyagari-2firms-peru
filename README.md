@@ -329,6 +329,16 @@ Después de la corrida, los targets del documento pueden comprobarse con:
 run('calibracion/validate_peru_calibration.m')
 ```
 
+El contraste agregado preliminar con México se reproduce con:
+
+```matlab
+run('calibracion/validate_mexico_screening.m')
+```
+
+Esta prueba no sustituye la construcción de T4 con microdatos ENOE. Separa la
+tasa publicada de personas informales, usada solo como referencia descriptiva,
+de la participación informal en el PIB, que sí es conceptualmente cercana a T5.
+
 La seleccion de nodos del proceso de productividad se prueba primero sin
 resolver el equilibrio y luego con las configuraciones finalistas.
 

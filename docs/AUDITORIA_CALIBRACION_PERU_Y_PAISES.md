@@ -37,19 +37,53 @@ Cambiar `HA_IE_T4_DATA` o `HA_IE_T5_DATA` solo cambia las cifras impresas. No pr
 
 La comparacion correcta tiene dos etapas. En la primera se mantienen los parametros internos de Peru y se sustituyen solo parametros externos medidos para el otro pais. Esta es una prueba de transporte y los momentos locales son predicciones fuera de muestra. En la segunda se recalibran `psi_F/psi_I`, `A_I` y `kappa_z1` contra T4, T5 y Tkz locales, manteniendo una normalizacion para la escala de las desutilidades. El ratio salarial, el ratio de gasto y el gradiente por quintil quedan reservados para validacion.
 
-## Paises candidatos
+## Países candidatos
 
 Las tasas siguientes son de empleo informal por persona, no fracciones de horas. Sirven para escoger comparadores, pero no pueden reemplazar directamente T4.
 
-| Pais | Indicador oficial reciente | Afinidad con Peru | Factibilidad para el modelo | Prioridad |
+| País | Indicador oficial reciente | Afinidad con Perú | Factibilidad para el modelo | Prioridad |
 |---|---:|---|---|---:|
-| Mexico | 53.2% en 2024 T2 | Informalidad menor, estructura productiva comparable | ENOE abierta y medicion oficial de economia informal equivalente a 24.8% del PIB en 2023 | 1 |
-| Colombia | 56.8% en diciembre 2024 a febrero 2025 | Mercado laboral dual y microdatos amplios | GEIH abierta; el 29.9% de valor agregado de economia no observada es mas amplio que T5 y no debe usarse sin depuracion | 2 |
-| Ecuador | 58.0% en diciembre de 2024 | Informalidad alta y economia andina | ENEMDU abierta; falta una medida de PBI informal suficientemente equivalente | 3 |
-| Paraguay | 62.5% en 2024 | Mas cercano a Peru en informalidad extensa | EPHC disponible; falta una cuenta de producto informal comparable | 4 |
-| Bolivia | Informalidad muy alta en las comparaciones de OIT | Comparador estructural cercano | Encuesta de Hogares disponible; comparabilidad y medicion de producto informal son las restricciones principales | 5 |
+| México | 54.4% en 2024 | Menor que Perú, pero suficientemente cercana para una prueba de transporte exigente | ENOE abierta, ENIGH 2024 y medición oficial de economía informal equivalente a 25.4% del PIB | 1 |
+| Ecuador | 52.4% en 2024 | Economía andina, heterogeneidad urbana y rural, y una encuesta reciente de gasto | ENEMDU abierta y ENIGHUR 2024-2025; falta una cuenta de PBI informal equivalente | 2 |
+| Colombia | 56.8% entre diciembre de 2024 y febrero de 2025 | Mercado laboral dual y microdatos laborales amplios | GEIH abierta y encuesta de presupuesto disponible; la economía no observada es más amplia que T5 | 3 |
+| Paraguay | 62.5% en 2024, sin agricultura | Más próximo a Perú por extensión de la informalidad | EPHC abierta; no se encontró una cuenta actual de producto informal comparable | 4 |
+| Bolivia | Informalidad muy alta en las comparaciones de OIT | Comparador andino relevante | La encuesta de hogares permite el bloque laboral, pero la medición compatible del producto informal es la principal restricción | 5 |
 
-Mexico debe ser la primera replica completa por disponibilidad estadistica, aunque Paraguay, Ecuador y Bolivia se parecen mas a Peru por nivel de informalidad extensa. Chile puede usarse como contraste de baja informalidad, no como pais parecido.
+México debe ser la primera réplica completa por disponibilidad estadística. Ecuador pasa al segundo lugar porque la ENIGHUR 2024-2025 permite construir una validación de gasto reciente, además de los momentos laborales de ENEMDU. Colombia ofrece una encuesta laboral especialmente sólida, pero su medición de economía no observada no reemplaza el PBI informal del modelo. Paraguay funciona mejor como prueba de estrés del bloque laboral. Chile puede usarse como contraste de baja informalidad, no como país parecido.
+
+## Resultado preliminar para México
+
+Sin recalibrar ningún parámetro, el equilibrio peruano genera 51.71% de horas informales y 18.80% de PBI informal. INEGI reporta que en México 54.4% de las personas ocupadas trabajó en condiciones de informalidad en 2024 y que esas actividades produjeron 25.4% del PIB. El primer contraste es solo orientativo porque compara horas del modelo con personas en los datos. El segundo sí es conceptualmente cercano a T5.
+
+| Magnitud | Modelo peruano transportado | México 2024 | Diferencia | Lectura |
+|---|---:|---:|---:|---|
+| Informalidad laboral | 51.71% de horas | 54.4% de personas | -2.69 puntos | Cercanía descriptiva, no prueba de T4 |
+| Participación informal en el PIB | 18.80% | 25.4% | -6.60 puntos | El modelo peruano subpredice el peso productivo informal mexicano |
+
+Este resultado descarta dos conclusiones apresuradas. No puede afirmarse todavía que el modelo ajusta México porque falta construir la fracción de horas con ENOE. Tampoco puede afirmarse que falla por completo. El nivel agregado de trabajo informal está cerca, mientras que la producción informal es demasiado baja. Esa combinación es informativa. Con la tecnología peruana, el modelo asigna a las horas informales menos producto del que muestran las cuentas mexicanas. La réplica mexicana deberá determinar si la brecha se corrige con la productividad informal relativa, con las participaciones de factores o con la composición sectorial, sin usar el ratio salarial ni el gasto para calibrar.
+
+## Momentos que pueden construirse
+
+| Momento | México | Ecuador | Colombia | Paraguay |
+|---|---|---|---|---|
+| Fracción de horas informales | ENOE, ocupación principal y secundaria | ENEMDU | GEIH | EPHC |
+| PBI informal | MEI 2024, directamente comparable | No disponible con equivalencia suficiente | No usar economía no observada sin depuración | No disponible con equivalencia suficiente |
+| Gap de formalidad por productividad | ENOE, con grupos educativos comunes | ENEMDU | GEIH | EPHC |
+| Ratio salarial | ENOE | ENEMDU | GEIH | EPHC |
+| Ratio de gasto según formalidad del jefe | ENIGH 2024 | ENIGHUR 2024-2025 | ENPH 2016-2017 | Sin encuesta reciente equivalente identificada |
+| Gradiente por riqueza | Aproximación con activos y tenencia en ENIGH | Aproximación con ENIGHUR | Aproximación con ENPH | Cobertura insuficiente para una comparación homogénea |
+
+La fracción de horas debe calcularse como la suma ponderada de horas informales dividida entre la suma ponderada de horas totales. Cuando una encuesta identifica una ocupación secundaria, sus horas y su condición de formalidad deben incorporarse por separado. La tasa de personas informales no reemplaza ese cálculo.
+
+El gap por productividad debe usar una regla común en los cuatro países. La opción reproducible inmediata es formar grupos por educación dentro de la población ocupada y medir la diferencia de formalidad entre los grupos alto y bajo. Una extensión más exigente estimaría residuos salariales comparables. No conviene mezclar ambas definiciones dentro de la misma tabla.
+
+El ratio salarial debe construirse por hora y con la misma población. Si no se dispone de una medida homogénea de impuestos y contribuciones, se reportarán por separado el ratio bruto observado y el ratio neto ajustado. El primero es comparable entre encuestas; el segundo requiere parámetros institucionales nacionales.
+
+## Criterio para afirmar que el modelo ajusta otro país
+
+La prueba de transporte mantiene los parámetros internos de Perú y reemplaza únicamente los parámetros externos medidos en el país. El modelo ajustará razonablemente si T4, T5 y el gap de formalidad quedan próximos a los datos sin recalibrar las desutilidades, la productividad informal relativa ni la pendiente de la barrera. Una distancia de hasta dos puntos porcentuales en T4 y T5 puede considerarse un ajuste fuerte; entre dos y cinco puntos, un ajuste parcial; una brecha mayor exige explicar el mecanismo que no se transporta. Estos umbrales son reglas de reporte, no intervalos estadísticos.
+
+La recalibración nacional es una prueba distinta. Allí T4, T5 y el gap disciplinan tres instrumentos internos, mientras que el ratio salarial, el ratio de gasto y el gradiente por riqueza permanecen fuera del ajuste. Un país solo contará como validación exitosa si mejora los targets sin deteriorar sistemáticamente estos momentos reservados.
 
 ## Insumos minimos por pais
 
@@ -69,11 +103,13 @@ Mexico debe ser la primera replica completa por disponibilidad estadistica, aunq
 |---|---|---|
 | 1. Cierre Peru | Ejecutar `reproducir_cierre.m` y luego `validate_peru_calibration.m` | Los tres targets directos quedan a menos de un punto porcentual |
 | 2. Robustez de grilla | Repetir Peru con ancho 2.8268, o con 60 nodos y ancho 3.0, y recalibrar | Los resultados economicos no cambian materialmente y la desviacion realizada coincide con 0.544 |
-| 3. Transporte a Mexico | Sustituir parametros externos mexicanos sin recalibrar parametros internos | Reportar errores fuera de muestra en T4, T5, Tkz, salarios y gasto |
-| 4. Recalibracion Mexico | Ajustar tres instrumentos a tres targets con una normalizacion explicita | Evaluar solo los momentos no usados para ajustar |
-| 5. Replicas Colombia y Ecuador | Repetir el protocolo con definiciones armonizadas | Comparar errores y no solo niveles de informalidad |
+| 3. Microdatos de México | Construir T4, gap de formalidad y ratio salarial con ENOE; construir gasto con ENIGH | Reproducir primero los agregados publicados por INEGI |
+| 4. Transporte a México | Sustituir parámetros externos mexicanos sin recalibrar parámetros internos | Reportar errores fuera de muestra en T4, T5, gap, salarios y gasto |
+| 5. Recalibración de México | Ajustar tres instrumentos a tres targets con una normalización explícita | Evaluar solo los momentos no usados para ajustar |
+| 6. Réplicas de Ecuador y Colombia | Repetir el protocolo con definiciones armonizadas, dejando T5 como no disponible | Comparar errores laborales y de gasto, no solo tasas de personas informales |
+| 7. Prueba de estrés con Paraguay | Transportar el bloque laboral a una economía con mayor informalidad | Evaluar si el mecanismo conserva el orden y los gradientes empíricos |
 
-Con los insumos disponibles hoy se puede validar el cierre peruano, pero no afirmar que ya existe una calibracion internacional. La siguiente corrida sustantiva debe ser Mexico. Ejecutar el modelo para los otros paises antes de construir T4 en horas, T5 compatible y el proceso local de productividad produciria numeros, pero no una prueba economica identificada.
+Con los insumos disponibles hoy se puede validar el cierre peruano y hacer el contraste agregado preliminar de México. Todavía no existe una calibración internacional completa. La siguiente corrida sustantiva debe hacerse después de construir los momentos mexicanos con microdatos. Ejecutar el modelo para los otros países antes de construir T4 en horas y el proceso local de productividad produciría números, pero no una prueba económica identificada.
 
 ## Fuentes oficiales para la ampliacion
 
@@ -81,9 +117,15 @@ Con los insumos disponibles hoy se puede validar el cierre peruano, pero no afir
 |---|---|
 | [ILOSTAT, estadisticas sobre economia informal](https://ilostat.ilo.org/topics/informality/) | Definiciones y comparacion armonizada de empleo informal |
 | [INEI, Produccion y empleo informal en el Peru 2022-2023](https://www.inei.gob.pe/media/MenuRecursivo/publicaciones_digitales/Est/Lib1996/libro.pdf) | Cuenta satelite y benchmark peruano |
-| [INEGI, Medicion de la Economia Informal 2023](https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2024/MDEI/MDEI2023.pdf) | Valor agregado informal de Mexico |
-| [INEGI, ENOE segundo trimestre de 2024](https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2024/ENOE/ENOE2024_09_Mex.pdf) | Informalidad laboral y definicion mexicana |
-| [DANE, empleo informal y seguridad social](https://www.dane.gov.co/index.php/estadisticas-por-tema/mercado-laboral/empleo-informal-y-seguridad-social/empleo-informal-y-seguridad-social-historicos) | Series y anexos de Colombia |
-| [DANE, microdatos GEIH 2024](https://microdatos.dane.gov.co/index.php/catalog/819) | Construccion de horas, salarios y grupos de Colombia |
-| [INEC, ENEMDU diciembre de 2024](https://www.ecuadorencifras.gob.ec/documentos/web-inec/EMPLEO/2024/Diciembre/202412_Mercado_Laboral.pdf) | Informalidad y microdatos de Ecuador |
-| [INE Paraguay, ocupacion informal 2024](https://www.ine.gov.py/noticias/2422/la-ocupacion-) | Benchmark y definicion de Paraguay |
+| [INEGI, Medición de la Economía Informal 2024](https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2025/pibmed/MEI2024_CP.pdf) | PBI informal de México y empleo informal agregado |
+| [INEGI, ENOE](https://www.inegi.org.mx/programas/enoe/15ymas/) | Microdatos trimestrales para horas, formalidad, salarios y educación |
+| [INEGI, ENOE 2024, cuestionario ampliado](https://www.inegi.org.mx/rnm/index.php/catalog/983) | Metadatos del primer trimestre, que ofrece el mayor detalle laboral |
+| [INEGI, ENIGH 2024](https://www.inegi.org.mx/programas/enigh/nc/2024/) | Gasto, ingreso, activos y características ocupacionales de los hogares mexicanos |
+| [DANE, empleo informal y seguridad social](https://www.dane.gov.co/index.php/estadisticas-por-tema/mercado-laboral/empleo-informal-y-seguridad-social/empleo-informal-y-seguridad-social-historicos) | Series y definición oficial de Colombia |
+| [DANE, microdatos GEIH 2024](https://microdatos.dane.gov.co/index.php/catalog/819) | Horas, salarios y grupos de Colombia |
+| [DANE, microdatos ENPH 2016-2017](https://microdatos.dane.gov.co/index.php/catalog/566) | Gasto de los hogares colombianos |
+| [INEC, ENEMDU anual 2024](https://www.ecuadorencifras.gob.ec/documentos/web-inec/EMPLEO/2024/anual/Boletin_tecnico_anual_enero-diciembre_2024.pdf) | Benchmark laboral de Ecuador |
+| [INEC, estadísticas laborales ENEMDU](https://www.ecuadorencifras.gob.ec/estadisticas-laborales-enemdu/) | Microdatos para horas, salarios y formalidad de Ecuador |
+| [INEC, ENIGHUR 2024-2025](https://www.ecuadorencifras.gob.ec/institucional/el-inec-socializa-los-resultados-de-la-enighur-2024-2025-para-fortalecer-politicas-publicas-y-decisiones-basadas-en-evidencia/) | Gasto e ingreso recientes de hogares ecuatorianos |
+| [INE Paraguay, ocupación informal 2024](https://www.ine.gov.py/noticias/2422/la-ocupacion-) | Benchmark y definición de Paraguay |
+| [INE Paraguay, microdatos EPHC](https://www.ine.gov.py/microdatos/) | Horas, ingresos y empleo de Paraguay |

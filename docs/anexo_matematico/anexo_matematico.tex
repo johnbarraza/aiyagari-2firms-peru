@@ -62,7 +62,7 @@ Este anexo presenta la derivación formal completa del modelo implementado en \t
 \begin{enumerate}[label=(\roman*)]
     \item Productividad $z_t \sim$ AR(1) log-normal, discretizado con $N_z=40$ y generador OU continuo $Q_z$ (Moll HACT Sección 5).
     \item Hogar: oferta laboral dual $\ell_F, \ell_I \ge 0$, restricción KKT $\ell_F + \ell_I \le \bar{H}=1$, consumo CES $(c_F, c_I; \sigma_C, \omega_C)$.
-    \item Firma formal: $Y_F = A_F K_F^\alpha L_F^{1-\alpha}$ (CD, $\alpha=0.573$, $A_F=1$). Firma informal: $Y_I=A_IK_I^{\alpha_I}L_I^{\beta_I}$ (DRS, $\alpha_I=0.22$, $\beta_I=0.619$, $A_I=0.98$).
+    \item Firma formal: $Y_F = A_F K_F^\alpha L_F^{1-\alpha}$ (CD, $\alpha=0.573$). Firma informal: $Y_I=A_IK_I^{\alpha_I}L_I^{\beta_I}$ (DRS, $\alpha_I=0.22$, $\beta_I=0.619$, $A_I=0.98$).
     \item Beneficios informales $\Pi_I=(1-\alpha_I-\beta_I)p_IY_I$ distribuidos proporcionalmente a horas informales (regla \texttt{hours}).
     \item Prima de deuda $\chi(z) = \chi_0 (z_1/z)^{\eta_\chi}$ para $a<0$, con $\chi_0=0.02$, $\eta_\chi=1$.
     \item Equilibrio general: $r$ vacía $S(r) = K_D(r)$, $p_I$ vacía $Y_I = C_I$, $T = \tau w_F L_F$.
@@ -139,7 +139,7 @@ con $\rho=0.073$, utilidad logarítmica ($\gamma=1$), $\phi=0.38$, $\psi_F=55$ y
 
 La restricción presupuestaria es:
 \begin{equation}\label{eq:budget}
-\dot{a} = (1-\tau) w_F z \ell_F - \kappa_F(a,z)\ell_F + \tilde{w}_I \theta z^{\nu_I} \ell_I + r a - \underbrace{\chi(z) \cdot \max(-a, 0)}_{\text{prima de deuda}} + T + \Pi_I^{\text{lump}} - (c_F + p_I c_I)
+\dot{a} = (1-\tau) w_F z \ell_F - \kappa_F(a,z)\ell_F + \tilde{w}_I z^{\nu_I} \ell_I + r a - \underbrace{\chi(z) \cdot \max(-a, 0)}_{\text{prima de deuda}} + T + \Pi_I^{\text{lump}} - (c_F + p_I c_I)
 \end{equation}
 
 donde $\tilde{w}_I = w_I + \Pi_I/L_I$ bajo la regla \texttt{hours} usada en el benchmark y, en ese caso, $\Pi_I^{\text{lump}}=0$ para evitar doble conteo. Bajo la regla alternativa \texttt{lump}, $\tilde w_I=w_I$ y el beneficio se transfiere como suma alzada. $\kappa_F(a,z)$ es la barrera formal y $\chi(z)$ la prima de deuda.
@@ -204,7 +204,7 @@ y $c_I = C/K$, $c_F = \xi c_I$. El código verifica explícitamente soluciones d
 Definiendo salarios efectivos:
 \begin{equation}
 w_F^{\text{net}}(a,z) = (1-\tau) w_F z - \kappa_F(a,z), \qquad
-w_I^{\text{eff}}(z) = \tilde{w}_I \theta z^{\nu_I}
+w_I^{\text{eff}}(z) = \tilde{w}_I z^{\nu_I}
 \end{equation}
 
 \textbf{Caso interior} ($\ell_F + \ell_I < \bar{H}$):
@@ -242,7 +242,7 @@ La estructura productiva dual está motivada por Restrepo-Echavarría (2014) \ci
 La participación formal usa la estimación de efectos fijos restringida de Céspedes, Aquije, Sánchez \& Vera-Tudela (2014) \cite{cespedes2014}:
 
 \begin{equation}\label{eq:formal}
-Y_F = A_F K_F^{\alpha} L_F^{1-\alpha}, \qquad \alpha_K = 0.573, \; \alpha_L = 0.427, \; A_F = 1
+Y_F = A_F K_F^{\alpha} L_F^{1-\alpha}, \qquad \alpha_K = 0.573, \; \alpha_L = 0.427
 \end{equation}
 
 CPO estáticas:
@@ -263,7 +263,7 @@ Y_I = A_I K_I^{\alpha_I} L_I^{\beta_I}, \qquad \alpha_I=0.22, \quad \beta_I=0.61
 
 Göbel et al. reportan como referencia una especificación DRS original $(0.118,0.605)$ y una normalización CRS $(0.163,0.837)$. El benchmark no coincide exactamente con ninguna: usa $(0.22,0.619)$ y conserva DRS, pues $\alpha_I+\beta_I=0.839<1$.
 
-El trabajo efectivo informal es $L_I = \int \theta z^{\nu_I} \ell_I(a,z) g(a,z) da\,dz$. El capital informal $K_I$ se elige estáticamente: $K_I = \left(\frac{p_I \, \alpha_I A_I}{r+\delta}\right)^{\frac{1}{1-\alpha_I}} L_I^{\frac{\beta_I}{1-\alpha_I}}$ cuando $\alpha_I > 0$. Las CPO determinan:
+El trabajo efectivo informal es $L_I = \int z^{\nu_I} \ell_I(a,z) g(a,z) da\,dz$. El capital informal $K_I$ se elige estáticamente: $K_I = \left(\frac{p_I \, \alpha_I A_I}{r+\delta}\right)^{\frac{1}{1-\alpha_I}} L_I^{\frac{\beta_I}{1-\alpha_I}}$ cuando $\alpha_I > 0$. Las CPO determinan:
 \begin{align}
 w_I &= p_I \cdot \beta_I A_I K_I^{\alpha_I} L_I^{\beta_I-1} \quad \text{(PMgL)} \label{eq:wI}\\
 \Pi_I &= p_I Y_I - w_I L_I - (r+\delta)K_I = p_I \cdot (1 - \alpha_I - \beta_I) Y_I \quad \text{(beneficio)} \label{eq:PiI}
@@ -436,7 +436,7 @@ La matriz $\mathbf{A}^{\mathsf{T}}$ es singular por construcción. Se fija $g_{1
 
     \item \textbf{Prima de deuda $\chi(z)$:} No está en Moll. Modifica el drift: $r a \to r a - \chi(z)\max(-a,0)$. Afecta las decisiones de ahorro/endeudamiento de forma diferenciada por $z$.
 
-    \item \textbf{Sector informal DRS:} No está en Moll. Regla \texttt{hours} cierra $p_I Y_I = \int \tilde{w}_I \theta z^{\nu_I} \ell_I dG$. Externalidad de dilución tratada como equilibrio (correcto para equilibrio competitivo).
+    \item \textbf{Sector informal DRS:} No está en Moll. Regla \texttt{hours} cierra $p_I Y_I = \int \tilde{w}_I z^{\nu_I} \ell_I dG$. Externalidad de dilución tratada como equilibrio (correcto para equilibrio competitivo).
 
     \item \textbf{Proceso $z$ AR(1) en logs discretizado con $N_z=40$:} El generador $Q_z$ de la Ec.~(\ref{eq:Qz_construction}) sigue el método de Moll (HACT Sección 5.1). La persistencia trimestral de Hong (2023) se anualiza; la dispersión estacionaria es un mapeo interno del paquete.
 \end{itemize}
@@ -482,10 +482,8 @@ Utilidad trabajo F & $\psi_F$ & 55.0 & Calibración conjunta (T4) \\
 Utilidad trabajo I & $\psi_I$ & 34.0 & Calibración conjunta (T4) \\
 CES elasticidad & $\sigma_C$ & 5.0 & Calibrado \\
 CES peso formal & $\omega_C$ & 0.56 & Calibrado \\
-Atenuación informal & $\theta$ & 1.0 & Normalización \\
 Exponente $z$ informal & $\nu_I$ & 0.6 & Calibrado \\
 \addlinespace
-PTF formal & $A_F$ & 1.0 & Normalización \\
 Capital share formal & $\alpha_K$ & 0.573 & Céspedes et al.\ (2014), efectos fijos restringidos \\
 Labor share formal & $\alpha_L$ & 0.427 & Céspedes et al.\ (2014), CRS \\
 Depreciación & $\delta$ & 0.10 & Castillo \& Rojas (BCRP REE-28) \\
@@ -494,7 +492,6 @@ Capital share informal & $\alpha_I$ & 0.22 & Calibración interna informada por 
 Labor share informal & $\beta_I$ & 0.619 & Calibración interna; DRS \\
 \addlinespace
 Impuesto & $\tau$ & 0.18 & Galindo et al.\ (2024) \\
-Dotación tiempo & $\bar{H}$ & 1.0 & Normalización \\
 \addlinespace
 \multirow{2}{2.5em}{Proceso $z$}
   & $N_z$ & 40 & Nodos discretización \\
@@ -503,7 +500,6 @@ Dotación tiempo & $\bar{H}$ & 1.0 & Normalización \\
 Método & OU/Rouwenhorst & \texttt{ou} (default) & Moll HACT Sección 5 \\
 \addlinespace
 Prima deuda & $\chi_0$ & 0.02 & Calibrado \\
-Prima elasticidad & $\eta_\chi$ & 1.0 & Normalización \\
 Rebate & --- & false & No se redistribuye \\
 \bottomrule
 \end{tabularx}

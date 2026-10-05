@@ -179,7 +179,7 @@ este modelo una extensión y no una variante:
 - **Anidamiento del modelo clásico.** Apagar el sector informal colapsa el modelo
   al Aiyagari estándar con oferta laboral endógena, sin tomar límites.
 - **Sorting monótono por productividad.** El atractivo relativo del sector formal
-  $\bigl((1-\tau)w_Fz-\kappa(z)\bigr)/(\theta z^{\nu_I})$ es estrictamente
+  $\bigl((1-\tau)w_Fz-\kappa(z)\bigr)/z^{\nu_I}$ es estrictamente
   creciente en $z$. Es el mecanismo que disciplina el target `Tkz`, convertido
   en teorema. El numerador lleva el canal institucional y el denominador el
   estructuralista.
@@ -294,6 +294,9 @@ formal de Céspedes, Aquije, Sánchez y Vera-Tudela (2014, BCRP), la informal de
 Göbel, Grimm y Lay (2013, BCRP), y la depreciación de Castillo y Rojas (BCRP).
 Los targets de informalidad y gasto salen de ENAHO e INEI.
 
+La busqueda complementaria de datos realizada con `Top_papers_creator` se
+resume en [`docs/TOP_PAPERS_DATA_SEARCH.md`](docs/TOP_PAPERS_DATA_SEARCH.md).
+
 Cuatro parámetros se calibran internamente ($\psi_F$, $\psi_I$, $A_I$ y
 $\kappa_{z1}$) contra tres targets: participación de horas informales, PBI
 informal nominal, y gap de formalidad por productividad.
@@ -323,6 +326,22 @@ Después de la corrida, los targets del documento pueden comprobarse con:
 ```matlab
 run('calibracion/validate_peru_calibration.m')
 ```
+
+La seleccion de nodos del proceso de productividad se prueba primero sin
+resolver el equilibrio y luego con las configuraciones finalistas.
+
+```matlab
+addpath('calibracion')
+run_nz_tests('grid')
+run_nz_tests('equilibrium')
+run_nz_tests('report')
+```
+
+La prueba de representación selecciona $N_z=40$ con ancho automático 2.8268.
+Esa combinación reproduce $\mathrm{sd}(\log z)=0.5440$ y mantiene el error del
+Gini de productividad por debajo de 0.1% frente a la grilla de 120 nodos. La
+comparación de equilibrio se mantiene separada porque cambiar el soporte exige
+recalibrar los parámetros internos antes de reemplazar la corrida de cierre.
 
 Para verificar la formalización, con Lean y Mathlib instalados:
 

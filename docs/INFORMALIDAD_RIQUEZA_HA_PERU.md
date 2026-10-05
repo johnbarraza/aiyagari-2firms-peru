@@ -138,7 +138,7 @@ donde $\kappa_{z1}$ representa el costo máximo (agentes de baja productividad) 
 El ingreso de los hogares proviene de cinco fuentes: (i) rendimiento de activos, (ii) ingresos laborales formales, (iii) ingreso laboral informal, (iv) participación en beneficios del sector informal y (v) transferencias del gobierno. La restricción presupuestaria intertemporal es:
 
 $$
-\dot{a} = \left[(1-\tau) w_F z - \kappa(z)\right] \ell_F + \left(w_I + \frac{\Pi_I}{L_I}\right) \theta z^{\nu_I} \ell_I + r(z) a + T - c_F - p_I c_I
+\dot{a} = \left[(1-\tau) w_F z - \kappa(z)\right] \ell_F + \left(w_I + \frac{\Pi_I}{L_I}\right) z^{\nu_I} \ell_I + r(z) a + T - c_F - p_I c_I
 $$
 
 donde $r(z) = r - \text{spread}(z) \cdot \mathbf{1}[a < 0]$ incorpora la prima de deuda:
@@ -163,7 +163,7 @@ Defina los retornos laborales marginales netos
 
 $$
 w_F^{net}(z)=(1-\tau)w_Fz-\kappa(z), \qquad
-w_I^{eff}(z)=\left(w_I+\frac{\Pi_I}{L_I}\right)\theta z^{\nu_I}.
+w_I^{eff}(z)=\left(w_I+\frac{\Pi_I}{L_I}\right)z^{\nu_I}.
 $$
 
 Si la restricción de tiempo no es vinculante, las condiciones de primer orden implican:
@@ -190,7 +190,7 @@ $$
 Y_F = A_F K^{\alpha_K} L_F^{1-\alpha_K}
 $$
 
-donde $A_F = 1$ (normalización), $K$ es el **capital formal** y $L_F$ el trabajo formal agregado. El problema de optimización determina los precios de equilibrio:
+donde $K$ es el **capital formal** y $L_F$ el trabajo formal agregado. El problema de optimización determina los precios de equilibrio:
 
 $$
 w_F = (1-\alpha_K) A_F \left(\frac{\alpha_K A_F}{r + \delta}\right)^{\alpha_K/(1-\alpha_K)}
@@ -238,7 +238,6 @@ La Tabla 1 presenta los parámetros obtenidos directamente de la literatura o fi
 | Tasa de depreciación | $\delta$ | 0.10 | Castillo & Rojas (BCRP REE-28) |
 | Participación capital formal | $\alpha_K$ | 0.573 | Céspedes et al. (2014, BCRP) |
 | Tasa impositiva formal | $\tau$ | 0.18 | Galindo et al. (2024, BCRP) |
-| Dotación de tiempo | $\bar{H}$ | 1 | Normalización |
 | Peso CES formal | $\omega_C$ | 0.56 | Calibración interna |
 | Elasticidad sustitución CES | $\sigma_C$ | 5 | Calibración interna |
 | Persistencia proceso $z$ | $\rho_z$ | 0.861 | Anualización de Hong (2023, J. Int. Econ.) |
@@ -247,7 +246,6 @@ La Tabla 1 presenta los parámetros obtenidos directamente de la literatura o fi
 | Prima de deuda: curvatura | $\eta$ | 1.0 | Supuesto conservador |
 | Tecnología informal | $\alpha_I, \beta_I$ | 0.22, 0.619 | Calibración interna informada por Göbel et al. (2013) |
 | Atenuación shock informal | $\nu_I$ | 0.6 | Calibración interna |
-| Atenuación $z$ en informal | $\theta$ | 1.0 | Sin atenuación adicional |
 
 [^rho-r]: En modelos de Aiyagari con mercados incompletos, $r^*<\rho$ en estado estacionario. El modelo arroja $r^*=0.066$, consistente con $\rho=0.073$. Un valor $\rho=0.05$ daría $r^*<0.05$, lo que no corresponde a los resultados obtenidos.
 
@@ -453,9 +451,9 @@ Una pregunta central es qué parte de la asociación entre informalidad y baja r
 
 ### 6.1.1 Lo que el modelo impone por supuesto
 
-El modelo impone tres elementos exógenos que crean las condiciones para el mecanismo. **Barrera de acceso:** la función $\kappa(z) = \kappa_{z1} \cdot \left(\frac{z_{\max}-z}{z_{\max}-z_{\min}}\right)$ es decreciente en $z$ por construcción. El parámetro $\kappa_{z1}=0.40$ se calibra para replicar $T_{kz}=38.6\%$, pero su forma funcional es un supuesto que representa costos de formalización, requisitos educativos y fricciones de selección. **Prima de deuda:** $\mathrm{spread}(z)$ también es una cuña decreciente en $z$ impuesta para representar un mayor riesgo percibido entre agentes de baja productividad. Su forma funcional es un supuesto del modelo. **Tecnologías y brecha salarial:** las diferencias tecnológicas calibradas favorecen una remuneración formal mayor en el benchmark. La magnitud salarial se determina en equilibrio, aunque permanece condicionada por esos parámetros.
+El modelo impone tres elementos exógenos que crean las condiciones para el mecanismo. La barrera de acceso $\kappa(z) = \kappa_{z1} \left(\frac{z_{\max}-z}{z_{\max}-z_{\min}}\right)$ es decreciente en $z$ por construcción. El parámetro $\kappa_{z1}=0.40$ se calibra para replicar $T_{kz}=38.6\%$, mientras que la forma funcional representa costos de formalización, requisitos educativos y fricciones de selección. La prima de deuda también disminuye con $z$ y representa un mayor riesgo percibido entre agentes de baja productividad. Las diferencias tecnológicas calibradas favorecen una remuneración formal mayor en el benchmark. Su magnitud se determina en equilibrio, condicionada por esos parámetros.
 
-Estos tres supuestos crean un entorno en el que los agentes con z bajo enfrentan simultáneamente: (a) mayor costo de acceso al sector formal, (b) mayor spread si se endeudan, y (c) menores salarios si trabajan en el sector informal. Nada de esto es un resultado; es la arquitectura del modelo.
+Estos tres supuestos hacen que los agentes con $z$ bajo enfrenten un mayor costo de acceso formal, una prima superior cuando se endeudan y una remuneración informal menor.
 
 ### 6.1.2 Resultados condicionales del equilibrio
 

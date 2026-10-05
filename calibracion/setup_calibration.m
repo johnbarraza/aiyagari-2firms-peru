@@ -46,7 +46,7 @@ setenv('HA_IE_DEBT_PREM_REBATE', '0');
 setenv('HA_IE_INFORMAL_PROFIT_RULE', 'hours');
 
 %% Targets reportados
-setenv('HA_IE_T4_DATA',          '0.557');
+setenv('HA_IE_T4_DATA',          '0.509');
 setenv('HA_IE_T5_DATA',          '0.190');
 setenv('HA_IE_TKZ_DATA',         '0.386');
 setenv('HA_IE_TGASTO_TIPO_DATA', '1.913');

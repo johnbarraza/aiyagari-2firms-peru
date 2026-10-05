@@ -167,7 +167,7 @@ if isfinite(env_tau_c) && env_tau_c >= 0, tau_c = env_tau_c; end
 % psi_F, psi_I: pesos de desutilidad del trabajo (parametros del hogar, NO de la firma)
 %   Con H_bar=Inf:  nivel de psi determina horas totales; ratio determina split F/I
 %   Con H_bar=1:    nivel de psi debe ser BAJO para que el tope binde (psi ~ 20-50)
-%                   ratio psi_F/psi_I ≈ 1.57 para split T4=0.556 (FOC KKT con phi=0.5)
+%                   la calibracion final usa psi_F/psi_I = 55/34 y genera T4=0.517
 psi_F = 55.0;    % final package calibration
 psi_I = 34.0;    % final package calibration
 theta = 1.0;      % informal productivity attenuation factor θ ∈ (0,1]
@@ -352,19 +352,20 @@ z2 = z(end);
 %  E[z] = 0.640*0.591 + 0.360*1.728 = 1.000  (normalizado)
 
 % ---- Targets calibracion Peru ----
-% INEI Cuenta Satelite 2024: el sector informal aporta 55.7% del empleo
-% y 19.0% del PBI nominal. El modelo mapea ell_I al sector informal
-% productivo, no a la informalidad laboral amplia dentro de firmas formales.
+% ENAHO 2015-2019: 50.9% de las horas se asigna al sector informal. La
+% Cuenta Satelite fija en 19.0% la participacion del PBI informal nominal.
+% El modelo mapea ell_I al sector informal productivo, no a la informalidad
+% laboral amplia dentro de firmas formales.
 %
-% Targets primarios actuales: T4, T5, Tkz y Tgasto_tipo. T6 queda como chequeo externo.
+% Targets primarios actuales: T4, T5 y Tkz. Tgasto_tipo y T6 son chequeos externos.
 % Instrumentos/canales disponibles:
 %   psi_F/psi_I  -> mueve principalmente T4 (asignacion horas F/I).
 %   A_I          -> mueve productividad/output informal y T5.
 %   kappa_z1     -> mueve gap formalidad z2-z1 (Tkz).
-%   sorting z/a   -> mueve gasto total de hogares formal-dominantes vs informales.
+%   sorting z/a   -> diagnostico de gasto total formal-dominante/informal-dominante.
 %   omega_C      -> mueve composicion CES c_F/(p_I*c_I); no es target ENAHO directo.
 % kappa(a) se desactiva para evitar endogeneidad de activos en la barrera.
-T4_data    = 0.557;   % share de HORAS informales, INEI Cuenta Satelite 2024
+T4_data    = 0.509;   % share de HORAS informales, ENAHO 2015-2019 (pre-COVID)
                       % Mod.500, def. sector informal Cuenta Satelite (emplpsec==1), pond. fac500a,
                       % filtro ocu500==1, horas ocupacion principal i513t/p513t (100% pobladas).
                       % Pre-COVID = mismo regimen que gasto/z 2015-2019 y T6 2017 (T6 es T4 por quintil).
@@ -1139,16 +1140,17 @@ else
     T5_nom = p_I_star * Y_I / (Y_F + p_I_star * Y_I);
 
     fprintf('--- Calibracion Targets (modelo | dato Peru) ---\n');
-    fprintf('  [PRIMARIOS - 4 targets]\n');
-    fprintf('  T4  E[lI]/(E[lF+lI])  sector informal: %.4f | %.3f  (Cuenta Sat.2024)  instr: psi_F/psi_I\n', T4_model, T4_data);
+    fprintf('  [PRIMARIOS - 3 targets]\n');
+    fprintf('  T4  E[lI]/(E[lF+lI])  sector informal: %.4f | %.3f  (ENAHO 2015-2019) instr: psi_F/psi_I\n', T4_model, T4_data);
     fprintf('  T5  pI*Y_I/(Y_F+pI*Y_I) PIB nominal:   %.4f | %.3f  (Cuenta Sat.2024)  instr: A_I\n', T5_nom, T5_data);
     fprintf('  Tkz gap formal z2-z1 (int.):            %.4f | %.3f  (EPEN 2025 broad)   instr: kappa_z1\n', T_kappa_z_model, T_kappa_z_data);
     fprintf('       form_rate z_min=%.2f:              %.4f\n', min(z), form_rate_z1);
     fprintf('       form_rate z_max=%.2f:              %.4f\n', max(z), form_rate_z2);
-    fprintf('  Tgasto_tipo E[gasto|lF>lI]/E[gasto|lI>=lF]: %.4f | %.3f  (ENAHO dominant_hours) instr: sorting\n', Tgasto_tipo, Tgasto_tipo_data);
+    fprintf('  [VALIDACION EXTERNA]\n');
+    fprintf('  Tgasto_tipo E[gasto|lF>lI]/E[gasto|lI>=lF]: %.4f | %.3f  (ENAHO)\n', Tgasto_tipo, Tgasto_tipo_data);
     fprintf('  TgFI_canasta c_F/(p_I*c_I):             %.4f | n/a   (diagnostico CES; sin target ENAHO directo)\n', TgFI_canasta);
-    fprintf('  [CANALES DISPONIBLES - 5]\n');
-    fprintf('       psi_F/psi_I -> T4; A_I -> T5; kappa_z1 -> Tkz; sorting -> Tgasto_tipo; T6 queda como chequeo\n');
+    fprintf('  [MAPEO DE CALIBRACION]\n');
+    fprintf('       psi_F/psi_I -> T4; A_I -> T5; kappa_z1 -> Tkz; Tgasto_tipo y T6 son validacion\n');
     % T1 household: usa w_I_star como PMgL (lump) o como ingreso mixto (hours)
     % En modo hours, w_I_star es el PMgL de la firma; el hogar percibe w_I_household_star
     if strcmp(informal_profit_rule, 'hours')
@@ -1348,12 +1350,12 @@ if EQUILIBRIUM_MODE == 2
 
 % =========================================================================
 % 4c. CALIBRATION SUMMARY
-%     Estrategia: targets primarios T4, T5, Tkz y Tgasto_tipo; T6 queda como chequeo.
+%     Estrategia: targets primarios T4, T5 y Tkz; Tgasto_tipo y T6 son chequeos.
 %       Instrumentos → Targets:
-%         psi_F/psi_I  → T4 = E[ell_I]/(E[ell_F]+E[ell_I]) = 0.557  (Cuenta Sat. 2024, empleo sector informal)
+%         psi_F/psi_I  → T4 = E[ell_I]/(E[ell_F]+E[ell_I]) = 0.509  (ENAHO 2015-2019, horas pre-COVID)
 %         A_I          → T5 = p_I*Y_I/(Y_F+p_I*Y_I)        = 0.190  (Cuenta Sat. 2024)
 %         kappa_z1     -> Tkz = gap formalidad z2-z1         = 0.386  (EPEN 2025 broad)
-%         sorting      -> Tgasto_tipo = E[gasto|lF>lI]/E[gasto|lI>=lF]
+%         Tgasto_tipo es validacion externa del sorting, no target directo.
 %         omega_C      -> demanda relativa CES y p_I; TgFI_canasta es diagnostico
 %       kappa(a) esta desactivado para evitar endogeneidad de activos.
 %       Referencia (no calibrada):
@@ -1380,20 +1382,20 @@ if EQUILIBRIUM_MODE == 2
     if false
     fprintf('\nMomentos actuales vs targets Peru (modelo | dato):\n');
     fprintf('  *** TARGETS PRIMARIOS (3) ***\n');
-    fprintf('  T4  E[lI]/(E[lF+lI])  sector inf.:    %.4f | %.3f  (Cuenta Sat.2024)  instr: psi_F/psi_I\n', T4_ratio_curr, T4_data);
+    fprintf('  T4  E[lI]/(E[lF+lI])  sector inf.:    %.4f | %.3f  (ENAHO 2015-2019) instr: psi_F/psi_I\n', T4_ratio_curr, T4_data);
     fprintf('  T5  pI*Y_I/(Y_F+pI*Y_I) PIB nominal:  %.4f | %.3f  (Cuenta Sat.2024)  instr: A_I\n', T5_nom, T5_data);
-    fprintf('  T6  gap Q1-Q5 horas inf.:              %.4f | %.3f  (INEI-ENAHO 2017)  monitoreo; kappa(a) desactivado\n', T6_model, T6_data);
-    fprintf('       Q1 share horas informales:        %.4f | %.3f\n', T6_Q1, T6_Q1_data);
-    fprintf('       Q5 share horas informales:        %.4f | %.3f\n', T6_Q5, T6_Q5_data);
-    fprintf('  *** CANALES/INSTRUMENTOS DISPONIBLES (4) ***\n');
-    fprintf('  psi_F/psi_I -> T4; A_I -> T5; kappa_z1 -> Tkz; omega_C -> demanda/p_I/T5 nominal; T6 chequeo\n');
-    fprintf('  Identificacion: con 4 canales y 3 targets, fijar omega_C o agregar un target adicional.\n');
+    fprintf('  Tkz gap formal z2-z1 (int.):           %.4f | %.3f  (EPEN 2025 broad)  instr: kappa_z1\n', T_kappa_z_model, T_kappa_z_data);
+    fprintf('  *** MAPEO DE CALIBRACION ***\n');
+    fprintf('  psi_F/psi_I -> T4; A_I -> T5; kappa_z1 -> Tkz; omega_C queda fijo.\n');
+    fprintf('  Identificacion: normalizar una psi o agregar horas totales como cuarto target.\n');
     fprintf('  *** REFERENCIAS (no calibradas) ***\n');
     fprintf('  T1  w_F/(w_I*theta) ratio salarial:   %.4f | ~%.2f  (BCR)\n', T1_wage_gross, T1_ref);
     fprintf('  T1  (1-tau)*w_F/(w_I*theta) neto:     %.4f\n', T1_wage_net);
     fprintf('  T5  Y_I/(Y_F+Y_I) real:               %.4f\n', T5_real);
     fprintf('  T4  L_I/(L_F+L_I) eficiencia:         %.4f   (NO target)\n', SI_eff_curr);
     fprintf('  E[ell_I] absoluto:                     %.4f\n', E_ellI_curr);
+    fprintf('  T6 Q1 y Q5 horas informales:           %.4f | %.4f  (datos %.3f | %.3f)\n', ...
+        T6_Q1, T6_Q5, T6_Q1_data, T6_Q5_data);
     fprintf('  *** PARAMETROS ***\n');
     fprintf('  A_F=%.4f, A_I=%.5f, alpha_I=%.4f, beta_I=%.4f, brecha PTF=%.2f, nu_I=%.4f, kappa_z1=%.4f, kappa_z_shape=%.2f, kappa_extra_legacy=%.4f\n', ...
         A_F, A_I, alpha_I, beta_I, ptf_gap, nu_I, kappa_z1, kappa_z_shape, kappa_extra);

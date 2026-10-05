@@ -298,6 +298,12 @@ Cuatro parámetros se calibran internamente ($\psi_F$, $\psi_I$, $A_I$ y
 $\kappa_{z1}$) contra tres targets: participación de horas informales, PBI
 informal nominal, y gap de formalidad por productividad.
 
+El target principal de horas es $50.9\%$, promedio ENAHO 2015-2019. El valor
+$55.9\%$ se conserva solo como robustez para 2020, 2022 y 2023, sin 2021. La
+auditoría de identificación y el protocolo para extender la calibración a
+México, Colombia, Ecuador y Paraguay están en
+[`docs/AUDITORIA_CALIBRACION_PERU_Y_PAISES.md`](docs/AUDITORIA_CALIBRACION_PERU_Y_PAISES.md).
+
 ## Reproducir
 
 ```matlab
@@ -311,6 +317,12 @@ producción `I=500`; la corrida reportada usó la grilla rápida `I=200`. Tarda 
 33 minutos y necesita del orden de 10 GB de RAM libres. Los resultados quedan en
 `outputs/stationary/<RUN_TAG>/`. Los ejercicios de robustez y las variables
 `HA_IE_*` están en [`INSTRUCCIONES.md`](INSTRUCCIONES.md).
+
+Después de la corrida, los targets del documento pueden comprobarse con:
+
+```matlab
+run('calibracion/validate_peru_calibration.m')
+```
 
 Para verificar la formalización, con Lean y Mathlib instalados:
 

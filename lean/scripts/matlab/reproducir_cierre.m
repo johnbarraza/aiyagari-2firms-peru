@@ -43,6 +43,12 @@ setenv('HA_IE_DEBT_PREM_ETA',        '1.0');
 setenv('HA_IE_DEBT_PREM_REBATE',     '0');
 setenv('HA_IE_INFORMAL_PROFIT_RULE', 'hours');
 
+% --- targets del documento (no alteran el equilibrio; solo la evaluacion) ---
+setenv('HA_IE_T4_DATA',              '0.509');
+setenv('HA_IE_T5_DATA',              '0.190');
+setenv('HA_IE_TKZ_DATA',             '0.386');
+setenv('HA_IE_TGASTO_TIPO_DATA',     '1.913');
+
 fprintf('=== reproduccion test_AI098_cierre + fix walras_err ===\n');
 fprintf('objetivo: r*=0.066040  K*=5.138390  p_I*=0.928115\n');
 fprintf('          T4=0.517110 T5=0.187958 Tkz=0.377518 T6=0.044079\n');

@@ -296,6 +296,8 @@ Los targets de informalidad y gasto salen de ENAHO e INEI.
 
 La busqueda complementaria de datos realizada con `Top_papers_creator` se
 resume en [`docs/TOP_PAPERS_DATA_SEARCH.md`](docs/TOP_PAPERS_DATA_SEARCH.md).
+La clasificación y la revisión editorial se resumen en
+[`docs/TOP_PAPERS_REVIEW.md`](docs/TOP_PAPERS_REVIEW.md).
 
 Cuatro parámetros se calibran internamente ($\psi_F$, $\psi_I$, $A_I$ y
 $\kappa_{z1}$) contra tres targets: participación de horas informales, PBI

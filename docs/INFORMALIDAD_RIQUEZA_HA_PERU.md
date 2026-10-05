@@ -37,7 +37,7 @@ La calibración reproduce sus tres targets principales: T4 (fracción de horas i
 
 # ABSTRACT
 
-The Peruvian economy exhibits high labor informality (71.1% in 2023, according to INEI-ENAHO), alongside marked wealth inequality. This thesis analyzes how households' endogenous decision to allocate working hours between the formal and informal sectors affects the stationary distribution of wealth and consumption. A continuous-time general equilibrium model with heterogeneous agents is developed, extending Achdou et al. (2022) through a dual productive structure and endogenous labor supply at the intensive margin.
+The Peruvian economy exhibits high labor informality (71.1% in 2023, according to INEI-ENAHO), alongside marked wealth inequality. This thesis characterizes the stationary distribution of wealth and consumption implied by households' endogenous allocation of working hours between the formal and informal sectors. A continuous-time general equilibrium model with heterogeneous agents is developed, extending Achdou et al. (2022) through a dual productive structure and endogenous labor supply at the intensive margin.
 
 The objective is to quantify associations and internal mechanisms of the model, not to identify a causal effect of informality in the data. The model uses aggregate moments and combines design assumptions, including productivity-dependent access barriers and a differential debt premium, with endogenous labor, consumption, and saving choices. Results are therefore interpreted as implications conditional on those wedges and on the calibration.
 
@@ -119,7 +119,7 @@ El equilibrio general cierra el modelo porque la suma de decisiones individuales
 
 ## 3.2 Nuestra Extensión del Modelo
 
-La economía está poblada por un continuo de hogares heterogéneos que enfrentan riesgo idiosincrático no asegurable sobre su productividad laboral. La contribución central es la modelación explícita de la decisión laboral endógena en un mercado dual. A diferencia de los modelos estándar donde la oferta de trabajo es inelástica, en este marco los agentes eligen óptimamente cómo distribuir su tiempo total entre el trabajo en el sector formal y el trabajo en el sector informal.
+La economía está poblada por un continuo de hogares heterogéneos que enfrentan riesgo idiosincrático no asegurable sobre su productividad laboral. El elemento distintivo es la modelación explícita de la decisión laboral endógena en un mercado dual. A diferencia de los modelos estándar donde la oferta de trabajo es inelástica, en este marco los agentes eligen óptimamente cómo distribuir su tiempo total entre el trabajo en el sector formal y el trabajo en el sector informal.
 
 ### 3.2.1 Hogares Heterogéneos
 
@@ -130,18 +130,18 @@ Los hogares son heterogéneos en sus dotaciones de activos $a$ y en su productiv
 Sin embargo, el acceso al sector formal no es inmediato ni gratuito. El modelo incorpora una cuña sobre el salario formal que representa como proxy barreras asociadas a requisitos educativos, procesos de selección, costos de formalización y fricciones de contratación. No es un costo fijo de participación sino un descuento proporcional a las horas formales trabajadas, de modo que el modelo opera únicamente en el margen intensivo. Dicha cuña depende negativamente de la productividad individual, de manera que los hogares más productivos enfrentan menores barreras. Formalmente:
 
 $$
-\kappa(z) = \kappa_{z1} \left(\frac{z_{\max} - z}{z_{\max} - z_{\min}}\right)^{\text{shape}}
+\kappa(z) = \kappa_{z1} \left(\frac{z_{\max} - z}{z_{\max} - z_{\min}}\right)^{s_\kappa}
 $$
 
-donde $\kappa_{z1}$ representa el costo máximo (agentes de baja productividad) y shape determina la curvatura.
+donde $\kappa_{z1}$ representa el costo máximo para los agentes de baja productividad y $s_\kappa$ determina la curvatura.
 
 El ingreso de los hogares proviene de cinco fuentes: (i) rendimiento de activos, (ii) ingresos laborales formales, (iii) ingreso laboral informal, (iv) participación en beneficios del sector informal y (v) transferencias del gobierno. La restricción presupuestaria intertemporal es:
 
 $$
-\dot{a} = \left[(1-\tau) w_F z - \kappa(z)\right] \ell_F + \left(w_I + \frac{\Pi_I}{L_I}\right) z^{\nu_I} \ell_I + r(z) a + T - c_F - p_I c_I
+\dot{a} = \left[(1-\tau) w_F z - \kappa(z)\right] \ell_F + \left(w_I + \frac{\Pi_I}{L_I}\right) z^{\nu_I} \ell_I + r a - \text{spread}(z)\max(-a,0) + T - c_F - p_I c_I
 $$
 
-donde $r(z) = r - \text{spread}(z) \cdot \mathbf{1}[a < 0]$ incorpora la prima de deuda:
+donde la prima de deuda se paga únicamente cuando $a<0$ y aumenta el costo financiero del hogar:
 
 $$
 \text{spread}(z) = \chi \left(\frac{z_{\max} - z}{z_{\max} - z_{\min}}\right)^{\eta}
@@ -224,16 +224,16 @@ garantizando la restricción presupuestaria balanceada $\int T \, d\mu = \int \t
 
 ## 4.1 Calibración
 
-### Parámetros de la Literatura
+### Parámetros fijados y calibración complementaria
 
-La Tabla 1 presenta los parámetros obtenidos directamente de la literatura o fijados por convenciones estándar.
+La Tabla 1 presenta los parámetros obtenidos de la literatura, fijados como supuestos del benchmark o calibrados fuera del bloque principal de tres targets.
 
-**Tabla 1: Parámetros de la literatura**
+**Tabla 1: Parámetros fijados y calibración complementaria**
 
 | Parámetro | Símbolo | Valor | Fuente |
 | :--- | :--- | :--- | :--- |
 | Coef. aversión al riesgo | $\gamma$ | 1 | Achdou et al. (2022) |
-| Tasa de descuento subjetiva | $\rho$ | 0.073 | Consistencia con $r^*$[^rho-r] |
+| Tasa de descuento subjetiva | $\rho$ | 0.073 | Supuesto del benchmark[^rho-r] |
 | Elasticidad de Frisch | $\phi$ | 0.38 | Céspedes & Rendón (2012, BCRP) |
 | Tasa de depreciación | $\delta$ | 0.10 | Castillo & Rojas (BCRP REE-28) |
 | Participación capital formal | $\alpha_K$ | 0.573 | Céspedes et al. (2014, BCRP) |
@@ -254,7 +254,7 @@ La Tabla 1 presenta los parámetros obtenidos directamente de la literatura o fi
 | Dimensión | Proceso OU (este modelo) | Proceso Poisson 2 estados |
 |---|---|---|
 | Soporte de $z$ | Continuo ($N_z = 40$) | Discreto (alto/bajo) |
-| Calibración | $\rho_z$, $\sigma_{\log z}$ de panel ENAHO (Hong 2022) | Parámetros ad hoc |
+| Calibración | $\rho_z$, $\sigma_{\log z}$ de panel ENAHO (Hong 2023) | Parámetros ad hoc |
 | Persistencia | AR(1) suave | Markov 2 estados |
 | Costo computacional | Alto: matriz $I \times N_z$ densa | Bajo: matriz $I \times 2$ dispersa |
 | Realismo | Distribución continua de productividad | Polariza en dos tipos |
@@ -272,8 +272,6 @@ La Tabla 2 muestra los parámetros calibrados para replicar momentos observados 
 | Desutilidad formal | $\psi_F$ | 55 | T4: fracción horas informal (intensivo) | 50.9% (ENAHO 2015-2019) |
 | Desutilidad informal | $\psi_I$ | 34 | T4: fracción horas informal (intensivo) | 50.9% (ENAHO 2015-2019) |
 | Barrera acceso formal (máx.) | $\kappa_{z1}$ | 0.40 | Tkz: gap formalidad por productividad | 38.6% (EPEN 2025) |
-| Retornos capital informal | $\alpha_I$ | 0.22 | Literatura (Göbel et al., 2013) | No aplica |
-| Retornos trabajo informal | $\beta_I$ | 0.619 | DRS: $\alpha_I + \beta_I < 1$ | No aplica |
 
 El target T4 se construye con la población ocupada de ENAHO, sus horas trabajadas, el ponderador del módulo laboral y la clasificación del sector informal de la Cuenta Satélite.[^t4] El target Tkz mide la diferencia en tasas de formalidad entre los grupos de mayor y menor productividad aproximada.[^tkz]
 
@@ -285,7 +283,7 @@ El target T4 se construye con la población ocupada de ENAHO, sus horas trabajad
 
 ## 4.2 Solución Numérica
 
-La solución del modelo se obtiene mediante métodos numéricos en tiempo continuo siguiendo Achdou et al. (2022). La variable de riqueza se discretiza en una grilla de 200 puntos (I = 200, corrida rápida) o 500 puntos (I = 500, corrida de producción) entre $a_{\min} = -1$ y $a_{\max} = 20$. La productividad se aproxima mediante Nz = 40 estados del proceso OU.
+La solución del modelo se obtiene mediante métodos numéricos en tiempo continuo siguiendo Achdou et al. (2022). La variable de riqueza se discretiza en una grilla de 200 puntos (I = 200, corrida rápida) o 500 puntos (I = 500, corrida de producción) entre $a_{\min} = -1$ y $a_{\max} = 20$. La productividad se aproxima mediante Nz = 40 estados del proceso OU. En la corrida de cierre, el drift del estado de productividad alto en $a_{\max}$ es $-3.75\times10^{-5}$, la masa en el último nodo es 0.23% y la masa en los cinco nodos superiores es 0.50%. Estos diagnósticos no muestran un drift saliente en el borde, aunque todavía conviene comprobar la estabilidad de los momentos con dominios más amplios.
 
 El problema dinámico de los hogares se resuelve mediante la HJB con un esquema de diferencias finitas *upwind* (Achdou et al., 2022; Moll, n.d.). Una vez obtenidas las funciones de política, se resuelve la ecuación KF para obtener la distribución estacionaria g(a, z). El equilibrio general itera sobre la tasa de interés r mediante bisección, y simultáneamente sobre el precio $p_I$, el salario informal $w_I$ y las transferencias T, hasta que todos los mercados se vacían.
 
@@ -333,8 +331,6 @@ El análisis se desarrolla a partir del equilibrio estacionario del modelo calib
 | Tgasto: ratio gasto F/I                   | 1.913 | 1.465  | -0.448  | Validación externa |
 | T1: ratio salarial formal/informal (neto) | 2.30  | 2.33   | +0.03    | Validación externa |
 | T6: gradiente informalidad Q1-Q5         | 53.0% | 4.4%   | -48.6pp | Comparación no homogénea |
-| Gini de ingreso/consumo Banco Mundial     | 40.1  | 21.8   | n.c.    | Contexto    |
-| Gini de activos del modelo                | ~0.68 | 52.1   | n.c.    | Diagnóstico |
 | Tasa de interés de equilibrio              | n.a. | 6.6%   | n.a. | Equilibrio      |
 | Precio bien informal                        | < 1   | 0.928  | n.a. | Consistencia (ok) |
 | Masa en deuda (a < 0)                       | n.a. | 11.8%  | n.a. | Diagnóstico    |
@@ -349,9 +345,9 @@ Las comparaciones de T6[^t6] y de los coeficientes de Gini[^gini] requieren caut
 
 ![](images/moll_time_use_by_z_excluding_leisure_matlab.png)
 
-*Figura 1: Composición de la oferta laboral por nivel de productividad z (margen intensivo) en la calibración final. Cada barra muestra la fracción de horas destinadas al sector formal (azul) e informal (naranja) para cada estado de productividad discretizado.*
+*Figura 1. Composición de la oferta laboral por nivel de productividad $z$ en la calibración final. Cada barra muestra la fracción de horas informales en azul y formales en naranja para cada estado discretizado. Las participaciones excluyen el ocio y suman cien por ciento.*
 
-El Gráfico 1 presenta la oferta laboral destinada a los sectores formal e informal según el nivel de productividad de cada individuo. Los resultados muestran una relación positiva entre productividad y participación en el sector formal. Conforme aumenta z, los agentes destinan una proporción creciente de sus horas al trabajo formal, mientras que los individuos de menor productividad concentran sus horas en el sector informal.
+La Figura 1 presenta la oferta laboral destinada a los sectores formal e informal según el nivel de productividad de cada individuo. Los resultados muestran una relación positiva entre productividad y participación en el sector formal. Conforme aumenta z, los agentes destinan una proporción creciente de sus horas al trabajo formal, mientras que los individuos de menor productividad concentran sus horas en el sector informal.
 
 Este sorting emerge de la interacción entre tres fuerzas: (i) la barrera $\kappa(z)$ que encarece el acceso al sector formal para agentes con z bajo; (ii) la diferencia salarial $w_F > w_I$ que hace más atractivo el sector formal; y (iii) las FOCs de la oferta laboral que equilibran la desutilidad marginal con el salario ponderado por la utilidad marginal del consumo.
 
@@ -361,15 +357,15 @@ El modelo genera una fracción agregada de horas en el sector informal de **51.7
 
 ![](images/moll_savings_policy_matlab.png)
 
-*Figura 2: Política de ahorro $\dot{a}(a, z)$. Línea positiva = ahorro; línea negativa = desahorro. Los diferentes trazos corresponden a distintos percentiles del proceso z. El cruce con $\dot{a} = 0$ determina el nivel de riqueza objetivo (target wealth) de cada agente.*
+*Figura 2. Política de ahorro $\dot{a}(a,z)$ para estados seleccionados de productividad. Los valores positivos indican ahorro y los negativos desahorro. Un cruce con cero identifica un punto estacionario interior cuando existe dentro del dominio; las trayectorias que no cruzan corresponden a soluciones de borde o requieren ampliar la grilla.*
 
-Los resultados indican que los agentes más productivos presentan mayor propensión a mantener activos positivos. La intensidad del ahorro disminuye gradualmente conforme aumenta el nivel de riqueza acumulada. En contraste, los agentes menos productivos muestran mayor tendencia a endeudarse, manteniendo niveles de deuda cercanos al límite $a_{\min} = -1$. El 11.8% de los hogares se encuentra en deuda (a < 0) en el equilibrio estacionario.
+Los resultados indican que los agentes más productivos presentan mayor propensión a mantener activos positivos. La intensidad del ahorro disminuye gradualmente conforme aumenta el nivel de riqueza acumulada. En contraste, los agentes menos productivos muestran mayor tendencia a endeudarse, manteniendo niveles de deuda cercanos al límite $a_{\min} = -1$. El 11.8% de los hogares se encuentra en deuda ($a<0$) en el equilibrio estacionario. La curva del estado más productivo permanece cerca de cero al aproximarse al extremo superior. En el nodo final su drift es levemente negativo y no saliente, pero la robustez del Gini y del capital agregado frente a un aumento de $a_{\max}$ permanece como prueba pendiente.
 
 ## 5.4 Distribución de Riqueza por Productividad
 
 ![](images/moll_wealth_density_by_z_low_median_high_matlab.png)
 
-*Figura 3: Distribución estacionaria de riqueza g(a|z) para el tercil inferior (z bajo), el estado mediano y el tercil superior (z alto) del proceso de productividad.*
+*Figura 3. Densidad estacionaria de riqueza condicionada en los estados mínimo, mediano y máximo de productividad, junto con la densidad marginal total. Cada curva condicional se normaliza por su propio máximo. Las líneas verticales punteadas indican la riqueza media de los tres estados seleccionados.*
 
 La distribución de riqueza muestra que los individuos con menor productividad están fuertemente concentrados en los niveles más bajos de riqueza, con una masa significativa en el límite de endeudamiento ($a_{\min} = -1$). Por el contrario, los individuos más productivos presentan una distribución más dispersa, con mayor acumulación en niveles intermedios y altos de riqueza.
 
@@ -401,9 +397,9 @@ El modelo genera un Gini de activos netos de 0.521 y un Gini de consumo de 0.218
 
 ![](images/moll_income_decomposition_percent_by_wealth_quintile_matlab.png)
 
-*Figura 4: Descomposición porcentual del ingreso por quintil de riqueza. El ingreso laboral formal (azul), el ingreso laboral informal (naranja), el rendimiento de activos (verde) y las transferencias del gobierno (rojo) se apilan para cada quintil.*
+*Figura 4. Descomposición del ingreso bruto por quintil de riqueza. El ingreso formal aparece en azul, el informal en naranja, el rendimiento de activos en amarillo, la transferencia fiscal en morado y los beneficios informales en verde. Las participaciones se calculan dentro de cada quintil y suman cien por ciento.*
 
-El Gráfico 4 revela que la fuente de ingreso que más distingue a los quintiles superiores de los inferiores es precisamente el **ingreso laboral formal**. Los quintiles de menor riqueza dependen proporcionalmente más del ingreso informal y de las transferencias, mientras que los quintiles altos concentran una mayor participación del ingreso formal y del rendimiento de activos. Este resultado es fundamental para evaluar la hipótesis de la investigación.
+La Figura 4 muestra que la composición del ingreso cambia con la riqueza. Los quintiles inferiores dependen proporcionalmente más del ingreso informal y de las transferencias, mientras que el rendimiento de activos aumenta con el quintil. Este patrón es descriptivo dentro del benchmark y no separa la contribución causal de cada cuña.
 
 ## 5.6 Gradiente de Informalidad por z y Probabilidad de Deuda
 
@@ -593,7 +589,7 @@ La oferta laboral endógena ofrece un margen potencial de auto-aseguramiento, en
 
 La principal limitación es la ausencia del margen extensivo. El T6 de 4.4% no es directamente comparable con el 53.0% observado porque ambos usan definiciones distintas. Una elección discreta de participación es una extensión prioritaria y una explicación plausible de parte de la brecha, pero su contribución debe medirse, no suponerse.
 
-Antes de atribuir mecanismos causales, quedan pendientes cuatro ejercicios: (i) retirar por separado $\kappa(z)$ y la prima de deuda; (ii) resolver una versión con horas fijas; (iii) reportar sensibilidad local y ponderaciones de la calibración; y (iv) armonizar la definición empírica y modelada de T6. Estos contrafactuales convertirían las asociaciones del benchmark en afirmaciones estructurales cuantificadas.
+Antes de atribuir mecanismos causales, quedan pendientes cuatro ejercicios: (i) retirar por separado $\kappa(z)$ y la prima de deuda; (ii) resolver una versión con horas fijas; (iii) reportar sensibilidad local y ponderaciones de la calibración; y (iv) armonizar la definición empírica y modelada de T6. Estos contrafactuales permitirían evaluar cuáles asociaciones del benchmark sobreviven al comparar equilibrios alternativos.
 
 \newpage
 
@@ -772,17 +768,17 @@ El gasto ajustado BnD se define como gasto total del hogar menos gasto en equipa
 
 *Figura D5: Distribución del gasto ajustado BnD por formalidad del jefe de hogar, 2019.*
 
-**Tabla D1: Gasto ajustado BnD promedio expandido por formalidad del jefe de hogar (soles corrientes)**
+**Tabla D1: Gasto ajustado BnD medio ponderado por formalidad del jefe de hogar (soles corrientes)**
 
-| Año  | Gasto formal | Gasto informal | Gasto total | Diferencia |
-|------|-------------:|---------------:|------------:|-----------:|
-| 2015 | 29415.92 | 14760.78 | 44176.70 | 14655.14 |
-| 2016 | 30972.93 | 15338.69 | 46311.62 | 15634.24 |
-| 2017 | 31848.96 | 15376.82 | 47225.78 | 16472.14 |
-| 2018 | 32644.25 | 15532.38 | 48176.63 | 17111.87 |
-| 2019 | 33214.85 | 15854.65 | 49069.50 | 17360.20 |
+| Año  | Gasto formal | Gasto informal | Diferencia |
+|------|-------------:|---------------:|-----------:|
+| 2015 | 29415.92 | 14760.78 | 14655.14 |
+| 2016 | 30972.93 | 15338.69 | 15634.24 |
+| 2017 | 31848.96 | 15376.82 | 16472.14 |
+| 2018 | 32644.25 | 15532.38 | 17111.87 |
+| 2019 | 33214.85 | 15854.65 | 17360.20 |
 
-**Tabla D2: Desviación estándar expandida del gasto ajustado BnD por formalidad del jefe de hogar**
+**Tabla D2: Desviación estándar ponderada del gasto ajustado BnD por formalidad del jefe de hogar**
 
 | Año  | SD gasto formal | SD gasto informal | SD total | Diferencia SD |
 |------|----------------:|------------------:|---------:|--------------:|
@@ -792,17 +788,17 @@ El gasto ajustado BnD se define como gasto total del hogar menos gasto en equipa
 | 2018 | 21335.79 | 12896.09 | 17628.46 | 8439.70 |
 | 2019 | 22095.74 | 12641.63 | 18000.45 | 9454.11 |
 
-**Tabla D3: Gasto total del hogar (GASHOG1D) promedio expandido por formalidad del jefe de hogar (soles corrientes)**
+**Tabla D3: Gasto total del hogar (GASHOG1D) medio ponderado por formalidad del jefe de hogar (soles corrientes)**
 
-| Año  | Gasto formal | Gasto informal | Gasto total | Diferencia |
-|------|-------------:|---------------:|------------:|-----------:|
-| 2015 | 31416.98 | 15600.98 | 47017.96 | 15816.00 |
-| 2016 | 32950.20 | 16210.21 | 49160.41 | 16739.99 |
-| 2017 | 33891.77 | 16235.75 | 50127.52 | 17656.02 |
-| 2018 | 34767.52 | 16409.78 | 51177.30 | 18357.74 |
-| 2019 | 35441.96 | 16749.94 | 52191.90 | 18692.02 |
+| Año  | Gasto formal | Gasto informal | Diferencia |
+|------|-------------:|---------------:|-----------:|
+| 2015 | 31416.98 | 15600.98 | 15816.00 |
+| 2016 | 32950.20 | 16210.21 | 16739.99 |
+| 2017 | 33891.77 | 16235.75 | 17656.02 |
+| 2018 | 34767.52 | 16409.78 | 18357.74 |
+| 2019 | 35441.96 | 16749.94 | 18692.02 |
 
-**Tabla D4: Desviación estándar expandida del gasto total del hogar (GASHOG1D) por formalidad del jefe de hogar**
+**Tabla D4: Desviación estándar ponderada del gasto total del hogar (GASHOG1D) por formalidad del jefe de hogar**
 
 | Año  | SD gasto formal | SD gasto informal | SD total | Diferencia SD |
 |------|----------------:|------------------:|---------:|--------------:|
@@ -812,4 +808,4 @@ El gasto ajustado BnD se define como gasto total del hogar menos gasto en equipa
 | 2018 | 23179.89 | 13532.90 | 18979.55 | 9646.99 |
 | 2019 | 23806.03 | 13286.70 | 19277.75 | 10519.33 |
 
-Fuente: ENAHO 2015-2019, INEI. La evidencia del anexo confirma que los hogares con jefe formal presentan mayor gasto promedio y mayor dispersión en todos los años, aunque esta clasificación por jefe de hogar se mantiene como validación visual y no como target vinculante del modelo.
+Fuente: ENAHO 2015-2019, INEI. Las Tablas D1 y D3 reportan medias condicionales por formalidad del jefe y no una media agregada, que requiere combinar ambos grupos con sus ponderadores. La evidencia del anexo muestra que los hogares con jefe formal presentan mayor gasto promedio y mayor dispersión en todos los años, aunque esta clasificación se mantiene como validación visual y no como target vinculante del modelo.

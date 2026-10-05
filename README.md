@@ -1,5 +1,8 @@
+<h1 align="center">Informalidad y Distribución de Riqueza</h1>
+
 <p align="center">
-  <img src="assets/banner.svg" alt="Informalidad y Distribución de Riqueza: un modelo de agentes heterogéneos con oferta laboral endógena" width="100%">
+  <strong>Un modelo de agentes heterogéneos con oferta laboral endógena</strong><br>
+  Perú · calibración ENAHO · MATLAB + Lean 4
 </p>
 
 <p align="center">
@@ -18,11 +21,7 @@
   <img alt="LaTeX" src="https://img.shields.io/badge/LaTeX-pdflatex-008080">
 </p>
 
-# Informalidad y Distribución de Riqueza
-
-**Un Modelo de Agentes Heterogéneos con Oferta Laboral Endógena**
-
-John Svante Barraza Ratachi · Enzo Andrés Nevado Martínez
+John Svante Barraza Ratachi · Enzo Andrés Nevado Martínez<br>
 Asesor: César Saturnino Salinas Depaz · Investigación Económica II, ciclo 2026-I
 
 > **Estado.** Trabajo académico de curso, **no arbitrado** y no publicado, sin DOI.
@@ -39,52 +38,73 @@ de la informalidad sobre la distribución de riqueza, no explicar sus causas
 estructurales.
 
 El mecanismo es uno solo: **acumulación baja para los hogares de baja
-productividad**. Dos cuñas exógenas, ambas decrecientes en la productividad `z`,
+productividad**. Dos cuñas exógenas, ambas decrecientes en la productividad $z$,
 inclinan la asignación de horas hacia el sector informal en la parte baja de la
-distribución: una barrera de acceso formal `\kappa(z)` que descuenta el salario
-formal por hora trabajada, y una prima de deuda `\chi(z)` que encarece el
-endeudamiento. De ahí emerge el resultado: quien tiene `z` baja trabaja más
+distribución: una barrera de acceso formal $\kappa(z)$ que descuenta el salario
+formal por hora trabajada, y una prima de deuda $\chi(z)$ que encarece el
+endeudamiento. De ahí emerge el resultado: quien tiene $z$ baja trabaja más
 informal, gana menos por hora, ahorra menos, y llega más expuesto al siguiente
 shock.
 
 El modelo combina las dos tradiciones con que la literatura lee la informalidad
 peruana. Del **estructuralismo** (CEPAL, PREALC, Pinto, Tokman) toma la
 heterogeneidad de productividad entre sectores; del enfoque **institucional**
-(De Soto 1986, Loayza 2016) toma `\kappa(z)` y `\chi(z)` como costos regulatorios
+(De Soto 1986, Loayza 2016) toma $\kappa(z)$ y $\chi(z)$ como costos regulatorios
 y de acceso.
 
 ## El problema del hogar
 
-El hogar tiene riqueza `a` y productividad `z`, esta última un proceso de
+El hogar tiene riqueza $a$ y productividad $z$, esta última un proceso de
 Ornstein-Uhlenbeck calibrado a un AR(1) anual con datos peruanos. En cada instante
-elige consumo formal e informal `(c_F, c_I)` y horas `(\ell_F, \ell_I)` sujeto a
-`\ell_F + \ell_I \le \bar H`.
+elige consumo formal e informal $(c_F,c_I)$ y horas $(\ell_F,\ell_I)$, sujeto a
+$\ell_F+\ell_I\leq\bar H$.
 
-El consumo agregado es un compuesto CES,
-`C = [\omega_C c_F^{\eta_C} + (1-\omega_C) c_I^{\eta_C}]^{1/\eta_C}`,
-y la desutilidad del trabajo es isoelástica y separable por sector,
-`\psi_F \ell_F^{1+1/\phi}/(1+1/\phi) + \psi_I \ell_I^{1+1/\phi}/(1+1/\phi)`.
+El consumo agregado es un compuesto CES:
+
+$$
+C=\left[\omega_C c_F^{\eta_C}+(1-\omega_C)c_I^{\eta_C}\right]^{1/\eta_C}.
+$$
+
+La desutilidad del trabajo es isoelástica y separable por sector:
+
+$$
+\frac{\psi_F\ell_F^{1+1/\phi}}{1+1/\phi}
++\frac{\psi_I\ell_I^{1+1/\phi}}{1+1/\phi}.
+$$
 
 La separabilidad es lo que permite resolver la oferta laboral en forma cerrada
-dada la utilidad marginal de la riqueza. En el caso interior,
-`\ell^{unc} = (\partial_a v \cdot w/\psi)^{\phi}` para cada sector. Cuando la
-restricción de tiempo es vinculante, el reparto resuelve
-`\psi_F \ell_F^{1/\phi} - \psi_I(\bar H - \ell_F)^{1/\phi} = \partial_a v (w_F^{net} - w_I^{eff})`.
+dada la utilidad marginal de la riqueza. Para cada sector, la solución interior
+sin restringir es
 
-La riqueza evoluciona según la restricción presupuestaria, con drift dado por
-ingreso laboral neto de la barrera, ingreso informal, retorno de activos neto de
-la prima de deuda, y transferencia fiscal, menos el gasto en consumo.
+$$
+\ell^{\mathrm{unc}}=\left(\frac{\partial_a v\,w}{\psi}\right)^{\phi}.
+$$
+
+Cuando la restricción de tiempo es vinculante, $\ell_F+\ell_I=\bar H$, el reparto
+se obtiene resolviendo
+
+$$
+\psi_F\ell_F^{1/\phi}
+-\psi_I(\bar H-\ell_F)^{1/\phi}
+=\partial_a v\left(w_F^{\mathrm{net}}-w_I^{\mathrm{eff}}\right).
+$$
+
+La riqueza evoluciona según la restricción presupuestaria. Su deriva (*drift*)
+es el ingreso laboral formal neto de la barrera, más el ingreso informal, el
+retorno de los activos y la transferencia fiscal, menos la prima de deuda y el
+gasto en consumo.
 
 ## El modelo: dos firmas, dos bienes
 
 | Bloque | Contenido |
 | --- | --- |
-| **Firma formal** | Cobb-Douglas con retornos constantes, `Y_F = A_F K_F^{\alpha} L_F^{1-\alpha}`. Alquila capital al costo de uso `r+\delta` y paga el salario `w_F`. |
-| **Firma informal** | `Y_I = A_I K_I^{\alpha_I} L_I^{\beta_I}` con `\alpha_I + \beta_I \le 1`. Su precio relativo `p_I` es endógeno; los beneficios se reparten en proporción a las horas informales. |
-| **Gobierno** | Recauda `\tau w_F L_F` sobre la nómina formal y lo devuelve como transferencia de suma alzada. |
+| **Firma formal** | Cobb-Douglas con retornos constantes, $Y_F=A_FK_F^{\alpha}L_F^{1-\alpha}$. Alquila capital al costo de uso $r+\delta$ y paga el salario $w_F$. |
+| **Firma informal** | $Y_I=A_IK_I^{\alpha_I}L_I^{\beta_I}$, con $\alpha_I+\beta_I\leq1$. Su precio relativo $p_I$ es endógeno; los beneficios se reparten en proporción a las horas informales. |
+| **Gobierno** | Recauda $\tau w_FL_F$ sobre la nómina formal y lo devuelve como transferencia de suma alzada. |
 
 La distribución estacionaria resuelve la ecuación de Kolmogorov Forward. Los
-precios `r` y `p_I` vacían el mercado de activos y el del bien informal.
+precios $r$ y $p_I$ se determinan conjuntamente para vaciar el mercado de activos
+y el mercado del bien informal.
 
 ## Verificación formal en Lean 4
 
@@ -112,9 +132,9 @@ proyecto está en [`lean/`](lean/).
 | Generador OU discretizado | `paper_ou_generator_rows_sum_zero` | las filas suman cero en nodos interiores y en ambos bordes reflectores | no cubre la existencia de la distribución ergódica |
 | Prima de deuda | `paper_debt_premium_decreasing_in_productivity` | estrictamente decreciente en la productividad | probada sobre la forma impresa, que estaba desactualizada |
 | Reparto CES óptimo | `paper_ces_optimal_demand_ratio` | tangencia con el precio relativo y factorización por el deflactor | solución interior; las esquinas no están formalizadas |
-| Oferta laboral interior | `paper_interior_labor_first_order_condition` | la CPO, la optimalidad **global** sobre todas las horas no negativas, y la unicidad del punto estacionario interior | un sector a la vez, con `\partial_a v` dado |
+| Oferta laboral interior | `paper_interior_labor_first_order_condition` | la CPO, la optimalidad **global** sobre todas las horas no negativas, y la unicidad del punto estacionario interior | un sector a la vez, con $\partial_a v$ dado |
 | Caso vinculante KKT | `paper_binding_labor_kkt_monotone_and_corners` | monotonía estricta del residuo, valores exactos en ambos extremos, y las dos condiciones de esquina | no cubre la convergencia de la bisección numérica |
-| Firma formal | `paper_formal_firm_first_order_conditions` | razón capital-trabajo cerrada y agotamiento del producto entre factores | retornos constantes, `p_F` normalizado a uno |
+| Firma formal | `paper_formal_firm_first_order_conditions` | razón capital-trabajo cerrada y agotamiento del producto entre factores | retornos constantes, $p_F$ normalizado a uno |
 | Firma informal | `paper_informal_firm_profit_exhaustion` | beneficio residual, agotamiento de Euler bajo CRS, demanda estática de capital | requirió corregir un factor de precio ausente en la fuente |
 | Vaciamiento del bien formal | `paper_walras_formal_goods_market` | la identidad de recursos y la caracterización exacta de cuándo coincide con la impresa | enunciado corregido; ver abajo |
 
@@ -123,22 +143,27 @@ proyecto está en [`lean/`](lean/).
 La condición de Walras impresa en el anexo **no se seguía** de las demás
 condiciones del modelo. La forma que sí se deriva es
 
-`Y_F = C_F + \delta K + \mathrm{Kappa} + \mathrm{DebtPrem}`, con `K = K_F + K_I`,
+$$
+Y_F=C_F+\delta K+\mathrm{Kappa}+\mathrm{DebtPrem},
+\qquad K=K_F+K_I.
+$$
 
-donde `Kappa` son los pagos agregados de la barrera de acceso y `DebtPrem` los de
+donde $\mathrm{Kappa}$ son los pagos agregados de la barrera de acceso y
+$\mathrm{DebtPrem}$ los de
 la prima de deuda. La derivación necesita, todas ellas condiciones del propio
 anexo: drift agregado nulo en estado estacionario, el presupuesto del gobierno
-`T = \tau w_F L_F`, el agotamiento del producto formal
-`Y_F = w_F L_F + (r+\delta)K_F`, el beneficio residual informal
-`\Pi_I = p_I Y_I - w_I L_I - (r+\delta)K_I`, el vaciamiento del bien informal
-`C_I = Y_I`, el vaciamiento de activos con capital **total** `K = K_F + K_I`, la
+$T=\tau w_FL_F$, el agotamiento del producto formal
+$Y_F=w_FL_F+(r+\delta)K_F$, el beneficio residual informal
+$\Pi_I=p_IY_I-w_IL_I-(r+\delta)K_I$, el vaciamiento del bien informal
+$C_I=Y_I$, el vaciamiento de activos con capital **total** $K=K_F+K_I$, la
 regla `hours` de reparto de beneficios, y la prima de deuda tratada como costo
 real de intermediación y por tanto no devuelta.
 
-La versión impresa, `C_F + \delta K_F + \mathrm{DebtPrem} = Y_F`, vale
-**exactamente cuando** `\mathrm{Kappa} + \delta K_I = 0`. En la calibración de
+La versión impresa, $C_F+\delta K_F+\mathrm{DebtPrem}=Y_F$, vale
+**exactamente cuando** $\mathrm{Kappa}+\delta K_I=0$. En la calibración de
 cierre ninguno de los dos términos es nulo: evaluada sobre esa corrida, la
-identidad impresa deja un residual de `1.10e-01` contra `4.71e-04` de la
+identidad impresa deja un residual de $1.10\times10^{-1}$, frente a
+$4.71\times10^{-4}$ de la
 corregida.
 
 Las seis correcciones que la verificación encontró ya están aplicadas al anexo y
@@ -154,12 +179,13 @@ este modelo una extensión y no una variante:
 - **Anidamiento del modelo clásico.** Apagar el sector informal colapsa el modelo
   al Aiyagari estándar con oferta laboral endógena, sin tomar límites.
 - **Sorting monótono por productividad.** El atractivo relativo del sector formal
-  `((1-\tau)w_F z - \kappa(z))/(\theta z^{\nu_I})` es estrictamente creciente en
-  `z`. Es el mecanismo que disciplina el target `Tkz`, convertido en teorema. El
-  numerador lleva el canal institucional y el denominador el estructuralista.
+  $\bigl((1-\tau)w_Fz-\kappa(z)\bigr)/(\theta z^{\nu_I})$ es estrictamente
+  creciente en $z$. Es el mecanismo que disciplina el target `Tkz`, convertido
+  en teorema. El numerador lleva el canal institucional y el denominador el
+  estructuralista.
 - **Margen intensivo sin salto de participación.** La política laboral es continua
-  en `z`, y las horas formales son positivas si y solo si
-  `\kappa(z) < (1-\tau)w_F z`.
+  en $z$, y las horas formales son positivas si y solo si
+  $\kappa(z)<(1-\tau)w_Fz$.
 - **Fidelidad del proceso de productividad y homoteticidad CES.** La difusión
   elegida devuelve exactamente la varianza estacionaria objetivo, el mapeo de la
   persistencia anual es exacto, y la composición de la canasta es idéntica para
@@ -222,16 +248,16 @@ solución única, y que la distribución invariante exista, se asumen.
 
 ### El gradiente por quintil de riqueza queda muy corto
 
-El modelo produce `T6 = 4.4 %` contra un dato de `53 %`. El trabajo lo atribuye a
+El modelo produce $T6=4.4\%$ frente a un dato de $53\%$. El trabajo lo atribuye a
 la ausencia del margen extensivo, y la formalización refina ese diagnóstico: el
 teorema de sorting es **condicional a la utilidad marginal de la riqueza**, o sea
 aísla el canal de productividad. El gradiente por riqueza no se sigue de él.
 
 Hay además una contribución de segundo orden en la misma dirección: la grilla de
-productividad entrega `sd(log z) = 0.5281` contra el objetivo calibrado de
-`0.5440`, un 2.9 % menos. El sesgo lo controla el ancho de la grilla y **no** el
-número de nodos, de modo que refinar `Nz` lo empeora. El análisis y tres opciones
-cuantificadas están en la sección 4 del
+productividad entrega $\operatorname{sd}(\log z)=0.5281$ frente al objetivo
+calibrado de $0.5440$, un $2.9\%$ menos. El sesgo lo controla el ancho de la
+grilla y **no** el número de nodos, de modo que refinar $N_z$ lo empeora. El
+análisis y tres opciones cuantificadas están en la sección 4 del
 [cruce numérico](lean/docs/VERIFICACION_NUMERICA.md).
 
 ### La corrida de cierre no se reproducía con los valores por defecto
@@ -239,23 +265,23 @@ cuantificadas están en la sección 4 del
 Hasta septiembre de 2026, `model_main` con sus defaults **no** reproducía la
 corrida que reporta el documento, por dos motivos de distinta gravedad.
 
-El grave es **silencioso**: el script traía `gamma=2` y `rho=0.05` de la
-especificación previa, mientras la corrida final usaba `gamma=1` y `rho=0.073`.
+El grave es **silencioso**: el script traía $\gamma=2$ y $\rho=0.05$ de la
+especificación previa, mientras la corrida final usaba $\gamma=1$ y $\rho=0.073$.
 Con esos defaults el modelo converge a un equilibrio distinto sin emitir ningún
 aviso. Ninguno de los dos quedaba registrado en el metadata, y `gamma` no se
 guardaba en ningún archivo: hubo que inferirlo numéricamente de la política de
 consumo de la corrida.
 
-El otro es **ruidoso**: el bracket de bisección de `r` llegaba solo hasta
-`0.0499`, por debajo del `r*=0.066` reportado. Con la calibración correcta eso
+El otro es **ruidoso**: el intervalo de bisección de $r$ llegaba solo hasta
+$0.0499$, por debajo del $r^*=0.066$ reportado. Con la calibración correcta eso
 no produce un resultado erróneo, porque el chequeo de signos que el solver ya
 hacía sobre los extremos aborta con `invalid bracket in r`. Impedía reproducir
 la corrida, pero avisaba.
 
-Está corregido: los defaults son los del documento, el bracket contiene el
+Está corregido: los valores por defecto son los del documento, el intervalo contiene el
 equilibrio, el solver avisa si la bisección agota iteraciones sin alcanzar
-tolerancia, y el metadata registra `gamma`, `rho`, `Frisch`, `alpha_K`, `delta`,
-`tau` y el bracket configurado junto al final.
+tolerancia, y los metadatos registran $\gamma$, $\rho$, la elasticidad de Frisch,
+$\alpha_K$, $\delta$, $\tau$ y el intervalo configurado junto al resultado final.
 
 ## Calibración y datos
 
@@ -265,8 +291,8 @@ formal de Céspedes, Aquije, Sánchez y Vera-Tudela (2014, BCRP), la informal de
 Göbel, Grimm y Lay (2013, BCRP), y la depreciación de Castillo y Rojas (BCRP).
 Los targets de informalidad y gasto salen de ENAHO e INEI.
 
-Cuatro parámetros se calibran internamente (`\psi_F`, `\psi_I`, `A_I` y
-`\kappa_{z1}`) contra tres targets: participación de horas informales, PBI
+Cuatro parámetros se calibran internamente ($\psi_F$, $\psi_I$, $A_I$ y
+$\kappa_{z1}$) contra tres targets: participación de horas informales, PBI
 informal nominal, y gap de formalidad por productividad.
 
 ## Reproducir

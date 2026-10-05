@@ -1,7 +1,7 @@
 ﻿\begin{center}
 \includegraphics[width=0.72\textwidth]{docs/images/image104.png}\\[1.0cm]
 
-{\normalsize Investigación Económica II — Ciclo 2026-I}\\[1.5cm]
+{\normalsize Investigación Económica II, Ciclo 2026-I}\\[1.5cm]
 
 {\LARGE \textbf{Informalidad y Distribución de Riqueza:}\\[0.2cm]
 Un Modelo de Agentes Heterogéneos con Oferta Laboral Endógena}\\[1.5cm]
@@ -27,9 +27,9 @@ Enzo Andrés Nevado Martínez}\\[0.8cm]
 
 La economía peruana exhibe una elevada informalidad laboral (71.1% en 2023 según INEI–ENAHO) junto a una marcada desigualdad. Esta tesis caracteriza la distribución estacionaria de riqueza y consumo que implica la asignación endógena de horas entre los sectores formal e informal. Para ello, se desarrolla un modelo macroeconómico de equilibrio general con agentes heterogéneos en tiempo continuo, extendiendo Achdou et al. (2022) mediante una estructura productiva dual y oferta laboral endógena en el margen intensivo.
 
-El objetivo es cuantificar asociaciones y mecanismos internos del modelo, no identificar un efecto causal de la informalidad en los datos. El modelo utiliza momentos agregados y combina supuestos de diseño —barreras de acceso decrecientes en productividad y una prima de deuda diferencial— con decisiones endógenas de trabajo, consumo y ahorro. Por tanto, sus resultados se interpretan como implicancias condicionales a esas cuñas y a la calibración.
+El objetivo es cuantificar asociaciones y mecanismos internos del modelo, no identificar un efecto causal de la informalidad en los datos. El modelo utiliza momentos agregados y combina supuestos de diseño, como barreras de acceso decrecientes en productividad y una prima de deuda diferencial, con decisiones endógenas de trabajo, consumo y ahorro. Por tanto, sus resultados se interpretan como implicancias condicionales a esas cuñas y a la calibración.
 
-La calibración reproduce sus tres targets principales: T4 (fracción de horas informales) = 51.7% frente a 50.9% en 2015–2019, T5 (PBI informal) = 18.8% frente a 19.0% y Tkz = 37.8% frente a 38.6%. Como chequeos externos, el ratio salarial neto es 2.33 frente a 2.30 y el ratio de gasto formal/informal es 1.465 frente a 1.913. El modelo no reproduce el gradiente de informalidad por quintil de riqueza (T6: 4.4% frente a 53.0%); la diferencia de definiciones —margen intensivo en el modelo y clasificación ocupacional en los datos— y la ausencia de una elección sectorial discreta son explicaciones plausibles, no demostraciones causales. La comparación con una versión de oferta laboral fija queda como contrafactual pendiente.
+La calibración reproduce sus tres targets principales: T4 (fracción de horas informales) = 51.7% frente a 50.9% en 2015–2019, T5 (PBI informal) = 18.8% frente a 19.0% y Tkz = 37.8% frente a 38.6%. Como chequeos externos, el ratio salarial neto es 2.33 frente a 2.30 y el ratio de gasto formal/informal es 1.465 frente a 1.913. El modelo no reproduce el gradiente de informalidad por quintil de riqueza (T6: 4.4% frente a 53.0%). La diferencia de definiciones, con un margen intensivo en el modelo y una clasificación ocupacional en los datos, junto con la ausencia de una elección sectorial discreta, constituye una explicación plausible y no una demostración causal. La comparación con una versión de oferta laboral fija queda como contrafactual pendiente.
 
 **Palabras Clave**: Informalidad, Distribución de la Riqueza, Agentes Heterogéneos, Oferta Laboral Endógena, Tiempo Continuo, Macroeconomía, Perú, Proceso OU, Diferencias Finitas.
 
@@ -39,9 +39,9 @@ La calibración reproduce sus tres targets principales: T4 (fracción de horas i
 
 The Peruvian economy exhibits high labor informality (71.1% in 2023, according to INEI-ENAHO), alongside marked wealth inequality. This thesis analyzes how households' endogenous decision to allocate working hours between the formal and informal sectors affects the stationary distribution of wealth and consumption. A continuous-time general equilibrium model with heterogeneous agents is developed, extending Achdou et al. (2022) through a dual productive structure and endogenous labor supply at the intensive margin.
 
-The objective is to quantify associations and internal mechanisms of the model, not to identify a causal effect of informality in the data. The model uses aggregate moments and combines design assumptions—productivity-dependent access barriers and a differential debt premium—with endogenous labor, consumption, and saving choices. Results are therefore interpreted as implications conditional on those wedges and on the calibration.
+The objective is to quantify associations and internal mechanisms of the model, not to identify a causal effect of informality in the data. The model uses aggregate moments and combines design assumptions, including productivity-dependent access barriers and a differential debt premium, with endogenous labor, consumption, and saving choices. Results are therefore interpreted as implications conditional on those wedges and on the calibration.
 
-The calibration reproduces its three main targets: T4 (informal hours share) = 51.7% against 50.9% in 2015–2019, T5 (informal GDP) = 18.8% against 19.0%, and Tkz = 37.8% against 38.6%. As external checks, the net formal-to-informal wage ratio is 2.33 against 2.30 and the formal-to-informal expenditure ratio is 1.465 against 1.913. The model does not reproduce the informality gradient by wealth quintile (T6: 4.4% against 53.0%); the mismatch in definitions—an intensive margin in the model and occupational classification in the data—and the absence of a discrete sectoral choice are plausible explanations rather than established causal accounts. A fixed-labor counterfactual remains to be computed.
+The calibration reproduces its three main targets: T4 (informal hours share) = 51.7% against 50.9% in 2015–2019, T5 (informal GDP) = 18.8% against 19.0%, and Tkz = 37.8% against 38.6%. As external checks, the net formal-to-informal wage ratio is 2.33 against 2.30 and the formal-to-informal expenditure ratio is 1.465 against 1.913. The model does not reproduce the informality gradient by wealth quintile (T6: 4.4% against 53.0%). The mismatch in definitions, with an intensive margin in the model and occupational classification in the data, together with the absence of a discrete sectoral choice, provides a plausible explanation rather than an established causal account. A fixed-labor counterfactual remains to be computed.
 
 **Keywords**: Informality, Wealth Distribution, Heterogeneous Agents, Endogenous Labor Supply, Continuous Time, Macroeconomics, Peru, OU Process, Finite Differences.
 
@@ -233,7 +233,7 @@ La Tabla 1 presenta los parámetros obtenidos directamente de la literatura o fi
 | Parámetro | Símbolo | Valor | Fuente |
 | :--- | :--- | :--- | :--- |
 | Coef. aversión al riesgo | $\gamma$ | 1 | Achdou et al. (2022) |
-| Tasa de descuento subjetiva | $\rho$ | 0.073 | Consistencia con $r^*$ (ver nota) |
+| Tasa de descuento subjetiva | $\rho$ | 0.073 | Consistencia con $r^*$[^rho-r] |
 | Elasticidad de Frisch | $\phi$ | 0.38 | Céspedes & Rendón (2012, BCRP) |
 | Tasa de depreciación | $\delta$ | 0.10 | Castillo & Rojas (BCRP REE-28) |
 | Participación capital formal | $\alpha_K$ | 0.573 | Céspedes et al. (2014, BCRP) |
@@ -242,16 +242,16 @@ La Tabla 1 presenta los parámetros obtenidos directamente de la literatura o fi
 | Peso CES formal | $\omega_C$ | 0.56 | Calibración interna |
 | Elasticidad sustitución CES | $\sigma_C$ | 5 | Calibración interna |
 | Persistencia proceso $z$ | $\rho_z$ | 0.861 | Anualización de Hong (2023, J. Int. Econ.) |
-| Desviación estándar $\log z$ | $\sigma_{\log z}$ | 0.544 | Transformación interna; véase nota OU |
+| Desviación estándar $\log z$ | $\sigma_{\log z}$ | 0.544 | Transformación interna[^ou] |
 | Prima de deuda: magnitud | $\chi$ | 0.02 | Galindo et al. (2024, BCRP) |
 | Prima de deuda: curvatura | $\eta$ | 1.0 | Supuesto conservador |
 | Tecnología informal | $\alpha_I, \beta_I$ | 0.22, 0.619 | Calibración interna informada por Göbel et al. (2013) |
 | Atenuación shock informal | $\nu_I$ | 0.6 | Calibración interna |
 | Atenuación $z$ en informal | $\theta$ | 1.0 | Sin atenuación adicional |
 
-**Nota sobre $\rho$ y $r^*$:** En modelos de Aiyagari (mercados incompletos), $r^*<\rho$ en estado estacionario. El modelo arroja $r^*=0.066$, consistente con $\rho=0.073$. Un valor $\rho=0.05$ daría $r^*<0.05$, inconsistente con los resultados obtenidos.
+[^rho-r]: En modelos de Aiyagari con mercados incompletos, $r^*<\rho$ en estado estacionario. El modelo arroja $r^*=0.066$, consistente con $\rho=0.073$. Un valor $\rho=0.05$ daría $r^*<0.05$, lo que no corresponde a los resultados obtenidos.
 
-**Nota sobre el proceso OU:** A diferencia de los procesos de Poisson de dos estados usados en literatura temprana, el modelo utiliza una difusión Ornstein–Uhlenbeck (OU) en tiempo continuo. La grilla de producción usa $N_z=40$ estados y se verificó su convergencia frente a grillas menores. Hong (2023) estima una persistencia trimestral de 0.963 para el componente permanente del ingreso, cuya anualización es $0.963^4\simeq0.861$. El valor 0.544 que aparece en Hong corresponde a $\sigma_{P0}$, la dispersión inicial del componente permanente; por ello, usar 0.544 como dispersión estacionaria de $\log z$ es una elección de mapeo del presente modelo y no una estimación directamente trasladada del artículo.
+[^ou]: El modelo utiliza una difusión Ornstein–Uhlenbeck en tiempo continuo con $N_z=40$ estados. Hong (2023) estima una persistencia trimestral de 0.963 para el componente permanente del ingreso, cuya anualización es $0.963^4\simeq0.861$. El valor 0.544 reportado por Hong corresponde a $\sigma_{P0}$, la dispersión inicial del componente permanente. Su uso como dispersión estacionaria de $\log z$ es, por tanto, un mapeo del presente modelo.
 
 | Dimensión | Proceso OU (este modelo) | Proceso Poisson 2 estados |
 |---|---|---|
@@ -261,8 +261,6 @@ La Tabla 1 presenta los parámetros obtenidos directamente de la literatura o fi
 | Costo computacional | Alto: matriz $I \times N_z$ densa | Bajo: matriz $I \times 2$ dispersa |
 | Realismo | Distribución continua de productividad | Polariza en dos tipos |
 | Literatura | Achdou et al. (2022) | Aiyagari (1994), Huggett (1993) |
-
-**Ventaja OU**: estimable microeconométricamente; captura heterogeneidad continua de ingresos; evita polarización artificial en alto/bajo. **Desventaja OU**: 20× más puntos de grilla que el proceso de 2 estados; mayor costo computacional y sensibilidad al ancho de grilla (`width_z`).
 
 ### Parámetros Calibrados Internamente
 
@@ -276,12 +274,14 @@ La Tabla 2 muestra los parámetros calibrados para replicar momentos observados 
 | Desutilidad formal | $\psi_F$ | 55 | T4: fracción horas informal (intensivo) | 50.9% (ENAHO 2015-2019) |
 | Desutilidad informal | $\psi_I$ | 34 | T4: fracción horas informal (intensivo) | 50.9% (ENAHO 2015-2019) |
 | Barrera acceso formal (máx.) | $\kappa_{z1}$ | 0.40 | Tkz: gap formalidad por productividad | 38.6% (EPEN 2025) |
-| Retornos capital informal | $\alpha_I$ | 0.22 | Literatura (Göbel et al., 2013) | — |
-| Retornos trabajo informal | $\beta_I$ | 0.619 | DRS: $\alpha_I + \beta_I < 1$ | — |
+| Retornos capital informal | $\alpha_I$ | 0.22 | Literatura (Göbel et al., 2013) | No aplica |
+| Retornos trabajo informal | $\beta_I$ | 0.619 | DRS: $\alpha_I + \beta_I < 1$ | No aplica |
 
-**Nota sobre T4:** El target principal T4 = 50.9% corresponde a la fracción de **horas totales trabajadas** destinadas al sector informal, calculada con ENAHO Módulo 500 para ocupados (`ocu500==1`), horas trabajadas (`i513t`/`p513t`), ponderador `fac500a` y sector informal de Cuenta Satélite (`emplpsec==1`). Se usa el promedio pre-COVID 2015-2019 para mantener consistencia con los demás momentos pre-pandemia. Como robustez, el promedio de años COVID/post disponibles excluyendo 2021 (2020, 2022 y 2023) es 55.9%. El año 2021 se excluye por la distorsión excepcional de la pandemia. Este indicador de **margen intensivo** difiere de la tasa de empleo informal extensivo del EPEN, que mide fracción de trabajadores cuyo empleo principal es informal.
+El target T4 se construye con la población ocupada de ENAHO, sus horas trabajadas, el ponderador del módulo laboral y la clasificación del sector informal de la Cuenta Satélite.[^t4] El target Tkz mide la diferencia en tasas de formalidad entre los grupos de mayor y menor productividad aproximada.[^tkz]
 
-**Nota sobre Tkz:** El target Tkz = 38.6% mide la diferencia en tasas de formalidad entre el grupo de mayor productividad (proxy: educación universitaria) y el grupo de menor productividad (sin secundaria completa), calculado con EPEN 2025.
+[^t4]: El valor principal de T4, 50.9%, es el promedio de la fracción de horas totales destinadas al sector informal durante 2015–2019. Como robustez, el promedio disponible para 2020, 2022 y 2023 es 55.9%. El año 2021 se excluye por la distorsión excepcional de la pandemia. Este indicador de margen intensivo difiere de la tasa de empleo informal de EPEN, que clasifica trabajadores según su empleo principal.
+
+[^tkz]: El valor de Tkz, 38.6%, corresponde a la diferencia en tasas de formalidad entre trabajadores con educación universitaria y trabajadores sin secundaria completa, calculada con EPEN 2025.
 
 **Identificación de la calibración interna:** $A_I$, $\psi_F$, $\psi_I$ y $\kappa_{z1}$ se seleccionan conjuntamente frente a tres targets reportados (T5, T4 y Tkz). En consecuencia, los momentos presentados no identifican por separado los cuatro parámetros. El par $(\psi_F,\psi_I)$ debe entenderse como una normalización/calibración conjunta del costo relativo de horas, no como dos parámetros empíricamente identificados de manera independiente. Una evaluación formal requiere reportar la función objetivo, pesos y sensibilidad local o fijar uno de los dos parámetros.
 
@@ -312,8 +312,8 @@ Los siguientes momentos son chequeos externos no vinculantes; no deben presentar
 | Ratio salarial formal/informal (neto) | T1       | 2.30  | BCRP                  |
 | Ratio gasto hogar formal / informal   | Tgasto   | 1.913 | ENAHO 2015–2019       |
 | Tasa informalidad Q1 − Q5 (horas)    | T6       | 53.0% | INEI-ENAHO Cuadro 7.5 |
-| Gini de ingreso/consumo               | —       | 40.1  | Banco Mundial, SI.POV.GINI 2024 |
-| Gini de riqueza                       | —       | ~0.68 | WID / Credit Suisse, referencia no vinculante |
+| Gini de ingreso/consumo               | No aplica | 40.1  | Banco Mundial, SI.POV.GINI 2024 |
+| Gini de riqueza                       | No aplica | ~0.68 | WID / Credit Suisse, referencia no vinculante |
 | Precio relativo bien informal         | p_I      | < 1   | Chequeo interno, no target empírico |
 
 \newpage
@@ -328,22 +328,24 @@ El análisis se desarrolla a partir del equilibrio estacionario del modelo calib
 
 | Momento                                     | Dato  | Modelo | Error    | Estado          |
 | :------------------------------------------ | :---- | :----- | :------- | :-------------- |
-| T4 — fracción horas informal (intensivo, pre-COVID) | 50.9% | 51.7%  | +0.8pp  | Target          |
-| T4 — robustez COVID/post sin 2021          | 55.9% | 51.7%  | -4.2pp  | Robustez        |
-| T5 — PBI informal / PBI total              | 19.0% | 18.8%  | -0.2pp  | Target          |
-| Tkz — gap formalidad por productividad     | 38.6% | 37.8%  | -0.8pp  | Target          |
-| Tgasto — ratio gasto F/I                   | 1.913 | 1.465  | -0.448  | Validación externa |
-| T1 — ratio salarial formal/informal (neto) | 2.30  | 2.33   | +0.03    | Validación externa |
-| T6 — gradiente informalidad Q1-Q5         | 53.0% | 4.4%   | -48.6pp | Comparación no homogénea\* |
-| Gini de ingreso/consumo Banco Mundial     | 40.1  | 21.8   | n.c.    | Contexto\*\*    |
-| Gini de activos del modelo                | ~0.68 | 52.1   | n.c.    | Diagnóstico\*\* |
-| Tasa de interés de equilibrio              | —    | 6.6%   | —       | Equilibrio      |
-| Precio bien informal                        | < 1   | 0.928  | —       | Consistencia (ok) |
-| Masa en deuda (a < 0)                       | —    | 11.8%  | —       | Diagnóstico    |
+| T4: fracción horas informal (intensivo, antes del COVID) | 50.9% | 51.7%  | +0.8pp  | Target          |
+| T4: robustez COVID/post sin 2021          | 55.9% | 51.7%  | -4.2pp  | Robustez        |
+| T5: PBI informal / PBI total              | 19.0% | 18.8%  | -0.2pp  | Target          |
+| Tkz: gap formalidad por productividad     | 38.6% | 37.8%  | -0.8pp  | Target          |
+| Tgasto: ratio gasto F/I                   | 1.913 | 1.465  | -0.448  | Validación externa |
+| T1: ratio salarial formal/informal (neto) | 2.30  | 2.33   | +0.03    | Validación externa |
+| T6: gradiente informalidad Q1-Q5         | 53.0% | 4.4%   | -48.6pp | Comparación no homogénea |
+| Gini de ingreso/consumo Banco Mundial     | 40.1  | 21.8   | n.c.    | Contexto    |
+| Gini de activos del modelo                | ~0.68 | 52.1   | n.c.    | Diagnóstico |
+| Tasa de interés de equilibrio              | n.a. | 6.6%   | n.a. | Equilibrio      |
+| Precio bien informal                        | < 1   | 0.928  | n.a. | Consistencia (ok) |
+| Masa en deuda (a < 0)                       | n.a. | 11.8%  | n.a. | Diagnóstico    |
 
-\**T6 combina una clasificación ocupacional discreta en los datos con una asignación intensiva de horas en el modelo. La ausencia del margen extensivo es una explicación plausible de la brecha, pero no queda aislada sin un contrafactual específico.*
+Las comparaciones de T6[^t6] y de los coeficientes de Gini[^gini] requieren cautela porque no confrontan objetos empíricos completamente homogéneos.
 
-\*\*Los Gini se reportan solo como contexto. El índice del Banco Mundial (SI.POV.GINI) mide desigualdad de ingreso o consumo según la encuesta primaria; no es un Gini de riqueza. El modelo reporta $Gini_c = 0.218$ para consumo y $Gini_a = 0.521$ para activos netos, por lo que la comparación directa con SI.POV.GINI no es un momento de calibración.
+[^t6]: T6 combina una clasificación ocupacional discreta en los datos con una asignación intensiva de horas en el modelo. La ausencia del margen extensivo es una explicación plausible de la brecha, pero no queda aislada sin un contrafactual específico.
+
+[^gini]: Los Gini se reportan solo como contexto. El índice del Banco Mundial SI.POV.GINI mide desigualdad de ingreso o consumo según la encuesta primaria y no riqueza. El modelo reporta $Gini_c=0.218$ para consumo y $Gini_a=0.521$ para activos netos. Por ello, la comparación directa no constituye un momento de calibración.
 
 ## 5.2 Oferta Laboral por Productividad
 
@@ -451,29 +453,17 @@ Una pregunta central es qué parte de la asociación entre informalidad y baja r
 
 ### 6.1.1 Lo que el modelo impone por supuesto
 
-El modelo impone tres elementos exógenos que crean las condiciones para el mecanismo:
-
-1. **Barrera de acceso $\kappa(z)$:** La función $\kappa(z) = \kappa_{z1} \cdot \left(\frac{z_{\max}-z}{z_{\max}-z_{\min}}\right)$ es una función decreciente en $z$ por construcción. El parámetro $\kappa_{z1} = 0.40$ se calibra para replicar $T_{kz} = 38.6\%$, pero la forma funcional (barrera mayor para z bajo) es un supuesto del modelo. Esto representa costos de formalización regulatoria, requisitos educativos y fricciones de selección, no una característica endógena emergente.
-2. **Prima de deuda $\text{spread}(z)$:** Análogamente, $\text{spread}(z)$ es una cuña decreciente en z impuesta exógenamente para capturar que las entidades financieras perciben mayor riesgo en agentes de baja productividad. El valor $\chi=0.02$ se calibra con datos de spreads crediticios, pero la forma funcional es un supuesto.
-3. **Tecnologías y brecha salarial:** Las diferencias tecnológicas calibradas favorecen una remuneración formal mayor en el benchmark. La magnitud salarial se determina en equilibrio, pero está condicionada por esos parámetros.
+El modelo impone tres elementos exógenos que crean las condiciones para el mecanismo. **Barrera de acceso:** la función $\kappa(z) = \kappa_{z1} \cdot \left(\frac{z_{\max}-z}{z_{\max}-z_{\min}}\right)$ es decreciente en $z$ por construcción. El parámetro $\kappa_{z1}=0.40$ se calibra para replicar $T_{kz}=38.6\%$, pero su forma funcional es un supuesto que representa costos de formalización, requisitos educativos y fricciones de selección. **Prima de deuda:** $\operatorname{spread}(z)$ también es una cuña decreciente en $z$ impuesta para representar un mayor riesgo percibido entre agentes de baja productividad. Su forma funcional es un supuesto del modelo. **Tecnologías y brecha salarial:** las diferencias tecnológicas calibradas favorecen una remuneración formal mayor en el benchmark. La magnitud salarial se determina en equilibrio, aunque permanece condicionada por esos parámetros.
 
 Estos tres supuestos crean un entorno en el que los agentes con z bajo enfrentan simultáneamente: (a) mayor costo de acceso al sector formal, (b) mayor spread si se endeudan, y (c) menores salarios si trabajan en el sector informal. Nada de esto es un resultado; es la arquitectura del modelo.
 
 ### 6.1.2 Resultados condicionales del equilibrio
 
-Dados los supuestos anteriores, el modelo genera endógenamente:
-
-1. **Asignación laboral condicional:** Dadas $\kappa(z)$, las tecnologías y las preferencias calibradas, las FOCs determinan cómo se reparten las horas. El patrón por productividad es una predicción interna, aunque Tkz también disciplina directamente $\kappa_{z1}$ y por eso no constituye validación independiente.
-2. **Distribución estacionaria:** La solución de la ecuación KF produce una distribución conjunta $g(a,z)$ y asociaciones entre productividad, composición del ingreso y activos. Estas asociaciones son resultados del modelo condicionales a las cuñas exógenas.
-3. **Magnitudes distributivas:** La riqueza media, el endeudamiento y los Gini son resultados cuantitativos del benchmark. La contribución causal de la informalidad a esas magnitudes no puede separarse sin comparar equilibrios alternativos.
+Dados los supuestos anteriores, el modelo produce tres grupos de resultados condicionales. **Asignación laboral:** las condiciones de primer orden determinan el reparto de horas dadas $\kappa(z)$, las tecnologías y las preferencias calibradas. El patrón por productividad es una predicción interna, aunque Tkz disciplina directamente $\kappa_{z1}$ y por eso no constituye validación independiente. **Distribución estacionaria:** la ecuación KF produce una distribución conjunta $g(a,z)$ y asociaciones entre productividad, composición del ingreso y activos. **Magnitudes distributivas:** la riqueza media, el endeudamiento y los Gini resultan del benchmark, pero la contribución causal de la informalidad no puede separarse sin comparar equilibrios alternativos.
 
 ### 6.1.3 Evaluación de la hipótesis
 
-El benchmark es compatible con la hipótesis de una asociación entre informalidad y baja acumulación. En particular, muestra que:
-
-- Los agentes con z bajo y alta informalidad acumulan en promedio menos riqueza (observable en Figura 3)
-- La composición del ingreso de los quintiles inferiores está sesgada hacia el sector informal (Figura 4)
-- La distribución estacionaria asocia baja productividad, mayor informalidad intensiva y menor riqueza
+El benchmark es compatible con la hipótesis de una asociación entre informalidad y baja acumulación. Los agentes con $z$ bajo y alta informalidad acumulan en promedio menos riqueza, como muestra la Figura 3. Asimismo, la composición del ingreso de los quintiles inferiores está más orientada al sector informal, como muestra la Figura 4. En conjunto, la distribución estacionaria asocia baja productividad, mayor informalidad intensiva y menor riqueza.
 
 Estos patrones son condicionales a $\kappa(z)$, $\text{spread}(z)$ y el resto de la calibración. Llamarlos "trampa" o afirmar retroalimentación causal exige mostrar persistencia dinámica y comparar con equilibrios sin cada cuña, ejercicios que aún no forman parte de los resultados reportados.
 
@@ -483,11 +473,7 @@ En modelos HA estándar sin oferta laboral, el ahorro precautorio es el principa
 
 ### 6.2.1 El mecanismo
 
-Cuando el shock de productividad z cae, el agente puede responder de tres maneras:
-
-1. Desahorrar (reducir a, canal de activos)
-2. Aumentar la oferta de trabajo en algún sector (canal de labor endógeno)
-3. Reducir consumo (absorber el shock)
+Cuando el shock de productividad $z$ cae, el agente puede desahorrar mediante el canal de activos, aumentar su oferta de trabajo mediante el canal laboral o reducir el consumo para absorber parte del shock.
 
 Con oferta laboral endógena, el agente puede, en principio, compensar parte de una caída de ingresos ajustando horas. Usando los retornos netos definidos en la Sección 3, las FOCs interiores son:
 
@@ -503,11 +489,7 @@ Pijoan-Más (2006) muestra que la flexibilidad laboral puede sustituir parcialme
 
 ### 6.2.3 Limitaciones del canal en el sector informal
 
-Sin embargo, el canal de seguro laboral tiene una limitación importante en nuestro modelo dual. Para los agentes con z bajo:
-
-- El acceso al sector formal está restringido por $\kappa(z) > 0$, lo que limita la cantidad de horas adicionales que pueden ofrecer al sector de mayor salario.
-- El sector informal tiene menor productividad ($w_I < w_F$) y rendimientos decrecientes ($\beta_I < 1$), lo que significa que aumentar horas informales genera ingresos crecientes pero a tasa decreciente.
-- La prima de deuda $\text{spread}(z) > 0$ encarece adicionalmente el crédito, reduciendo la capacidad de inter-temporizar el consumo.
+El canal de seguro laboral tiene una limitación importante en el modelo dual. Para los agentes con $z$ bajo, la barrera $\kappa(z)>0$ restringe el acceso al sector de mayor salario. Al mismo tiempo, el sector informal presenta menor productividad, $w_I<w_F$, y rendimientos decrecientes, $\beta_I<1$, por lo que las horas adicionales generan ingresos a una tasa decreciente. La prima de deuda $\operatorname{spread}(z)>0$ encarece además el crédito y reduce la capacidad de trasladar consumo entre periodos.
 
 Estas fuerzas sugieren que el canal podría ser asimétrico, pero el signo neto debe medirse en el contrafactual. Bacher, Grübener y Nord (2025) estudian el *added-worker effect* en hogares de dos miembros y encuentran un papel especialmente importante entre hogares jóvenes; su resultado motiva una futura extensión intrahogar, no valida una asimetría por ingreso en el modelo actual.
 
@@ -527,11 +509,7 @@ Una extensión natural incorporaría una elección de sector principal y, condic
 
 ### 6.3.2 Ausencia de Heterogeneidad de Firmas
 
-El modelo representa el sector formal mediante una única firma representativa y el sector informal mediante otra única firma representativa. En la realidad:
-
-- Las firmas formales difieren en tamaño, sector productivo, acceso a capital externo y tecnología.
-- Las microempresas informales son extremadamente heterogéneas: desde vendedores ambulantes hasta fabricantes informales con múltiples empleados.
-- No existe matching heterogéneo entre firmas y trabajadores.
+El modelo representa cada sector mediante una única firma representativa. En la realidad, las firmas formales difieren en tamaño, sector productivo, acceso a capital externo y tecnología, mientras que las microempresas informales abarcan desde vendedores ambulantes hasta fabricantes con varios empleados. El modelo tampoco incorpora emparejamiento heterogéneo entre firmas y trabajadores.
 
 Esta simplificación impide capturar mecanismos importantes: la movilidad entre tipos de firmas, los retornos crecientes asociados a firmas formales más grandes, o el rol de las redes sociales en el acceso a empleo formal. Futuras investigaciones podrían incorporar heterogeneidad de firmas siguiendo la literatura de búsqueda y emparejamiento (Meghir, Narita y Robin, 2015).
 
@@ -543,21 +521,13 @@ $$
 u = \frac{C^{1-\gamma}-1}{1-\gamma} - \psi_F \frac{\ell_F^{1+1/\phi}}{1+1/\phi} - \psi_I \frac{\ell_I^{1+1/\phi}}{1+1/\phi}
 $$
 
-tiene ventajas computacionales importantes: las FOCs de trabajo pueden resolverse analíticamente (o mediante bisección en el caso con restricción KKT), eliminando la necesidad de búsqueda numérica multidimensional. Sin embargo, impone restricciones económicas relevantes:
-
-1. **Independencia entre decisiones laborales:** La oferta de trabajo en el sector formal no depende directamente de las horas en el sector informal (y viceversa). En la realidad, las horas en ambos sectores pueden ser complementos o sustitutos imperfectos según la naturaleza del trabajo.
-2. **Independencia entre consumo y ocio:** La separabilidad implica que la elasticidad de sustitución intertemporal del consumo (gobernada por $\gamma$) es independiente de la decisión laboral. Esta separación simplifica el análisis pero ignora posibles complementariedades entre consumo y trabajo (por ejemplo, transporte y alimentación asociados al trabajo formal).
-3. **Sin aprendizaje ni capital humano:** Las horas en el sector formal no generan acumulación de habilidades que aumenten la productividad futura, lo que podría amplificar el mecanismo de trampa de pobreza a través de un canal de capital humano adicional.
-4. **$\psi$ asimétrico como proxy de barreras regulatorias por hora:** La calibración requiere $\psi_F > \psi_I$ para que el modelo genere una fracción de horas informales (T4) consistente con el dato principal pre-COVID de 50.9% y razonablemente cercana a la robustez sin 2021 de 55.9%. Esta asimetría puede interpretarse como un *proxy* reducido del costo de cumplimiento regulatorio por hora en el sector formal: registro SUNAT, aportes ESSALUD, contratos laborales y obligaciones de planilla incrementan el "costo efectivo" de cada hora formal más allá del salario neto. El trabajador informal no incurre en estos costos, lo que en el margen intensivo se refleja como una menor desutilidad por hora informal (Levy, 2008; Perry et al., 2007). En rigor, sin embargo, este diferencial es una fricción de *participación* (no de *intensidad*) y su representación correcta requeriría un margen extensivo explícito con costo fijo de entrada al sector formal. La asimetría $\psi_F > \psi_I$ constituye por tanto una aproximación de forma reducida que permite calibrar el modelo intensivo al target T4 sin comprometer la trazabilidad analítica de las FOCs.
+tiene ventajas computacionales importantes porque las condiciones de primer orden del trabajo pueden resolverse analíticamente o mediante bisección cuando la restricción de tiempo es vinculante. Sin embargo, impone restricciones económicas. **Decisiones laborales:** la oferta formal no depende directamente de las horas informales y viceversa, aunque ambas pueden ser complementarias o sustitutas en la realidad. **Consumo y ocio:** la separabilidad hace que la elasticidad de sustitución intertemporal del consumo, gobernada por $\gamma$, sea independiente de la decisión laboral e ignora complementariedades asociadas al trabajo. **Aprendizaje:** las horas formales no generan capital humano ni elevan la productividad futura. **Asimetría de $\psi$:** la calibración requiere $\psi_F>\psi_I$ para aproximar T4. Esta diferencia funciona como una representación reducida de los costos de cumplimiento formal mencionados por Levy (2008) y Perry et al. (2007). En rigor, esos costos corresponden principalmente a una fricción de participación, por lo que una representación estructural requeriría un margen extensivo explícito.
 
 La utilidad separable en los dos tipos de trabajo, junto con el proceso OU para z, permite resolver el modelo en escala macroeconómica (I × Nz = 200 × 40 = 8,000 estados) con tiempos computacionales manejables (~75 minutos para la corrida rápida). Sustituciones por formas más generales (por ejemplo, GHH como en Greenwood, Hercowitz y Huffman, 1988) requieren resolución numérica de la oferta laboral en cada punto de la grilla, aumentando sustancialmente el costo computacional.
 
 ### 6.3.4 Otras Limitaciones Reconocidas
 
-- **Análisis estático:** El modelo opera en estado estacionario. No puede analizar transiciones ante shocks (pandemia, reformas tributarias) ni evaluar dinámicas de ajuste. Extensiones mediante MIT shocks (transición entre estados estacionarios) están documentadas como agenda futura.
-- **Ausencia de dimensión de género:** El modelo no diferencia por género. La informalidad femenina (73.3%) supera a la masculina (69.1%) según EPEN (INEI, 2024), y las brechas salariales de género son documentadas por Guillén y Huarancca (2024). Una extensión natural incorporaría tipos de agentes diferenciados por género.
-- **Sin heterogeneidad sectorial dentro del informal:** El sector informal se modela mediante una única tecnología. La heterogeneidad entre agricultura, construcción, comercio y servicios informales (todos con grados de informalidad y productividades distintas) no es capturada.
-- **Capital informal:** La calibración actual incluye capital en el sector informal ($\alpha_I=0.22$), pero no modela la decisión de inversión informal explícitamente. El stock de capital informal se determina por la condición de vaciado del mercado de bienes, no por una decisión intertemporal de los empresarios informales.
+Otras limitaciones completan el alcance del ejercicio. **Análisis estático:** el modelo opera en estado estacionario y no estudia transiciones ante pandemias o reformas. **Género:** no diferencia entre mujeres y hombres, pese a las brechas de informalidad y salarios documentadas por INEI (2024) y Guillén y Huarancca (2024). **Heterogeneidad sectorial:** una única tecnología informal resume actividades muy diferentes, como agricultura, construcción, comercio y servicios. **Capital informal:** aunque la calibración incluye capital informal con $\alpha_I=0.22$, su inversión no es una decisión intertemporal explícita y el stock se determina mediante las condiciones de equilibrio.
 
 \newpage
 
@@ -573,7 +543,7 @@ Esta extensión requiere ampliar el problema HACT usado aquí. Los costos fijos 
 
 ## 7.2 Heterogeneidad por género y hogares con dos miembros
 
-Una segunda extensión relevante consiste en introducir heterogeneidad por género. El modelo podría incorporar dos tipos de agentes —mujeres y hombres— con distintos procesos de productividad, costos de acceso al sector formal, preferencias laborales, restricciones de tiempo y cargas de trabajo no remunerado. Esta extensión permitiría analizar la brecha de informalidad por género documentada en EPEN (informalidad femenina 73.3% vs. masculina 69.1%) y evaluar cómo las fricciones laborales afectan diferencialmente la acumulación de activos. Además, se podría pasar de hogares unitarios a hogares con dos miembros para estudiar mecanismos de seguro intrahogar. Bacher, Grübener y Nord (2025) desarrollan un modelo de ciclo de vida con hogares de dos miembros y fricciones de búsqueda laboral para estudiar el *Added Worker Effect*, definido como la entrada al mercado laboral de un cónyuge ante la pérdida de empleo de la pareja, lo que ofrece una referencia metodológica directa.
+Una segunda extensión relevante consiste en introducir heterogeneidad por género. El modelo podría incorporar dos tipos de agentes, mujeres y hombres, con distintos procesos de productividad, costos de acceso al sector formal, preferencias laborales, restricciones de tiempo y cargas de trabajo no remunerado. Esta extensión permitiría analizar la brecha de informalidad por género documentada en EPEN (informalidad femenina 73.3% vs. masculina 69.1%) y evaluar cómo las fricciones laborales afectan diferencialmente la acumulación de activos. Además, se podría pasar de hogares unitarios a hogares con dos miembros para estudiar mecanismos de seguro intrahogar. Bacher, Grübener y Nord (2025) desarrollan un modelo de ciclo de vida con hogares de dos miembros y fricciones de búsqueda laboral para estudiar el *Added Worker Effect*, definido como la entrada al mercado laboral de un cónyuge ante la pérdida de empleo de la pareja, lo que ofrece una referencia metodológica directa.
 
 ## 7.3 Múltiples sectores informales
 

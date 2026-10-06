@@ -44,3 +44,6 @@ outputs/figures/
 # ZIPs de distribución (demasiado grandes)
 *.zip
 *.7z
+
+# Microdatos oficiales descargados. Se versionan scripts y momentos derivados.
+inputs/mexico/enoe_2024q1/raw/

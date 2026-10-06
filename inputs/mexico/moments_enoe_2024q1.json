@@ -1,0 +1,23 @@
+{
+  "country": "Mexico",
+  "survey": "ENOE 2024-I, cuestionario ampliado",
+  "sample_observations": 193108,
+  "expanded_employment": 59120905.0,
+  "person_informality": 0.5434668329248343,
+  "T4_informal_hours_main_job_classification": 0.5070729241898922,
+  "formality_low_education": 0.19826147635417452,
+  "formality_university": 0.7653441471811918,
+  "Tkz_education_formality_gap": 0.5670826708270174,
+  "gross_hourly_wage_formal": 70.26809908304635,
+  "gross_hourly_wage_informal": 48.906447294011684,
+  "gross_hourly_wage_ratio": 1.4367860061601792,
+  "T5_informal_gdp_official_2024": 0.254,
+  "definitions": {
+    "informal": "EMP_PPAL=1; formal is EMP_PPAL=2",
+    "T4": "weighted informal hours divided by weighted total hours; hours inherit main-job status",
+    "low_education": "ANIOS_ESC from 0 through 8, below completed secondary",
+    "university": "ANIOS_ESC from 16 through 30",
+    "Tkz": "formal person share among university minus formal person share among low education",
+    "wage_ratio": "weighted arithmetic mean of positive hourly income, formal divided by informal"
+  }
+}

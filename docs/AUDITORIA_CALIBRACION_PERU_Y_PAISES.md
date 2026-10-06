@@ -35,7 +35,7 @@ El buen ajuste de T4, T5 y Tkz no debe describirse como validacion fuera de mues
 
 Cambiar `HA_IE_T4_DATA` o `HA_IE_T5_DATA` solo cambia las cifras impresas. No produce una economia distinta. Una prueba internacional valida necesita una configuracion local de preferencias o una justificacion para mantenerlas, tecnologia formal e informal, impuesto al trabajo formal, proceso de productividad, barrera de acceso, prima de deuda y momentos construidos con definiciones equivalentes.
 
-La comparacion correcta tiene dos etapas. En la primera se mantienen los parametros internos de Peru y se sustituyen solo parametros externos medidos para el otro pais. Esta es una prueba de transporte y los momentos locales son predicciones fuera de muestra. En la segunda se recalibran `psi_F/psi_I`, `A_I` y `kappa_z1` contra T4, T5 y Tkz locales, manteniendo una normalizacion para la escala de las desutilidades. El ratio salarial, el ratio de gasto y el gradiente por quintil quedan reservados para validacion.
+La comparacion correcta tiene dos etapas. En la primera se mantienen los parametros internos de Peru y se sustituyen solo parametros externos medidos para el otro pais. Esta es una prueba de transporte y los momentos locales son predicciones fuera de muestra. En la segunda se recalibran `psi_F/psi_I`, `A_I` y `kappa_z1` contra T4, T5 y Tkz locales. El ratio salarial, el ratio de gasto y el gradiente por quintil quedan reservados para validacion.
 
 ## Países candidatos
 
@@ -51,7 +51,7 @@ Las tasas siguientes son de empleo informal por persona, no fracciones de horas.
 
 México debe ser la primera réplica completa por disponibilidad estadística. Ecuador pasa al segundo lugar porque la ENIGHUR 2024-2025 permite construir una validación de gasto reciente, además de los momentos laborales de ENEMDU. Colombia ofrece una encuesta laboral especialmente sólida, pero su medición de economía no observada no reemplaza el PBI informal del modelo. Paraguay funciona mejor como prueba de estrés del bloque laboral. Chile puede usarse como contraste de baja informalidad, no como país parecido.
 
-## Resultado preliminar para México
+## Resultado para México
 
 Sin recalibrar ningún parámetro, el equilibrio peruano genera 51.71% de horas informales y 18.80% de PBI informal. INEGI reporta que en México 54.4% de las personas ocupadas trabajó en condiciones de informalidad en 2024 y que esas actividades produjeron 25.4% del PIB. El primer contraste es solo orientativo porque compara horas del modelo con personas en los datos. El segundo sí es conceptualmente cercano a T5.
 
@@ -60,7 +60,7 @@ Sin recalibrar ningún parámetro, el equilibrio peruano genera 51.71% de horas 
 | Informalidad laboral | 51.71% de horas | 54.4% de personas | -2.69 puntos | Cercanía descriptiva, no prueba de T4 |
 | Participación informal en el PIB | 18.80% | 25.4% | -6.60 puntos | El modelo peruano subpredice el peso productivo informal mexicano |
 
-Este resultado descarta dos conclusiones apresuradas. No puede afirmarse todavía que el modelo ajusta México porque falta construir la fracción de horas con ENOE. Tampoco puede afirmarse que falla por completo. El nivel agregado de trabajo informal está cerca, mientras que la producción informal es demasiado baja. Esa combinación es informativa. Con la tecnología peruana, el modelo asigna a las horas informales menos producto del que muestran las cuentas mexicanas. La réplica mexicana deberá determinar si la brecha se corrige con la productividad informal relativa, con las participaciones de factores o con la composición sectorial, sin usar el ratio salarial ni el gasto para calibrar.
+La extensión posterior construyó la fracción de horas, el gap educativo y el ratio salarial con ENOE 2024-I. El filtro reproduce la tasa oficial de personas informales. Las corridas muestran que la especificación actual no ajusta simultáneamente T4, T5 y el sorting educativo. Una corrida con cierre numérico produce 66.0% de horas informales, 36.1% de PBI informal y un gap de 85.3%, frente a 50.7%, 25.4% y 56.7% en los datos. Un candidato más cercano en T4 y T5 no supera la verificación con 24 nodos. El detalle reproducible está en [CALIBRACION_MEXICO.md](CALIBRACION_MEXICO.md).
 
 ## Momentos que pueden construirse
 
@@ -105,11 +105,11 @@ La recalibración nacional es una prueba distinta. Allí T4, T5 y el gap discipl
 | 2. Robustez de grilla | Repetir Peru con ancho 2.8268, o con 60 nodos y ancho 3.0, y recalibrar | Los resultados economicos no cambian materialmente y la desviacion realizada coincide con 0.544 |
 | 3. Microdatos de México | Construir T4, gap de formalidad y ratio salarial con ENOE; construir gasto con ENIGH | Reproducir primero los agregados publicados por INEGI |
 | 4. Transporte a México | Sustituir parámetros externos mexicanos sin recalibrar parámetros internos | Reportar errores fuera de muestra en T4, T5, gap, salarios y gasto |
-| 5. Recalibración de México | Ajustar tres instrumentos a tres targets con una normalización explícita | Evaluar solo los momentos no usados para ajustar |
+| 5. Recalibración de México | Ajustar tres instrumentos a tres targets | Evaluar solo los momentos no usados para ajustar |
 | 6. Réplicas de Ecuador y Colombia | Repetir el protocolo con definiciones armonizadas, dejando T5 como no disponible | Comparar errores laborales y de gasto, no solo tasas de personas informales |
 | 7. Prueba de estrés con Paraguay | Transportar el bloque laboral a una economía con mayor informalidad | Evaluar si el mecanismo conserva el orden y los gradientes empíricos |
 
-Con los insumos disponibles hoy se puede validar el cierre peruano y hacer el contraste agregado preliminar de México. Todavía no existe una calibración internacional completa. La siguiente corrida sustantiva debe hacerse después de construir los momentos mexicanos con microdatos. Ejecutar el modelo para los otros países antes de construir T4 en horas y el proceso local de productividad produciría números, pero no una prueba económica identificada.
+Con los insumos disponibles hoy se valida el cierre peruano y se completa una primera prueba microfundada para México. El resultado mexicano es negativo, pero informativo. Señala que la extensión requiere un margen extensivo o heterogeneidad sectorial independiente antes de continuar con una calibración internacional completa. Ecuador sigue siendo el siguiente país candidato una vez construidos T4 y el proceso local de productividad.
 
 ## Fuentes oficiales para la ampliacion
 

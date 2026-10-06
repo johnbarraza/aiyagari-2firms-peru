@@ -335,9 +335,27 @@ El contraste agregado preliminar con México se reproduce con:
 run('calibracion/validate_mexico_screening.m')
 ```
 
-Esta prueba no sustituye la construcción de T4 con microdatos ENOE. Separa la
-tasa publicada de personas informales, usada solo como referencia descriptiva,
-de la participación informal en el PIB, que sí es conceptualmente cercana a T5.
+La extensión ya construye T4, el gap educativo y el ratio salarial directamente
+con ENOE 2024-I. También ejecuta un cribado de parámetros mexicanos. El
+resultado es un rechazo provisional de transportabilidad. Una corrida cierra
+los mercados, pero no ajusta simultáneamente T4, T5 y el sorting educativo.
+
+```bash
+python scripts/data/mexico/build_enoe_moments.py
+```
+
+```matlab
+run('calibracion/setup_mexico_screen.m')
+run('model_main.m')
+run('calibracion/summarize_mexico_screens.m')
+run('calibracion/validate_mexico_calibration.m')
+```
+
+Los datos, parámetros tomados de la literatura macro mexicana, resultados y
+limitaciones están en
+[`docs/CALIBRACION_MEXICO.md`](docs/CALIBRACION_MEXICO.md). La configuración
+de 24 nodos queda separada en `calibracion/setup_mexico_nz24.m` porque el
+candidato cercano en T4 y T5 no superó esa verificación numérica.
 
 La seleccion de nodos del proceso de productividad se prueba primero sin
 resolver el equilibrio y luego con las configuraciones finalistas.
